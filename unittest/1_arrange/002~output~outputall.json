@@ -1,4 +1,4 @@
-[{"EventId":"1","EventMessage":"Hello"},
-{"EventId":"2","EventMessage":"World"},
+[{"EventId":"1","EventMessage":null},
+{"EventId":"2","EventMessage":null},
 {"EventId":"3","EventMessage":"Hello"},
 {"EventId":"4","EventMessage":"Friends"}]
