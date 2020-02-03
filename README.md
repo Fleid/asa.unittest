@@ -1,6 +1,6 @@
 # Unit testing an Azure Stream Analytics project
 
-This document describes a workaround solution to implement unit testing for an [Azure Stream Analytics](https://docs.microsoft.com/en-us/azure/stream-analytics/) (ASA) project.
+Unit testing for [Azure Stream Analytics](https://docs.microsoft.com/en-us/azure/stream-analytics/) (ASA) projects.
 
 ## Description
 
