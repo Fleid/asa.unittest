@@ -28,7 +28,7 @@ Name of the folder containing the test fixture (folders 1_Arrange, 2_act...), us
 Name of the target folder where test assets will be generated and test results will be output
 
 .EXAMPLE
-.\unittest_prun.ps1 -asaProjectName "myASAProj" -asaProjectPath "C:\Users\Florian\Source\Repos\ASAtopology01\myASAProj" -testProjectPath "C:\Users\Florian\Source\Repos\ASAtopology01\unittest2" -assertPath "C:\Users\Florian\Source\Repos\ASAtopology01\unittest2\3_assert"-verbose
+.\unittest_prun.ps1 -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\Florian\Source\Repos\asa.unittest" -assertPath "C:\Users\Florian\Source\Repos\asa.unittest\unittest\3_assert"-verbose
 #>
 
 [CmdletBinding()]
@@ -36,13 +36,13 @@ param (
     [ValidateSet("2.3.0")]
     [string]$ASAnugetVersion = "2.3.0",
 
-    [string]$solutionPath = $ENV:BUILD_SOURCESDIRECTORY,
+    [string]$solutionPath = $ENV:BUILD_SOURCESDIRECTORY, # Azure DevOps Pipelines default variable
 
     [Parameter(Mandatory=$True)]
     [string]$asaProjectName,
 
     [string]$unittestFolder = "unittest",
-    [string]$assertPath = $ENV:COMMUB_TESTRESULTSDIRECTORY
+    [string]$assertPath = $ENV:COMMUB_TESTRESULTSDIRECTORY # Azure DevOps Pipelines default variable
 )
 
 ################################################################################################################################
