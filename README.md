@@ -126,9 +126,9 @@ Most errors in the test runner come from a faulty XML asaproj file, it is import
 
 ### Configuring a test case
 
-A test case is made of at least 2 files : a **test input data** file and a **reference output data** file. The test runner will start a local job ingesting the test input data, and compare the output of that job with the reference output data. Mapping inputs and outputs will be done following a convention on each file name.
+A test case is made of at least 2 files : a **test input data** file and a **reference output data** file. The test runner will start a local job ingesting the test input data, and compare the output of that job to the reference output data. Mapping inputs and outputs will be done following a file name convention.
 
-Reminder : each input source used in the job query to be tested must have a local source configured in the ASA project ([VSCode](https://docs.microsoft.com/en-us/azure/stream-analytics/visual-studio-code-local-run), [Visual Studio](https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-vs-tools-local-run)).
+**Reminder** : every input source used in the job query to be tested must have a local source configured in the ASA project ([VSCode](https://docs.microsoft.com/en-us/azure/stream-analytics/visual-studio-code-local-run), [Visual Studio](https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-vs-tools-local-run)).
 
 Once this is done:
 
@@ -167,6 +167,8 @@ Proper format (brackets and commas):
 {"EventId":"4","EventMessage":"Friends"}
 ]
 ```
+
+The solution comes with a couple of pre-configured test cases to illustrate the format and naming convention.
 
 ## High level picture
 
