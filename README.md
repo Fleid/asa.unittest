@@ -1,21 +1,29 @@
-# Unit testing an Azure Stream Analytics project
+# Unit testing Azure Stream Analytics
 
-Unit testing for [Azure Stream Analytics](https://docs.microsoft.com/en-us/azure/stream-analytics/) (ASA) projects.
+Unit testing for [Azure Stream Analytics](https://docs.microsoft.com/en-us/azure/stream-analytics/) (ASA), the complex event processing (stateful) service running in Azure.
 
 ## Description
 
-As of writing, there is no available option to run unit tests from the major IDEs supporting ASA: VSCode and Visual Studio.
+As of writing, there is no available option to run unit tests from the major IDEs supporting ASA: [VSCode](https://code.visualstudio.com/) and [Visual Studio](https://visualstudio.microsoft.com/vs/).
 
-This solution is an attempt at offering the basic features required for unit testing:
+This solution offers the basic features required for unit testing:
 
 - fully local, repeatable executions over multiple test cases
 - automated evaluation of the resulting outputs against the expected ones
 
-For that it leverages the **local testing with sample data** capabilities of either [VSCode](https://docs.microsoft.com/en-us/azure/stream-analytics/visual-studio-code-local-run) or [Visual Studio](https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-vs-tools-local-run), in addition to [Microsoft.Azure.StreamAnalytics.CICD](https://www.nuget.org/packages/Microsoft.Azure.StreamAnalytics.CICD/) and [jsondiffpatch](https://github.com/benjamine/JsonDiffPatch), via a PowerShell script and predefined folder structure and file naming convention:
+For that it leverages the **local testing with sample data** capabilities of either [VSCode](https://docs.microsoft.com/en-us/azure/stream-analytics/visual-studio-code-local-run) or [Visual Studio](https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-vs-tools-local-run), as unit testing should not rely on external services.
+
+Local runs are scripted in PowerShell, using the `sa.exe` tool from the [Microsoft.Azure.StreamAnalytics.CICD](https://www.nuget.org/packages/Microsoft.Azure.StreamAnalytics.CICD/) package. 
+
+Finally the results are evaluated against reference data sets thanks to [jsondiffpatch](https://github.com/benjamine/JsonDiffPatch).
+
+The whole thing is wired together in a PowerShell script based on a predefined test fixture (folder structure + naming convention):
 
 ![figure 1 - High level overview](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_overview.png?raw=true)
 
 *[figure 1 - High level overview](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_overview.png?raw=true)*
+
+This repository provides both an installation script in addition to the run script to automate most of the setup. It also allows automated executions in a continuous build pipeline.
 
 Please note that this solution is currently available **only on Windows** since it depends on *Microsoft.Azure.StreamAnalytics.CICD*.
 
