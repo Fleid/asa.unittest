@@ -4,6 +4,7 @@
         "asaproj",
         "asaql",
         "jsondiffpatch",
+        "prun",
         "unittest"
     ]
 }
