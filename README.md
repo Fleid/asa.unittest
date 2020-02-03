@@ -21,28 +21,28 @@ Please note that this solution is currently available **only on Windows** since 
 
 ## Quick start
 
-###  Hello World
+### Hello World
 
 The following steps show how to download and run the solution with a Hello World ASA project:
 
-0. Install [Node.JS](https://nodejs.org/en/download/) to get the npm CLI, and a recent version (6+) of [PowerShell](https://github.com/PowerShell/PowerShell/releases) (*assets* tab under a specific release)
+1. Install [Node.JS](https://nodejs.org/en/download/) to get the npm CLI, and a recent version (6+) of [PowerShell](https://github.com/PowerShell/PowerShell/releases) (*assets* tab under a specific release)
 1. Download the sample package (it includes a basic ASA project with a couple of pre-configured tests)
-2. **Only once** - execute the installer in the *unittest\2_act* folder: `unittest_install.ps1` (mind the argument/parameter for target folder)
-3. Execute the test runner in the *unittest\2_act* folder: `unittest_run.ps1`  (mind the arguments/parameters for project/output folder)
+1. **Only once** - execute the installer in the *unittest\2_act* folder: `unittest_install.ps1` (mind the argument/parameter for target folder)
+1. Execute the test runner in the *unittest\2_act* folder: `unittest_run.ps1`  (mind the arguments/parameters for project/output folder)
 
 ### Quick installation
 
 The following steps show how to download and run the solution on an existing ASA project:
 
-0. Install [Node.JS](https://nodejs.org/en/download/) to get the npm CLI, and a recent version (6+) of [PowerShell](https://github.com/PowerShell/PowerShell/releases) (*assets* tab under a specific release)
+1. Install [Node.JS](https://nodejs.org/en/download/) to get the npm CLI, and a recent version (6+) of [PowerShell](https://github.com/PowerShell/PowerShell/releases) (*assets* tab under a specific release)
 1. Download the main package (it includes the test folder structure and scripts)
-2. If it doesn't exist, create a solution folder (simple top folder) for the ASA project
-3. Move both the ASA project and the unittest folder in that new solution folder
-4. If using VSCode (and not Visual Studio), add an `.asaproj` file as explained below
-5. Add local inputs for every source used in the query ([VSCode](https://docs.microsoft.com/en-us/azure/stream-analytics/visual-studio-code-local-run) / [Visual Studio](https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-vs-tools-local-run))
-6. Configure a test case as explained below
-7. **Only once** - execute the installer in the *unittest\2_act folder*: `unittest_install.ps1` (mind the argument/parameter for target folder)
-8. Execute the test runner in the *unittest\2_act folder* folder: `unittest_run.ps1`  (mind the arguments/parameters for project/output folder)
+1. If it doesn't exist, create a solution folder (simple top folder) for the ASA project
+1. Move both the ASA project and the unittest folder in that new solution folder
+1. If using VSCode (and not Visual Studio), add an `.asaproj` file as explained below
+1. Add local inputs for every source used in the query ([VSCode](https://docs.microsoft.com/en-us/azure/stream-analytics/visual-studio-code-local-run) / [Visual Studio](https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-vs-tools-local-run))
+1. Configure a test case as explained below
+1. **Only once** - execute the installer in the *unittest\2_act folder*: `unittest_install.ps1` (mind the argument/parameter for target folder)
+1. Execute the test runner in the *unittest\2_act folder* folder: `unittest_run.ps1`  (mind the arguments/parameters for project/output folder)
 
 ### Configuring the asaproj file
 
@@ -57,7 +57,6 @@ This step is only required for VSCode project, as Visual Studio manages that fil
 1. In the ASA Project : configure local input(s) for every input source to be tested
 2. In `1_arrange` : create a local input file (using live extract if necessary) for the test case, FILE NAME CONVENTION
 3. In `1_arrange` : create the expected output file (using a local run on sample data of necessary) for the test case, FILE NAME CONVENTION
-
 
 ## High level picture
 
@@ -85,7 +84,7 @@ This solution uses the following components:
   - the [nuget CLI](https://docs.microsoft.com/en-us/nuget/reference/nuget-exe-cli-reference), to download and install the package above
 - the **jsondiffpatch** npm package ([GitHub]((https://github.com/benjamine/JsonDiffPatch) ), [npm](https://www.npmjs.com/package/jsondiffpatch)) which allows to compare json files
   - the [npm CLI](https://docs.npmjs.com/cli-documentation/) to install the package above, available with [Node.JS](https://nodejs.org/en/download/)
-- [PowerShell](https://github.com/PowerShell/PowerShell/releases) as the shell to run intermediary tasks and execute the required commands 
+- [PowerShell](https://github.com/PowerShell/PowerShell/releases) as the shell to run intermediary tasks and execute the required commands
 
 These components are used in a script as follow:
 
@@ -126,7 +125,7 @@ The folder `2_act` will contain the solution dependencies (`nuget and npm packag
 
 ### unittest\3_assert
 
-The folder `3_assert` will be **automatically** filled with test results at runtime. 
+The folder `3_assert` will be **automatically** filled with test results at runtime.
 
 Each execution will add a new folder named after the timestamp of the run, inside of which each test case will generate a new sub-folder:
 
