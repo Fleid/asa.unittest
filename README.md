@@ -45,10 +45,20 @@ To be noted that those requirements are installed by default on every Azure DevO
 
 The following steps show how to download and run the solution with a Hello World ASA project:
 
-1. Check requirements
-1. Clone/Download the repository (it includes a basic ASA project `ASAHelloWorld` and a couple of pre-configured tests)
-1. **Only once** - execute the installer in the *unittest\2_act* folder: `unittest_install.ps1` (mind the argument/parameter for target folder)
-1. Execute the test runner in the *unittest\2_act* folder: `unittest_run.ps1`  (mind the arguments/parameters for project/output folder)
+1. Check all requirements are installed
+1. Clone/download this repository (as it includes a basic ASA project `ASAHelloWorld` and a couple of pre-configured tests)
+1. **Only once** - execute the installer in the *unittest\2_act* folder: `unittest_install.ps1`
+  . Open a Powershell host (terminal, ISE...)
+  . Navigate to `asa.unittest\unittest\2_act`
+  . Run `.\unittest_install.ps1 -solutionPath "C:\Users\florian\Repos\asa.unittest" -verbose` with the right `-solutionPath`
+  . ![Screenshot of a terminal run of the installation script](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_install.png?raw=true)
+  . In case of PowerShell issues see troubleshooting
+1. Execute the test runner in the *unittest\2_act* folder: `unittest_prun.ps1`
+  . Open a Powershell host (terminal, ISE...)
+  . Navigate to `asa.unittest\unittest\2_act`
+  . Run `.\unittest_prun.ps1 -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\florian\Repos\asa.unittest" -assertPath "C:\Users\florian\Repos\asa.unittest\unittest\3_assert"-verbose` with the right `-solutionPath` and `-assertPath`
+  . ![Screenshot of a terminal run of the installation script](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_prun.png?raw=true)
+  . In case of PowerShell issues see troubleshooting
 
 ### Quick installation
 
