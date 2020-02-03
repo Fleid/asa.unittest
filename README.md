@@ -210,6 +210,8 @@ PowerShell [remoting for jobs](https://docs.microsoft.com/en-us/powershell/modul
 
 ## Internal details
 
+**(This need to be updated to reflect the new parallel run workflow)**
+
 ![figure 2 - Detailed overview](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_overviewFull.png?raw=true)
 
 *[figure 2 - Detailed overview](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_overviewFull.png?raw=true)*
