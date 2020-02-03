@@ -35,11 +35,9 @@ This solution leverages PowerShell, a nuget package and a npm package to enable 
 - The **npm CLI** must also be installed manually (available with [Node.JS](https://nodejs.org/en/download/))
 - The nuget CLI will be downloaded via the provided installation script, but it requires the [.NET Framework 4.7.2 or above](https://dotnet.microsoft.com/download/dotnet-framework) to run.
 
-The requirements above are installed by default in Azure DevOps Pipelines agents.
-
 From there, the installation script will take care of the other dependencies (including the nuget CLI).
 
-## Installation
+To be noted that those requirements are installed by default on every Azure DevOps Pipelines agents.
 
 ## Quick start
 
@@ -47,8 +45,8 @@ From there, the installation script will take care of the other dependencies (in
 
 The following steps show how to download and run the solution with a Hello World ASA project:
 
-1. Install [Node.JS](https://nodejs.org/en/download/) to get the npm CLI, and a recent version (6+) of [PowerShell](https://github.com/PowerShell/PowerShell/releases) (*assets* tab under a specific release)
-1. Download the sample package (it includes a basic ASA project with a couple of pre-configured tests)
+1. Check requirements
+1. Clone/Download the repository (it includes a basic ASA project `ASAHelloWorld` and a couple of pre-configured tests)
 1. **Only once** - execute the installer in the *unittest\2_act* folder: `unittest_install.ps1` (mind the argument/parameter for target folder)
 1. Execute the test runner in the *unittest\2_act* folder: `unittest_run.ps1`  (mind the arguments/parameters for project/output folder)
 
