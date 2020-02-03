@@ -1,8 +1,12 @@
 # Unit testing an Azure Stream Analytics project
 
-This document describes a solution to implement unit testing for an [Azure Stream Analytics](https://docs.microsoft.com/en-us/azure/stream-analytics/) (ASA) project.
+This document describes a workaround solution to implement unit testing for an [Azure Stream Analytics](https://docs.microsoft.com/en-us/azure/stream-analytics/) (ASA) project.
 
-This solution is not optimal, as detailed in *Shortcomings* below, but still offers the basic features required for unit testing:
+## Description
+
+As of writing, there is no available option to run unit tests from the major IDEs supporting ASA: VSCode and Visual Studio.
+
+This solution is an attempt at offering the basic features required for unit testing:
 
 - fully local, repeatable executions over multiple test cases
 - automated evaluation of the resulting outputs against the expected ones
