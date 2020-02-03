@@ -1,0 +1,7 @@
+{
+    "InputAlias": "hwsource",
+    "Type": "Data Stream",
+    "Format": "csv",
+    "FilePath": "Data_hwsource.csv",
+    "ScriptType": "InputMock"
+}

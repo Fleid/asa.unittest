@@ -1,0 +1,12 @@
+# Windows being Windows
+desktop.ini
+
+# testing dependancies
+2_act/nuget.exe
+2_act/Microsoft.Azure.StreamAnalytics.CICD.*/
+
+# local development context
+2_act/unittest_localinit.ps1
+
+# local test results
+3_assert/*

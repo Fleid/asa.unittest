@@ -1,0 +1,23 @@
+WITH Regroup AS (
+	SELECT EventId, EventMessage FROM hwsource
+	UNION ALL
+	SELECT EventId, EventMessage FROM hwsource2
+)
+
+SELECT
+	*
+INTO OutputHello
+FROM Regroup
+WHERE EventMessage LIKE 'Hello'
+
+SELECT
+	*
+INTO OutputOther
+FROM Regroup
+WHERE EventMessage NOT LIKE 'Hello'
+
+SELECT
+	*
+INTO OutputAll
+FROM Regroup
+

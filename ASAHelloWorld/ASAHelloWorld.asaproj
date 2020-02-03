@@ -1,0 +1,23 @@
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <ItemGroup>
+    <Script Include="ASAHelloWorld.asaql" />
+  </ItemGroup>
+
+  <ItemGroup>
+
+    <Configure Include="Inputs\Local_hwsource.json">
+      <SubType>InputMock</SubType>
+    </Configure>
+
+    <Configure Include="Inputs\Local_hwsource2.json">
+      <SubType>InputMock</SubType>
+    </Configure>
+
+    <Configure Include="JobConfig.json">
+      <SubType>JobConfig</SubType>
+    </Configure>
+    
+  </ItemGroup>
+  
+</Project>
