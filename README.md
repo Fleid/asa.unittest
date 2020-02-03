@@ -126,11 +126,44 @@ Most errors in the test runner come from a faulty XML asaproj file, it is import
 
 ### Configuring a test case
 
-...
+A test case is made of at least 2 files : a **test input data** file and a **reference output data** file. The test runner will start a local job ingesting the test input data, and compare the output of that job with the reference output data. Mapping inputs and outputs will be done following a convention on each file name.
 
-1. In the ASA Project : configure local input(s) for every input source to be tested
-2. In `1_arrange` : create a local input file (using live extract if necessary) for the test case, FILE NAME CONVENTION
-3. In `1_arrange` : create the expected output file (using a local run on sample data of necessary) for the test case, FILE NAME CONVENTION
+Reminder : each input source used in the job query to be tested must have a local source configured in the ASA project ([VSCode](https://docs.microsoft.com/en-us/azure/stream-analytics/visual-studio-code-local-run), [Visual Studio](https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-vs-tools-local-run)).
+
+Once this is done:
+
+1. In `unittest\1_arrange`, prepare input files:
+   - Copy the **test input data** file to be used in the test case for the test case
+   - Rename it according to the file name convention : `xxx~input~sourceAlias~testLabel.yyy`
+      - `xxx` : for the test case number (grouping multiple inputs and outputs together), for example : 001, 002...
+      - `~` : as the separator
+      - `input` : flags the file as an input file
+      - `sourceAlias` : alias of the source in the query
+      - `testLabel` : a label to identify the test (`nominal`, `missingField`, `nullValue`...)
+      - `yyy` : any of the supported data format extension (csv, json, avro)
+1. In `unittest\1_arrange`, prepare output files:
+   - Copy the **reference output data** file to be used in the test case
+   - Rename it according to the file name convention : `xxx~output~sinkAlias~testLabel.json`
+      - `xxx` : for the test case number (grouping multiple inputs and outputs together), for example : 001, 002...
+      - `~` : as the separator
+      - `output` : flags the file as an input file
+      - `sinkAlias` : alias of the destination in the query
+      - `testLabel` : a label to identify the test (`nominal`, `missingField`, `nullValue`...)
+      - `json` : **the data must be in JSON format as it's the only format currently supported for local output** (the ASA engine doesn't honor the output format for local runs)
+
+Note that [live extracts](https://docs.microsoft.com/en-us/azure/stream-analytics/visual-studio-code-local-run#prepare-sample-data) are a good way to generate test input data. Similarly for the output of local runs for reference output data. Note that these files may be generated in a **line separated** format, meaning without a proper array syntax (missing `[...]` around all records), which is not supported by the test runner. They will need to be corrected as follow:
+
+Wrong format:
+```JSON
+{"EventId":"3","EventMessage":"Hello"}{"EventId":"4","EventMessage":"Friends"}
+```
+Proper format (brackets and commas):
+```JSON
+[
+{"EventId":"3","EventMessage":"Hello"},
+{"EventId":"4","EventMessage":"Friends"}
+]
+```
 
 ## High level picture
 
