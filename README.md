@@ -15,6 +15,8 @@ In this article:
   - Troubleshooting
 - Internal Details
 
+*** 
+
 ## Description
 
 At the time of writing, there is no available option to run unit tests from the major IDEs supporting ASA: [VSCode](https://code.visualstudio.com/) and [Visual Studio](https://visualstudio.microsoft.com/vs/).
@@ -39,6 +41,8 @@ The whole thing is wired together in a **PowerShell** script based on a predefin
 This repository provides an **installation script**, in addition to the test script, to automate most of the setup. This installation script also allows automated executions in a continuous build pipeline such as **Azure DevOps Pipelines**.
 
 Please note that this solution is currently available **only on Windows** since it depends on *Microsoft.Azure.StreamAnalytics.CICD*.
+
+***
 
 ## Getting started
 
@@ -202,6 +206,8 @@ PowerShell [remoting for jobs](https://docs.microsoft.com/en-us/powershell/modul
 - Both the ASA project folder and the unittest folder need to be in the same solution folder
 - The ASA project folder, ASA script file (`.asaql`) and the XML asaproj file (`.asaproj`) needs to have the same name
 
+***
+
 ## Internal details
 
 ![figure 2 - Detailed overview](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_overviewFull.png?raw=true)
@@ -222,8 +228,6 @@ These components are used in a script as follow:
 
 ![figure 1 - Schema of the unit testing setup - it is detailed below](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_solution.png?raw=true)
 
-[figure 1 - Schema of the unit testing setup]()
-
 The script will expect the following folder structure to run properly:
 
 - **mySolutionFolder** <- *Potentially new top solution folder*
@@ -233,49 +237,11 @@ The script will expect the following folder structure to run properly:
     - 2_act <- *New folder that will contain dependencies and scripts*
     - 3_assert <- *New folder that will contain test run results*
 
-### unittest\1_arrange
+### Build automation in Azure DevOps
 
-The folder `1_arrange` will contain test cases described by at least 2 files each: one **Input** and one **Output**. Both files contain data:
+Use a PowerShell task to run the installation script first and the test runner script second.
 
-- Input files will contain the data to be used as local input during the test
-- Output files will contain the data expected to be found as the result of the run
-
-For input files, the main test script will update the **local** configuration file of that data source in the ASA project (and reverse that change to the starting value at the end).
-
-The following naming convention must be used:
-
-- `xxx~direction~dataSource~testLabel.extension` with:
-  - `xxx` : Test case number, used to match multiple files in a single test case
-  - `direction` : Input or Output. Input will make the script replaces the **local** input configuration file for   the data source below in the ASA project
-  - `dataSource` : The name of the data source that will have its **local** configuration altered to point toward   this file
-  - `testLabel` : Label of the test
-  - `extension` : JSON, CSV...
-
-### unittest\2_act
-
-The folder `2_act` will contain the solution dependencies (`nuget and npm packages`, PowerShell install script) and the main PowerShell script: `unittest_run.ps1`.
-
-### unittest\3_assert
-
-The folder `3_assert` will be **automatically** filled with test results at runtime.
-
-Each execution will add a new folder named after the timestamp of the run, inside of which each test case will generate a new sub-folder:
-
-- 3_assert
-  - 20200106122200
-    - 001
-    - 002
-    - 003
-  - 20200106122551
-    - 001
-    - 002
-    - 003
-
-## Local setup
-
-## Build automation in Azure DevOps
-
-## Shortcomings
+### Shortcomings
 
 - Slow execution
 - No integration to the usual IDEs
