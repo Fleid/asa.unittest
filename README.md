@@ -2,6 +2,19 @@
 
 Unit testing for [Azure Stream Analytics](https://docs.microsoft.com/en-us/azure/stream-analytics/) (ASA), the complex event processing (stateful) service running in Azure.
 
+In this article:
+
+- Description
+- Getting started
+  - Requirements
+  - Hello World
+  - Installation
+  - Running a test
+  - Configuring the asaproj file
+  - Configuring a test case
+  - Troubleshooting
+- Internal Details
+
 ## Description
 
 At the time of writing, there is no available option to run unit tests from the major IDEs supporting ASA: [VSCode](https://code.visualstudio.com/) and [Visual Studio](https://visualstudio.microsoft.com/vs/).
@@ -27,7 +40,9 @@ This repository provides an **installation script**, in addition to the test scr
 
 Please note that this solution is currently available **only on Windows** since it depends on *Microsoft.Azure.StreamAnalytics.CICD*.
 
-## Requirements
+## Getting started
+
+### Requirements
 
 This solution leverages PowerShell, a nuget package and a npm package to enable unit testing:
 
@@ -38,8 +53,6 @@ This solution leverages PowerShell, a nuget package and a npm package to enable 
 From there, the installation script will take care of the other dependencies (including the nuget CLI).
 
 To be noted that those requirements are installed by default on every Azure DevOps Pipelines agents.
-
-## Getting started
 
 ### Hello World
 
@@ -61,7 +74,7 @@ The following steps show how to download and run the solution with a Hello World
    - Here it is expected that the test ends with 2 errors, in test case *003*
    - In case of issues see **troubleshooting**
 
-### Installation
+### Installation and running a test
 
 The following steps show how to download and run the solution on an existing ASA project:
 
@@ -83,6 +96,8 @@ The following steps show how to download and run the solution on an existing ASA
    - Navigate to `unittest\2_act` in the solution folder
    - Run `.\unittest_prun.ps1 -asaProjectName "<ASAPROJECTNAME>" -solutionPath "C:\<SOLUTIONFOLDERPATH>" -assertPath "C:\<SOLUTIONFOLDERPATH>\unittest\3_assert"-verbose` with the right `-solutionPath` and `-assertPath` (absolute paths)
    - In case of issues see **troubleshooting**
+
+Once the test fixture is set, the recommended way of running jobs is via a terminal window.
 
 ### Configuring the asaproj file
 
@@ -170,9 +185,24 @@ Proper format (brackets and commas):
 
 The solution comes with a couple of pre-configured test cases to illustrate the format and naming convention.
 
-## High level picture
+### Troubleshooting
 
-As detailed in the following section, the solution uses the required components via a PowerShell script, and expects a certain folder structure and file naming convention to do so successfully:
+The main causes of error are:
+
+#### PowerShell
+
+PowerShell [execution policies](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7). PowerShell comes with that mechanism which is supposed to make a user deeply aware of the fact they're running a script they haven't written. For users with administrative rights, it's an easy to solve issue via **an admin session** and the command `Set-ExecutionPolicy -ExecutionPolicy Unrestricted` ([doc](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-7)). For non admins, the easiest is to create new powershell scripts (text files with the `.ps1` extension) and copy/paste the content of each script (install, prun). Note that the VSCode Integrated PowerShell environment has [an issue with execution policies](https://github.com/PowerShell/vscode-powershell/issues/1217) and should be avoided (use terminal instead)
+
+PowerShell [remoting for jobs](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_jobs?view=powershell-7). Depending on the version of PowerShell (older), it may require remoting to be enabled to start background jobs. Background jobs are used by the test runner to start runs in parallel. This should not be necessary, but [the command to enable remoting](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/enable-psremoting?view=powershell-7) is `Enable-PSRemoting`
+
+#### Test Fixture
+
+- Missing or malformed `asaproj` XML file. See the paragraph on how to configure it, check values against the JSON asaproj file as they should be the same. Limit the content to what is strictly necessary (script, JobConfig, local inputs)
+- Bad format for JSON data files: test input JSON files and **all** reference output file need to be array of records (`[{...},{...}]`).
+- Both the ASA project folder and the unittest folder need to be in the same solution folder
+- The ASA project folder, ASA script file (`.asaql`) and the XML asaproj file (`.asaproj`) needs to have the same name
+
+## Internal details
 
 ![figure 2 - Detailed overview](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_overviewFull.png?raw=true)
 
