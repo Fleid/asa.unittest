@@ -51,13 +51,13 @@ The following steps show how to download and run the solution with a Hello World
   . Open a Powershell host (terminal, ISE...)
   . Navigate to `asa.unittest\unittest\2_act`
   . Run `.\unittest_install.ps1 -solutionPath "C:\Users\florian\Repos\asa.unittest" -verbose` with the right `-solutionPath`
-  . ![Screenshot of a terminal run of the installation script](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_install.png?raw=true)
+  . ![Screenshot of a terminal run of the installation script](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_install_terminal.png?raw=true)
   . In case of PowerShell issues see troubleshooting
 1. Execute the test runner in the *unittest\2_act* folder: `unittest_prun.ps1`
   . Open a Powershell host (terminal, ISE...)
   . Navigate to `asa.unittest\unittest\2_act`
   . Run `.\unittest_prun.ps1 -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\florian\Repos\asa.unittest" -assertPath "C:\Users\florian\Repos\asa.unittest\unittest\3_assert"-verbose` with the right `-solutionPath` and `-assertPath`
-  . ![Screenshot of a terminal run of the installation script](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_prun.png?raw=true)
+  . ![Screenshot of a terminal run of the installation script](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_prun_terminal.png?raw=true)
   . In case of PowerShell issues see troubleshooting
 
 ### Quick installation
