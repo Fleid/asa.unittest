@@ -154,10 +154,13 @@ Once this is done:
 Note that [live extracts](https://docs.microsoft.com/en-us/azure/stream-analytics/visual-studio-code-local-run#prepare-sample-data) are a good way to generate test input data. Similarly for the output of local runs for reference output data. Note that these files may be generated in a **line separated** format, meaning without a proper array syntax (missing `[...]` around all records), which is not supported by the test runner. They will need to be corrected as follow:
 
 Wrong format:
+
 ```JSON
 {"EventId":"3","EventMessage":"Hello"}{"EventId":"4","EventMessage":"Friends"}
 ```
+
 Proper format (brackets and commas):
+
 ```JSON
 [
 {"EventId":"3","EventMessage":"Hello"},
