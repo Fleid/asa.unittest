@@ -39,46 +39,90 @@ From there, the installation script will take care of the other dependencies (in
 
 To be noted that those requirements are installed by default on every Azure DevOps Pipelines agents.
 
-## Quick start
+## Getting started
 
 ### Hello World
 
 The following steps show how to download and run the solution with a Hello World ASA project:
 
 1. Check all requirements are installed
-1. Clone/download this repository (as it includes a basic ASA project `ASAHelloWorld` and a couple of pre-configured tests)
+1. Clone/download this repository (as it includes a basic ASA project `ASAHelloWorld` and a couple of pre-configured tests in *unittest\1_arrange* )
 1. **Only once** - execute the installer in the *unittest\2_act* folder: `unittest_install.ps1`
-   1. Open a Powershell host (terminal, ISE...)
-   . Navigate to `asa.unittest\unittest\2_act`
-   . Run `.\unittest_install.ps1 -solutionPath "C:\Users\florian\Repos\asa.unittest" -verbose` with the right `-solutionPath`
-   . ![Screenshot of a terminal run of the installation script](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_install_terminal.png?raw=true)
-  . In case of PowerShell issues see troubleshooting
+   - Open a Powershell host (terminal, ISE...)
+   - Navigate to `asa.unittest\unittest\2_act`
+   - Run `.\unittest_install.ps1 -solutionPath "C:\Users\florian\Repos\asa.unittest" -verbose` with the right `-solutionPath` (absolute paths)
+   - ![Screenshot of a terminal run of the installation script](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_install_terminal.png?raw=true)
+   - In case of issues see **troubleshooting**
 1. Execute the test runner in the *unittest\2_act* folder: `unittest_prun.ps1`
-   1. Open a Powershell host (terminal, ISE...)
-   . Navigate to `asa.unittest\unittest\2_act`
-   . Run `.\unittest_prun.ps1 -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\florian\Repos\asa.unittest" -assertPath "C:\Users\florian\Repos\asa.unittest\unittest\3_assert"-verbose` with the right `-solutionPath` and `-assertPath`
-   . ![Screenshot of a terminal run of the installation script](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_prun_terminal.png?raw=true)
-   . In case of PowerShell issues see troubleshooting
+   - Open a Powershell host (terminal, ISE...)
+   - Navigate to `asa.unittest\unittest\2_act`
+   - Run `.\unittest_prun.ps1 -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\florian\Repos\asa.unittest" -assertPath "C:\Users\florian\Repos\asa.unittest\unittest\3_assert"-verbose` with the right `-solutionPath` and `-assertPath` (absolute paths)
+   - ![Screenshot of a terminal run of the installation script](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_prun_terminal.png?raw=true)
+   - Here it is expected that the test ends with 2 errors, in test case *003*
+   - In case of issues see **troubleshooting**
 
-### Quick installation
+### Installation
 
 The following steps show how to download and run the solution on an existing ASA project:
 
-1. Install [Node.JS](https://nodejs.org/en/download/) to get the npm CLI, and a recent version (6+) of [PowerShell](https://github.com/PowerShell/PowerShell/releases) (*assets* tab under a specific release)
-1. Download the main package (it includes the test folder structure and scripts)
-1. If it doesn't exist, create a solution folder (simple top folder) for the ASA project
-1. Move both the ASA project and the unittest folder in that new solution folder
-1. If using VSCode (and not Visual Studio), add an `.asaproj` file as explained below
-1. Add local inputs for every source used in the query ([VSCode](https://docs.microsoft.com/en-us/azure/stream-analytics/visual-studio-code-local-run) / [Visual Studio](https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-vs-tools-local-run))
+1. Check all requirements are installed
+1. If it doesn't exist, **create a solution folder** (simple top folder)
+1. Prepare the ASA Project
+   - Copy or move the existing ASA project to the solution folder
+   - If the project was developed with VSCode (not necessary for Visual Studio), add an `.asaproj` file to the ASA project as explained below
+   - In ASA, add local inputs for every source used in the query (see [VSCode](https://docs.microsoft.com/en-us/azure/stream-analytics/visual-studio-code-local-run) / [Visual Studio](https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-vs-tools-local-run))
+1. Clone/download this repository, copy or move the *unittest* folder to the solution folder
+1. **Only once** - execute the installer in the *unittest\2_act* folder: `unittest_install.ps1`
+   - Open a Powershell host (terminal, ISE...)
+   - Navigate to `unittest\2_act` in the solution folder
+   - Run `.\unittest_install.ps1 -solutionPath "C:\<SOLUTIONFOLDERPATH>" -verbose` with the right `-solutionPath` (absolute paths)
+   - In case of issues see **troubleshooting**
 1. Configure a test case as explained below
-1. **Only once** - execute the installer in the *unittest\2_act folder*: `unittest_install.ps1` (mind the argument/parameter for target folder)
-1. Execute the test runner in the *unittest\2_act folder* folder: `unittest_run.ps1`  (mind the arguments/parameters for project/output folder)
+1. Execute the test runner in the *unittest\2_act* folder: `unittest_prun.ps1`
+   - Open a Powershell host (terminal, ISE...)
+   - Navigate to `unittest\2_act` in the solution folder
+   - Run `.\unittest_prun.ps1 -asaProjectName "<ASAPROJECTNAME>" -solutionPath "C:\<SOLUTIONFOLDERPATH>" -assertPath "C:\<SOLUTIONFOLDERPATH>\unittest\3_assert"-verbose` with the right `-solutionPath` and `-assertPath` (absolute paths)
+   - In case of issues see **troubleshooting**
 
 ### Configuring the asaproj file
 
-This step is only required for VSCode project, as Visual Studio manages that file automatically.
+This step is only required for ASA project created with **VSCode**.
 
-...
+An ASA project created with VSCode has an **asaproj** JSON file in the form of `asaproj.json`. The tool allowing command line executions (`sa.exe`) currently expects an XML version as generated by Visual Studio. It is required to manually create that file before for the test runner to call `sa.exe` successfully.
+
+To do so, create a new file **in the ASA project folder** named `<ASAPROJECTNAME>.asaproj` after the ASA project name (same name as the `.asaql`) with the following content, replacing:
+
+- `ASAHelloWorld.asaql` by `<ASAPROJECTNAME>.asaql` after the ASA project name
+- For every local inputs, an item group of subtype `InputMock` with the proper relative path `Inputs\Local_MYINPUT01.json` pointing to the local configuration file (not data file). If those doesn't already exist in the ASA project, create them by [adding local source](https://docs.microsoft.com/en-us/azure/stream-analytics/visual-studio-code-local-run) for existing inputs
+- **No other items are required** (no outputs, no functions...), only local inputs, other that the JobConfig as illustrated below
+
+```XML
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <ItemGroup>
+    <Script Include="ASAHelloWorld.asaql" />
+  </ItemGroup>
+
+  <ItemGroup>
+
+    <Configure Include="Inputs\Local_MYINPUT01.json">
+      <SubType>InputMock</SubType>
+    </Configure>
+
+    <Configure Include="Inputs\Local_MYINPUT02.json">
+      <SubType>InputMock</SubType>
+    </Configure>
+
+    <Configure Include="JobConfig.json">
+      <SubType>JobConfig</SubType>
+    </Configure>
+
+  </ItemGroup>
+  
+</Project>
+```
+
+Most errors in the test runner come from a faulty XML asaproj file, it is important to make sure it's wired properly.
 
 ### Configuring a test case
 

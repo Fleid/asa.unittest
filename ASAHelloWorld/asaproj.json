@@ -3,16 +3,16 @@
     "startFile": "ASAHelloWorld.asaql",
     "configurations": [
         {
+            "filePath": "Inputs\\Local_hwsource.json",
+            "subType": "InputMock"
+        },
+        {
+            "filePath": "Inputs\\Local_hwsource2.json",
+            "subType": "InputMock"
+        },
+        {
             "filePath": "JobConfig.json",
             "subType": "JobConfig"
-        },
-        {
-            "filePath": "Inputs/Local_hwsource.json",
-            "subType": "InputMock"
-        },
-        {
-            "filePath": "Inputs/Local_hwsource2.json",
-            "subType": "InputMock"
         }
     ]
 }
