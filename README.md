@@ -6,7 +6,7 @@ Unit testing for [Azure Stream Analytics](https://docs.microsoft.com/en-us/azure
 
 At the time of writing, there is no available option to run unit tests from the major IDEs supporting ASA: [VSCode](https://code.visualstudio.com/) and [Visual Studio](https://visualstudio.microsoft.com/vs/).
 
-This solution was developed to offer the basic features required for unit testing:
+So this solution was developed to offer the basic features required for unit testing:
 
 - fully local, repeatable executions over multiple test cases
 - automated evaluation of the resulting outputs against the expected ones
@@ -15,7 +15,7 @@ For that it leverages the **local testing with sample data** capabilities of eit
 
 Local runs are scripted thanks to the `sa.exe` tool from the [Microsoft.Azure.StreamAnalytics.CICD](https://www.nuget.org/packages/Microsoft.Azure.StreamAnalytics.CICD/) package.
 
-Finally the results are evaluated against reference data sets thanks to [jsondiffpatch](https://github.com/benjamine/JsonDiffPatch).
+The results are then evaluated against reference data sets thanks to [jsondiffpatch](https://github.com/benjamine/JsonDiffPatch).
 
 The whole thing is wired together in a **PowerShell** script based on a predefined test fixture (folder structure + naming convention):
 
@@ -23,9 +23,23 @@ The whole thing is wired together in a **PowerShell** script based on a predefin
 
 *[figure 1 - High level overview](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_overview.png?raw=true)*
 
-This repository provides an **installation script**, in addition to the run script, to automate most of the setup. This installation script also allows automated executions in a continuous build pipeline such as **Azure DevOps Pipelines**.
+This repository provides an **installation script**, in addition to the test script, to automate most of the setup. This installation script also allows automated executions in a continuous build pipeline such as **Azure DevOps Pipelines**.
 
 Please note that this solution is currently available **only on Windows** since it depends on *Microsoft.Azure.StreamAnalytics.CICD*.
+
+## Requirements
+
+This solution leverages PowerShell, a nuget package and a npm package to enable unit testing:
+
+- For **PowerShell**, any [recent version](https://github.com/PowerShell/PowerShell/releases) should do (*assets* tab under a specific release)
+- The **npm CLI** must also be installed manually (available with [Node.JS](https://nodejs.org/en/download/))
+- The nuget CLI will be downloaded via the provided installation script, but it requires the [.NET Framework 4.7.2 or above](https://dotnet.microsoft.com/download/dotnet-framework) to run.
+
+The requirements above are installed by default in Azure DevOps Pipelines agents.
+
+From there, the installation script will take care of the other dependencies (including the nuget CLI).
+
+## Installation
 
 ## Quick start
 
@@ -73,16 +87,6 @@ As detailed in the following section, the solution uses the required components 
 ![figure 2 - Detailed overview](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_overviewFull.png?raw=true)
 
 *[figure 2 - Detailed overview](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_overviewFull.png?raw=true)*
-
-### Requirements
-
-As detailed below, this solution leverages PowerShell, a nuget package and a npm package to enable unit testing:
-
-- For **PowerShell**, any [recent version](https://github.com/PowerShell/PowerShell/releases) should do (*assets* tab under a specific release)
-- The **npm CLI** must also be installed manually (available with [Node.JS](https://nodejs.org/en/download/))
-- The nuget CLI will be downloaded via the provided installation script
-
-The reason for that is that the installation script is provided to be run in Azure DevOps Build pipelines, whose agents have PowerShell and npm pre-installed, but not the nuget CLI.
 
 ### Scenario and components
 
