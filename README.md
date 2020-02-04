@@ -1,27 +1,33 @@
 # Unit testing Azure Stream Analytics
 
-Unit testing for [Azure Stream Analytics](https://docs.microsoft.com/en-us/azure/stream-analytics/) (ASA), the complex event processing (stateful) service running in Azure.
+Unit testing for [Azure Stream Analytics](https://docs.microsoft.com/en-us/azure/stream-analytics/) (ASA), the serverless [complex-event-processing](https://en.wikipedia.org/wiki/Complex_event_processing) service running in Azure.
 
 In this article:
 
 - Description
+  - Context
+  - Unit testing
 - Getting started
   - Requirements
   - Hello World
   - Installation
-  - Running a test
+- Operations
   - Configuring the asaproj file
   - Configuring a test case
+  - Running a test
+  - Build automation in Azure DevOps
   - Troubleshooting
 - Internal Details
 
-*** 
+***
 
 ## Description
 
-At the time of writing, there is no available option to run unit tests from the major IDEs supporting ASA: [VSCode](https://code.visualstudio.com/) and [Visual Studio](https://visualstudio.microsoft.com/vs/).
+### Context
 
-So this solution was developed to offer the basic features required for unit testing:
+At the time of writing, the major IDEs that support ASA ([VSCode](https://code.visualstudio.com/) and [Visual Studio](https://visualstudio.microsoft.com/vs/)) don't offer unit testing for it natively. 
+
+This solution intends to fill that gap by enabling:
 
 - fully local, repeatable executions over multiple test cases
 - automated evaluation of the resulting outputs against the expected ones
@@ -30,7 +36,7 @@ For that it leverages the **local testing with sample data** capabilities of eit
 
 Local runs are scripted thanks to the `sa.exe` tool from the [Microsoft.Azure.StreamAnalytics.CICD](https://www.nuget.org/packages/Microsoft.Azure.StreamAnalytics.CICD/) package.
 
-The results are then evaluated against reference data sets thanks to [jsondiffpatch](https://github.com/benjamine/JsonDiffPatch).
+The results are then evaluated against reference data sets thanks to the [jsondiffpatch](https://github.com/benjamine/JsonDiffPatch) library.
 
 The whole thing is wired together in a **PowerShell** script based on a predefined test fixture (folder structure + naming convention):
 
@@ -40,7 +46,19 @@ The whole thing is wired together in a **PowerShell** script based on a predefin
 
 This repository provides an **installation script**, in addition to the test script, to automate most of the setup. This installation script also allows automated executions in a continuous build pipeline such as **Azure DevOps Pipelines**.
 
-Please note that this solution is currently available **only on Windows** since it depends on *Microsoft.Azure.StreamAnalytics.CICD*.
+Please note that this solution is currently available **only on Windows** as it depends on *Microsoft.Azure.StreamAnalytics.CICD*.
+
+### Unit testing
+
+From [Wikipedia](https://en.wikipedia.org/wiki/Unit_testing):
+
+> Unit tests are typically automated tests written and run by software developers to ensure that a section of an application (known as the "unit") meets its design and behaves as intended.
+
+Here **the unit is an individual output of an ASA job / query**. The test runner will need all the test inputs required for the job, but it will calculate test results only for outputs having a reference data file provided.
+
+For practical reason (limiting the number of tests mean limiting the number of parallel runs to do), a single test can involve multiple outputs, as is demonstrated in the sample files.
+
+Unit tests should not rely on external services, so all runs are done via local runs on sample data. Using live sources, or the Cloud service, to run tests would not qualify as unit testing.
 
 ***
 
@@ -48,7 +66,7 @@ Please note that this solution is currently available **only on Windows** since 
 
 ### Requirements
 
-This solution leverages PowerShell, a nuget package and a npm package to enable unit testing:
+This solution leverages [PowerShell](https://en.wikipedia.org/wiki/PowerShell), a [nuget](https://en.wikipedia.org/wiki/NuGet) package and a [npm](https://en.wikipedia.org/wiki/Npm_(software)) package to enable unit testing:
 
 - For **PowerShell**, any [recent version](https://github.com/PowerShell/PowerShell/releases) should do (*assets* tab under a specific release)
 - The **npm CLI** must also be installed manually (available with [Node.JS](https://nodejs.org/en/download/))
@@ -60,25 +78,25 @@ To be noted that those requirements are installed by default on every Azure DevO
 
 ### Hello World
 
-The following steps show how to download and run the solution with a Hello World ASA project:
+The following steps show how to download and run the solution with the included Hello World ASA project:
 
 1. Check all requirements are installed
-1. Clone/download this repository (as it includes a basic ASA project `ASAHelloWorld` and a couple of pre-configured tests in *unittest\1_arrange* )
+1. Clone/download this repository (it includes a basic ASA project `ASAHelloWorld` and a couple of pre-configured tests in *unittest\1_arrange* )
 1. **Only once** - execute the installer in the *unittest\2_act* folder: `unittest_install.ps1`
-   - Open a Powershell host (terminal, ISE...)
+   - Open a **Powershell** host (terminal, ISE...)
    - Navigate to `asa.unittest\unittest\2_act`
    - Run `.\unittest_install.ps1 -solutionPath "C:\Users\florian\Repos\asa.unittest" -verbose` with the right `-solutionPath` (absolute paths)
    - ![Screenshot of a terminal run of the installation script](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_install_terminal.png?raw=true)
    - In case of issues see **troubleshooting**
 1. Execute the test runner in the *unittest\2_act* folder: `unittest_prun.ps1`
-   - Open a Powershell host (terminal, ISE...)
+   - Open a **Powershell** host (terminal, ISE...)
    - Navigate to `asa.unittest\unittest\2_act`
    - Run `.\unittest_prun.ps1 -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\florian\Repos\asa.unittest" -assertPath "C:\Users\florian\Repos\asa.unittest\unittest\3_assert"-verbose` with the right `-solutionPath` and `-assertPath` (absolute paths)
    - ![Screenshot of a terminal run of the installation script](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_prun_terminal.png?raw=true)
    - Here it is expected that the test ends with 2 errors, in test case *003*
    - In case of issues see **troubleshooting**
 
-### Installation and running a test
+### Installation
 
 The following steps show how to download and run the solution on an existing ASA project:
 
@@ -90,18 +108,14 @@ The following steps show how to download and run the solution on an existing ASA
    - In ASA, add local inputs for every source used in the query (see [VSCode](https://docs.microsoft.com/en-us/azure/stream-analytics/visual-studio-code-local-run) / [Visual Studio](https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-vs-tools-local-run))
 1. Clone/download this repository, copy or move the *unittest* folder to the solution folder
 1. **Only once** - execute the installer in the *unittest\2_act* folder: `unittest_install.ps1`
-   - Open a Powershell host (terminal, ISE...)
+   - Open a **Powershell** host (terminal, ISE...)
    - Navigate to `unittest\2_act` in the solution folder
    - Run `.\unittest_install.ps1 -solutionPath "C:\<SOLUTIONFOLDERPATH>" -verbose` with the right `-solutionPath` (absolute paths)
    - In case of issues see **troubleshooting**
-1. Configure a test case as explained below
-1. Execute the test runner in the *unittest\2_act* folder: `unittest_prun.ps1`
-   - Open a Powershell host (terminal, ISE...)
-   - Navigate to `unittest\2_act` in the solution folder
-   - Run `.\unittest_prun.ps1 -asaProjectName "<ASAPROJECTNAME>" -solutionPath "C:\<SOLUTIONFOLDERPATH>" -assertPath "C:\<SOLUTIONFOLDERPATH>\unittest\3_assert"-verbose` with the right `-solutionPath` and `-assertPath` (absolute paths)
-   - In case of issues see **troubleshooting**
 
-Once the test fixture is set, the recommended way of running jobs is via a terminal window.
+***
+
+## Operations
 
 ### Configuring the asaproj file
 
@@ -189,6 +203,23 @@ Proper format (brackets and commas):
 
 The solution comes with a couple of pre-configured test cases to illustrate the format and naming convention.
 
+### Running a test
+
+Once installation is done:
+
+1. Configure a test case as explained above
+1. Execute the test runner in the *unittest\2_act* folder: `unittest_prun.ps1`
+   - Open a **Powershell** host (terminal, ISE...)
+   - Navigate to `unittest\2_act` in the solution folder
+   - Run `.\unittest_prun.ps1 -asaProjectName "<ASAPROJECTNAME>" -solutionPath "C:\<SOLUTIONFOLDERPATH>" -assertPath "C:\<SOLUTIONFOLDERPATH>\unittest\3_assert"-verbose` with the right `-solutionPath` and `-assertPath` (absolute paths)
+   - In case of issues see **troubleshooting**
+
+Once the test fixture is set, the recommended way of running jobs is via a terminal window.
+
+### Build automation in Azure DevOps
+
+Use a PowerShell task to run the installation script first and the test runner script second.
+
 ### Troubleshooting
 
 The main causes of error are:
@@ -210,7 +241,7 @@ PowerShell [remoting for jobs](https://docs.microsoft.com/en-us/powershell/modul
 
 ## Internal details
 
-**(This need to be updated to reflect the new parallel run workflow)**
+**(This needs to be updated to reflect the new parallel run workflow)**
 
 ![figure 2 - Detailed overview](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_overviewFull.png?raw=true)
 
@@ -238,10 +269,6 @@ The script will expect the following folder structure to run properly:
     - 1_arrange <- *New folder that will contain test cases*
     - 2_act <- *New folder that will contain dependencies and scripts*
     - 3_assert <- *New folder that will contain test run results*
-
-### Build automation in Azure DevOps
-
-Use a PowerShell task to run the installation script first and the test runner script second.
 
 ### Shortcomings
 
