@@ -218,7 +218,38 @@ Once the test fixture is set, the recommended way of running jobs is via a termi
 
 ### Build automation in Azure DevOps
 
-Use a PowerShell task to run the installation script first and the test runner script second.
+Use a [PowerShell task](https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/powershell?view=azure-devops) to run the installation script first and the test runner script second.
+
+Note that both scripts use default values for most parameters. These default values are wired to the [build variables](https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml#build-variables) provided by Azure DevOps. As such, they can be left unassigned in the task.
+
+The **installation script** only needs the `$unittestFolder` name if it's not the default (`unittest`), as illustrated with the script extract below:
+
+```PowerShell
+[CmdletBinding()]
+param (
+    [ValidateSet("2.3.0")]
+    [string]$ASAnugetVersion = "2.3.0",
+    [string]$solutionPath = $ENV:BUILD_SOURCESDIRECTORY,
+    [string]$unittestFolder ="unittest"
+)
+```
+
+The **test runner** (prun) needs to be provided with the `$asaProjectName`, and the `$unittestFolder` if it's not the default (`unittest`), as illustrated with the script extract below:
+
+```PowerShell
+param (
+    [ValidateSet("2.3.0")]
+    [string]$ASAnugetVersion = "2.3.0",
+
+    [string]$solutionPath = $ENV:BUILD_SOURCESDIRECTORY, # Azure DevOps Pipelines default variable
+
+    [Parameter(Mandatory=$True)]
+    [string]$asaProjectName,
+
+    [string]$unittestFolder = "unittest",
+    [string]$assertPath = $ENV:COMMUB_TESTRESULTSDIRECTORY # Azure DevOps Pipelines default variable
+)
+```
 
 ### Troubleshooting
 
