@@ -82,16 +82,16 @@ The following steps show how to download and run the solution with the included 
 
 1. Check all requirements are installed
 1. Clone/download this repository (it includes a basic ASA project `ASAHelloWorld` and a couple of pre-configured tests in *unittest\1_arrange* )
-1. **Only once** - execute the installer in the *unittest\2_act* folder: `unittest_install.ps1`
+1. **Only once** - execute the installer in the *unittest\2_act* folder: `Install-AutToolset.ps1`
    - Open a **Powershell** host (terminal, ISE...)
    - Navigate to `asa.unittest\unittest\2_act`
-   - Run `.\unittest_install.ps1 -solutionPath "C:\Users\florian\Repos\asa.unittest" -verbose` with the right `-solutionPath` (absolute paths)
+   - Run `.\Install-AutToolset.ps1 -solutionPath "C:\Users\florian\Repos\asa.unittest" -verbose` with the right `-solutionPath` (absolute paths)
    - ![Screenshot of a terminal run of the installation script](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_install_terminal.png?raw=true)
    - In case of issues see **troubleshooting**
-1. Execute the test runner in the *unittest\2_act* folder: `unittest_prun.ps1`
+1. Execute the test runner in the *unittest\2_act* folder: `Start-AutRun.ps1`
    - Open a **Powershell** host (terminal, ISE...)
    - Navigate to `asa.unittest\unittest\2_act`
-   - Run `.\unittest_prun.ps1 -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\florian\Repos\asa.unittest" -assertPath "C:\Users\florian\Repos\asa.unittest\unittest\3_assert"-verbose` with the right `-solutionPath` and `-assertPath` (absolute paths)
+   - Run `.\Start-AutRun.ps1 -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\florian\Repos\asa.unittest" -assertPath "C:\Users\florian\Repos\asa.unittest\unittest\3_assert"-verbose` with the right `-solutionPath` and `-assertPath` (absolute paths)
    - ![Screenshot of a terminal run of the installation script](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_prun_terminal.png?raw=true)
    - Here it is expected that the test ends with 2 errors, in test case *003*
    - In case of issues see **troubleshooting**
@@ -107,10 +107,10 @@ The following steps show how to download and run the solution on an existing ASA
    - If the project was developed with VSCode (not necessary for Visual Studio), add an `.asaproj` file to the ASA project as explained below
    - In ASA, add local inputs for every source used in the query (see [VSCode](https://docs.microsoft.com/en-us/azure/stream-analytics/visual-studio-code-local-run) / [Visual Studio](https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-vs-tools-local-run))
 1. Clone/download this repository, copy or move the *unittest* folder to the solution folder
-1. **Only once** - execute the installer in the *unittest\2_act* folder: `unittest_install.ps1`
+1. **Only once** - execute the installer in the *unittest\2_act* folder: `Install-AutToolset.ps1`
    - Open a **Powershell** host (terminal, ISE...)
    - Navigate to `unittest\2_act` in the solution folder
-   - Run `.\unittest_install.ps1 -solutionPath "C:\<SOLUTIONFOLDERPATH>" -verbose` with the right `-solutionPath` (absolute paths)
+   - Run `.\Install-AutToolset.ps1 -solutionPath "C:\<SOLUTIONFOLDERPATH>" -verbose` with the right `-solutionPath` (absolute paths)
    - In case of issues see **troubleshooting**
 
 ***
@@ -208,10 +208,10 @@ The solution comes with a couple of pre-configured test cases to illustrate the 
 Once installation is done:
 
 1. Configure a test case as explained above
-1. Execute the test runner in the *unittest\2_act* folder: `unittest_prun.ps1`
+1. Execute the test runner in the *unittest\2_act* folder: `Start-AutRun.ps1`
    - Open a **Powershell** host (terminal, ISE...)
    - Navigate to `unittest\2_act` in the solution folder
-   - Run `.\unittest_prun.ps1 -asaProjectName "<ASAPROJECTNAME>" -solutionPath "C:\<SOLUTIONFOLDERPATH>" -assertPath "C:\<SOLUTIONFOLDERPATH>\unittest\3_assert"-verbose` with the right `-solutionPath` and `-assertPath` (absolute paths)
+   - Run `.\Start-AutRun.ps1 -asaProjectName "<ASAPROJECTNAME>" -solutionPath "C:\<SOLUTIONFOLDERPATH>" -assertPath "C:\<SOLUTIONFOLDERPATH>\unittest\3_assert"-verbose` with the right `-solutionPath` and `-assertPath` (absolute paths)
    - In case of issues see **troubleshooting**
 
 Once the test fixture is set, the recommended way of running jobs is via a terminal window.
@@ -234,7 +234,7 @@ param (
 )
 ```
 
-The **test runner** (prun) needs to be provided with the `$asaProjectName`, and the `$unittestFolder` if it's not the default (`unittest`), as illustrated with the script extract below:
+The **test runner** (Start-AutRun) needs to be provided with the `$asaProjectName`, and the `$unittestFolder` if it's not the default (`unittest`), as illustrated with the script extract below:
 
 ```PowerShell
 param (
@@ -257,7 +257,7 @@ The main causes of error are:
 
 #### PowerShell
 
-PowerShell [execution policies](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7). PowerShell comes with that mechanism which is supposed to make a user deeply aware of the fact they're running a script they haven't written. For users with administrative rights, it's an easy to solve issue via **an admin session** and the command `Set-ExecutionPolicy -ExecutionPolicy Unrestricted` ([doc](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-7)). For non admins, the easiest is to create new powershell scripts (text files with the `.ps1` extension) and copy/paste the content of each script (install, prun). Note that the VSCode Integrated PowerShell environment has [an issue with execution policies](https://github.com/PowerShell/vscode-powershell/issues/1217) and should be avoided (use terminal instead)
+PowerShell [execution policies](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7). PowerShell comes with that mechanism which is supposed to make a user deeply aware of the fact they're running a script they haven't written. For users with administrative rights, it's an easy to solve issue via **an admin session** and the command `Set-ExecutionPolicy -ExecutionPolicy Unrestricted` ([doc](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-7)). For non admins, the easiest is to create new powershell scripts (text files with the `.ps1` extension) and copy/paste the content of each script (install, Start-AutRun). Note that the VSCode Integrated PowerShell environment has [an issue with execution policies](https://github.com/PowerShell/vscode-powershell/issues/1217) and should be avoided (use terminal instead)
 
 PowerShell [remoting for jobs](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_jobs?view=powershell-7). Depending on the version of PowerShell (older), it may require remoting to be enabled to start background jobs. Background jobs are used by the test runner to start runs in parallel. This should not be necessary, but [the command to enable remoting](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/enable-psremoting?view=powershell-7) is `Enable-PSRemoting`
 
