@@ -94,12 +94,22 @@ $testFolders |
     New-Item -ItemType Directory |
     Out-Null
 
-## Copy ASA files required for run in each test case folder
+## Copy .asaql, .asaproj (XML) and JobConfig, asaproj (JSON) required for run in each test case folder
 $testFolders | 
     Select-Object @{Name="Destination"; Expression = {"$($_.Path)\$asaProjectName\"}} |
-    Copy-Item -Path "$asaProjectPath\*.as*" -recurse |
+    Copy-Item -Path "$asaProjectPath\*.as*","$asaProjectPath\*.json" -recurse |
     Out-Null
 
+## If there isn't a XML asaproj, generate it from the JSON one
+$testFolders | 
+    ForEach-Object -Process {
+        if (-not(Test-Path "$($_.Path)\$asaProjectName\$asaProjectName.asaproj" -PathType leaf)) {
+            $exe = "$actPath\New-AUTAsaproj.ps1"
+            & $exe -asaProjectName $asaProjectName -solutionPath $_.Path
+        }
+    }
+
+## Copy the local input mock file required for run in each test case folder
 $testFolders | 
     Select-Object @{Name="Destination"; Expression = {"$($_.Path)\$asaProjectName\Inputs\"}} |
     Copy-Item -Path "$asaProjectPath\Inputs\Local*.json" -recurse |
