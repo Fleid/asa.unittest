@@ -8,7 +8,7 @@ PS: VSCode has a weird behavior on that topic, use Terminal : https://github.com
 .DESCRIPTION
 This script will leverage a text fixture (folder structure + filename convention) to run unit tests for a given ASA project.
 
-It requires dependencies installed by a companion script unittest_install.ps1
+It requires dependencies installed by a companion script Install_AutToolset.ps1
 
 See documentation for more information.
 
@@ -28,7 +28,7 @@ Name of the folder containing the test fixture (folders 1_Arrange, 2_act...), us
 Name of the target folder where test assets will be generated and test results will be output
 
 .EXAMPLE
-.\Start-AutRun.ps1 -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\Florian\Source\Repos\asa.unittest" -assertPath "C:\Users\Florian\Source\Repos\asa.unittest\unittest\3_assert"-verbose
+.\Start-AutRun.ps1 -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\fleide\Repos\asa.unittest" -assertPath "C:\Users\fleide\Repos\asa.unittest\unittest\3_assert"-verbose
 #>
 
 [CmdletBinding()]
