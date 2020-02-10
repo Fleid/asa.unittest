@@ -37,22 +37,29 @@ param (
     [string]$unittestFolder ="unittest"
 )
 
-Set-Location "$solutionPath\$unittestFolder\2_act" |
-    Out-Null
+$actPath = "$solutionPath\$unittestFolder\2_act"
 
-# Windows - get nuget.exe from https://www.nuget.org/downloads
-Write-Verbose "001 - Download nuget.exe"
-Invoke-WebRequest `
-    -Uri https://dist.nuget.org/win-x86-commandline/latest/nuget.exe `
-    -OutFile nuget.exe |
-    Out-Null
+if (Test-Path $actPath)
+{
+    Set-Location $actPath
 
-# Install ASA CI/CD package from nuget
-Write-Verbose "002 - Install ASA.CICD nuget package"
-Invoke-Expression "./nuget install Microsoft.Azure.StreamAnalytics.CICD -version $ASAnugetVersion" |
-    Out-Null
-
-# Install jsondiffpatch from npm
-Write-Verbose "003 - Install jsondiffpatch npm package"
-Invoke-Expression "npm install -g jsondiffpatch" |
-    Out-Null
+    # Windows - get nuget.exe from https://www.nuget.org/downloads
+    Write-Verbose "001 - Download nuget.exe"
+    Invoke-WebRequest `
+        -Uri https://dist.nuget.org/win-x86-commandline/latest/nuget.exe `
+        -OutFile nuget.exe |
+        Out-Null
+    
+    # Install ASA CI/CD package from nuget
+    Write-Verbose "002 - Install ASA.CICD nuget package"
+    Invoke-Expression "./nuget install Microsoft.Azure.StreamAnalytics.CICD -version $ASAnugetVersion" |
+        Out-Null
+    
+    # Install jsondiffpatch from npm
+    Write-Verbose "003 - Install jsondiffpatch npm package"
+    Invoke-Expression "npm install -g jsondiffpatch" |
+        Out-Null    
+}
+else {
+    throw("The path provided is not valid: $actPath")
+}
