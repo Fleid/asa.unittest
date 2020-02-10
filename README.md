@@ -4,21 +4,20 @@ Unit testing for [Azure Stream Analytics](https://docs.microsoft.com/en-us/azure
 
 In this article:
 
-- Description
-  - Context
-  - Unit testing
-- Getting started
-  - Requirements
-  - Hello World
-  - Installation
-- Operations
-  - ~~Configuring the asaproj file~~
-  - Configuring a test case
-  - Running a test
-  - Build automation in Azure DevOps
-  - Troubleshooting
-- Internal Details
-  - Change Log
+- [Description](https://github.com/Fleid/asa.unittest#description)
+  - [Context](https://github.com/Fleid/asa.unittest#context)
+  - [Unit testing](https://github.com/Fleid/asa.unittest#Unit-testing)
+- [Getting started](https://github.com/Fleid/asa.unittest#Getting-started)
+  - [Requirements](https://github.com/Fleid/asa.unittest#Requirements)
+  - [Hello World](https://github.com/Fleid/asa.unittest#Hello-World)
+  - [Installation](https://github.com/Fleid/asa.unittest#Installation)
+- [Operations](https://github.com/Fleid/asa.unittest#Operations)
+  - [Running a test](https://github.com/Fleid/asa.unittest#Running-a-test)
+  - [Configuring a test case](https://github.com/Fleid/asa.unittest#Configuring-a-test-case)
+  - [Build automation in Azure DevOps](https://github.com/Fleid/asa.unittest#Build-automation-in-Azure-DevOps)
+  - [Troubleshooting](https://github.com/Fleid/asa.unittest#Troubleshooting)
+- [Internal Details](https://github.com/Fleid/asa.unittest#Internal-Details)
+  - [Change Log](https://github.com/Fleid/asa.unittest#Change-Log)
 
 ***
 
@@ -57,7 +56,7 @@ From [Wikipedia](https://en.wikipedia.org/wiki/Unit_testing):
 
 Here **the unit is an individual output of an ASA job / query**. The test runner will need all the test inputs required for the job, but it will calculate test results only for outputs having a reference data file provided.
 
-For practical reason (limiting the number of tests mean limiting the number of parallel runs to do), a single test can involve multiple outputs, as is demonstrated in the sample files.
+For practical reason (limiting the number of tests mean limiting the number of parallel runs to do), a single test can involve multiple outputs, as is demonstrated in [the sample files](https://github.com/Fleid/asa.unittest/tree/master/unittest/1_arrange).
 
 Unit tests should not rely on external services, so all runs are done via local runs on sample data. Using live sources, or the Cloud service, to run tests would not qualify as unit testing.
 
@@ -88,14 +87,14 @@ The following steps show how to download and run the solution with the included 
    - Navigate to `asa.unittest\unittest\2_act`
    - Run `.\Install-AutToolset.ps1 -solutionPath "C:\Users\florian\Repos\asa.unittest" -verbose` with the right `-solutionPath` (absolute paths)
    - ![Screenshot of a terminal run of the installation script](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_install_terminal.png?raw=true)
-   - In case of issues see **troubleshooting**
+   - In case of issues see [troubleshooting](https://github.com/Fleid/asa.unittest#Troubleshooting)
 1. Execute the test runner in the *unittest\2_act* folder: `Start-AutRun.ps1`
    - Open a **Powershell** host (terminal, ISE...)
    - Navigate to `asa.unittest\unittest\2_act`
    - Run `.\Start-AutRun.ps1 -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\florian\Repos\asa.unittest" -assertPath "C:\Users\florian\Repos\asa.unittest\unittest\3_assert"-verbose` with the right `-solutionPath` and `-assertPath` (absolute paths)
    - ![Screenshot of a terminal run of the installation script](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_prun_terminal.png?raw=true)
    - Here it is expected that the test ends with 2 errors, in test case *003*
-   - In case of issues see **troubleshooting**
+   - In case of issues see [troubleshooting](https://github.com/Fleid/asa.unittest#Troubleshooting)
 
 ### Installation
 
@@ -112,16 +111,24 @@ The following steps show how to download and run the solution on an existing ASA
    - Open a **Powershell** host (terminal, ISE...)
    - Navigate to `unittest\2_act` in the solution folder
    - Run `.\Install-AutToolset.ps1 -solutionPath "C:\<SOLUTIONFOLDERPATH>" -verbose` with the right `-solutionPath` (absolute paths)
-   - In case of issues see **troubleshooting**
+   - In case of issues see [troubleshooting](https://github.com/Fleid/asa.unittest#Troubleshooting)
 
 ***
 
 ## Operations
 
-### Configuring the asaproj file
+### Running a test
 
-There is no need to manually create an asaproj file anymore, as it's being generated on the fly by the tool.
-The original documentation is available in the README history.
+Once the [installation](https://github.com/Fleid/asa.unittest#Installation) is done:
+
+1. [Configure a test case](https://github.com/Fleid/asa.unittest#Configuring-a-test-case)
+1. Execute the test runner in the *unittest\2_act* folder: `Start-AutRun.ps1`
+   - Open a **Powershell** host (terminal, ISE...)
+   - Navigate to `unittest\2_act` in the solution folder
+   - Run `.\Start-AutRun.ps1 -asaProjectName "<ASAPROJECTNAME>" -solutionPath "C:\<SOLUTIONFOLDERPATH>" -assertPath "C:\<SOLUTIONFOLDERPATH>\unittest\3_assert"-verbose` with the right `-solutionPath` and `-assertPath` (absolute paths)
+   - In case of issues see **troubleshooting**
+
+The recommended way of running jobs is via a terminal window.
 
 ### Configuring a test case
 
@@ -150,15 +157,16 @@ Once this is done:
       - `testLabel` : a label to identify the test (`nominal`, `missingField`, `nullValue`...)
       - `json` : **the data must be in JSON format as it's the only format currently supported for local output** (the ASA engine doesn't honor the output format for local runs)
 
-Note that [live extracts](https://docs.microsoft.com/en-us/azure/stream-analytics/visual-studio-code-local-run#prepare-sample-data) are a good way to generate test input data. Similarly for the output of local runs for reference output data. Note that these files may be generated in a **line separated** format, meaning without a proper array syntax (missing `[...]` around all records), which is not supported by the test runner. They will need to be corrected as follow:
+Note that [live extracts](https://docs.microsoft.com/en-us/azure/stream-analytics/visual-studio-code-local-run#prepare-sample-data) are a good way to generate test input data. For reference output data, the best is to leverage the output files in the **LocalRunOutputs** folder, located in the ASA project after a successful local run. Note that these files may be generated in a **line separated** format which is not supported by the test runner. They will need to be corrected as follow:
 
-Wrong format:
+Unsupported format:
 
 ```JSON
-{"EventId":"3","EventMessage":"Hello"}{"EventId":"4","EventMessage":"Friends"}
+{"EventId":"3","EventMessage":"Hello"}
+{"EventId":"4","EventMessage":"Friends"}
 ```
 
-Proper format (brackets and commas):
+Supported format (brackets **and** commas):
 
 ```JSON
 [
@@ -167,55 +175,21 @@ Proper format (brackets and commas):
 ]
 ```
 
-The solution comes with a couple of pre-configured test cases to illustrate the format and naming convention.
-
-### Running a test
-
-Once installation is done:
-
-1. Configure a test case as explained above
-1. Execute the test runner in the *unittest\2_act* folder: `Start-AutRun.ps1`
-   - Open a **Powershell** host (terminal, ISE...)
-   - Navigate to `unittest\2_act` in the solution folder
-   - Run `.\Start-AutRun.ps1 -asaProjectName "<ASAPROJECTNAME>" -solutionPath "C:\<SOLUTIONFOLDERPATH>" -assertPath "C:\<SOLUTIONFOLDERPATH>\unittest\3_assert"-verbose` with the right `-solutionPath` and `-assertPath` (absolute paths)
-   - In case of issues see **troubleshooting**
-
-Once the test fixture is set, the recommended way of running jobs is via a terminal window.
+The solution comes with a couple of [pre-configured test cases](https://github.com/Fleid/asa.unittest/tree/master/unittest/1_arrange) to illustrate the format and naming convention.
 
 ### Build automation in Azure DevOps
 
-Use a [PowerShell task](https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/powershell?view=azure-devops) to run the installation script first and the test runner script second.
+Use a [PowerShell task](https://docs.microsoft.com/en-us/azure/devops/pipelines/scripts/powershell?view=azure-devops) to run the installation script first, and the test runner script second.
 
 Note that both scripts use default values for most parameters. These default values are wired to the [build variables](https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml#build-variables) provided by Azure DevOps. As such, they can be left unassigned in the task.
 
-The **installation script** only needs the `$unittestFolder` name if it's not the default (`unittest`), as illustrated with the script extract below:
+The mandatory parameters are:
 
-```PowerShell
-[CmdletBinding()]
-param (
-    [ValidateSet("2.3.0")]
-    [string]$ASAnugetVersion = "2.3.0",
-    [string]$solutionPath = $ENV:BUILD_SOURCESDIRECTORY,
-    [string]$unittestFolder ="unittest"
-)
-```
-
-The **test runner** (Start-AutRun) needs to be provided with the `$asaProjectName`, and the `$unittestFolder` if it's not the default (`unittest`), as illustrated with the script extract below:
-
-```PowerShell
-param (
-    [ValidateSet("2.3.0")]
-    [string]$ASAnugetVersion = "2.3.0",
-
-    [string]$solutionPath = $ENV:BUILD_SOURCESDIRECTORY, # Azure DevOps Pipelines default variable
-
-    [Parameter(Mandatory=$True)]
-    [string]$asaProjectName,
-
-    [string]$unittestFolder = "unittest",
-    [string]$assertPath = $ENV:COMMUB_TESTRESULTSDIRECTORY # Azure DevOps Pipelines default variable
-)
-```
+- For the **installation script** (`Install-AutToolset`)
+    - `$unittestFolder` if it's not the default (`unittest`)
+- For the **test runner** (`Start-AutRun`)
+    - `$asaProjectName`
+    - `$unittestFolder` if it's not the default (`unittest`)
 
 ### Troubleshooting
 
@@ -229,10 +203,9 @@ PowerShell [remoting for jobs](https://docs.microsoft.com/en-us/powershell/modul
 
 #### Test Fixture
 
-- ~~Missing or malformed `asaproj` XML file. See the paragraph on how to configure it, check values against the JSON asaproj file as they should be the same. Limit the content to what is strictly necessary (script, JobConfig, local inputs)~~
-- Bad format for JSON data files: test input JSON files and **all** reference output file need to be array of records (`[{...},{...}]`).
 - Both the ASA project folder and the unittest folder need to be in the same solution folder
 - The ASA project folder, ASA script file (`.asaql`) and the XML asaproj file (`.asaproj`) needs to have the same name
+- Bad format for JSON data files: test input JSON files and **all** reference output file need to be array of records (`[{...},{...}]`) - see [Configuring a test case](https://github.com/Fleid/asa.unittest#Configuring-a-test-case)
 
 ***
 
