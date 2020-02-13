@@ -22,63 +22,81 @@ Name of the Azure Stream Analytics project = name of the project folder = name o
 .\New-AUTAsaproj.ps1 -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\fleide\Repos\asa.unittest" -verbose
 #>
 
-[CmdletBinding()]
-param (
-    [string]$solutionPath = $ENV:BUILD_SOURCESDIRECTORY, # Azure DevOps Pipelines default variable
+function New-AutAsaproj{
 
-    [Parameter(Mandatory=$True)]
-    [string]$asaProjectName
-)
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory=$True)]
+        [string]$solutionPath,
+        
+        [Parameter(Mandatory=$True)]
+        [string]$asaProjectName
+    )
 
-################################################################################################################################
-write-verbose "101 - Set Variables"
+    BEGIN {}
 
-# Variables
-$asaProjectPath = "$solutionPath\$asaProjectName"
-$sourceAsaprojFile = "$asaProjectPath\asaproj.json"
-$targetAsaprojFile = "$asaProjectPath\$asaProjectName.asaproj"
+    PROCESS {
+        ################################################################################################################################
+        write-verbose "101 - Set Variables"
 
-# Constants
-$newline = "`n"
-$header = "<Project ToolsVersion=`"4.0`" DefaultTargets=`"Build`" xmlns=`"http://schemas.microsoft.com/developer/msbuild/2003`">" 
-$footer = "</Project>"
-$itemGroupStart = "<ItemGroup>"
-$itemGroupEnd = "</ItemGroup>"
+        # Variables
+        $asaProjectPath = "$solutionPath\$asaProjectName"
+        $sourceAsaprojFile = "$asaProjectPath\asaproj.json"
+        $targetAsaprojFile = "$asaProjectPath\$asaProjectName.asaproj"
 
-################################################################################################################################
-write-verbose "201 - Loading existing content from the JSON asaproj file"
+        if (
+            (Test-Path -Path $asaProjectPath) -and 
+            (Test-Path -Path $sourceAsaprojFile -PathType Leaf ) -and 
+            (Test-Path -Path $targetAsaprojFile -PathType Leaf)
+        ){
 
-$sourceAsaproj = Get-Content $sourceAsaprojFile | ConvertFrom-Json
+            # Constants
+            $newline = "`n"
+            $header = "<Project ToolsVersion=`"4.0`" DefaultTargets=`"Build`" xmlns=`"http://schemas.microsoft.com/developer/msbuild/2003`">" 
+            $footer = "</Project>"
+            $itemGroupStart = "<ItemGroup>"
+            $itemGroupEnd = "</ItemGroup>"
 
-################################################################################################################################
-write-verbose "301 - Generating the XML asaproj"
+            ################################################################################################################################
+            write-verbose "201 - Loading existing content from the JSON asaproj file"
 
-# Header
-$targetAsaproj = $header + $newline
+            $sourceAsaproj = Get-Content $sourceAsaprojFile | ConvertFrom-Json
 
-# First ItemGroup for script file (asaql)
-$targetAsaproj += $itemGroupStart + $newline 
-$targetAsaproj += "<Script Include=`"$($sourceAsaproj.startFile)`"/>" + $newline 
-$targetAsaproj += $itemGroupEnd + $newline 
+            ################################################################################################################################
+            write-verbose "301 - Generating the XML asaproj"
 
-# Second ItemGroup for InputMock (local input config files) and JobConfig
-$targetAsaproj += $itemGroupStart + $newline 
+            # Header
+            $targetAsaproj = $header + $newline
 
-$sourceAsaproj.configurations | `
-    Where-Object {$_.subType -in "InputMock","JobConfig" } |
-    Foreach-Object -process {
-        $targetAsaproj += "<Configure Include=`"$($_.filePath)`">" + $newline 
-        $targetAsaproj += "<SubType>$($_.subType)</SubType>" + $newline 
-        $targetAsaproj += "</Configure>" + $newline 
-    }
+            # First ItemGroup for script file (asaql)
+            $targetAsaproj += $itemGroupStart + $newline 
+            $targetAsaproj += "<Script Include=`"$($sourceAsaproj.startFile)`"/>" + $newline 
+            $targetAsaproj += $itemGroupEnd + $newline 
 
-$targetAsaproj += $itemGroupEnd + $newline 
+            # Second ItemGroup for InputMock (local input config files) and JobConfig
+            $targetAsaproj += $itemGroupStart + $newline 
 
-# Footer
-$targetAsaproj += $footer + $newline 
+            $sourceAsaproj.configurations | `
+                Where-Object {$_.subType -in "InputMock","JobConfig" } |
+                Foreach-Object -process {
+                    $targetAsaproj += "<Configure Include=`"$($_.filePath)`">" + $newline 
+                    $targetAsaproj += "<SubType>$($_.subType)</SubType>" + $newline 
+                    $targetAsaproj += "</Configure>" + $newline 
+                }
 
-################################################################################################################################
-write-verbose "401 - Writing the content to disk"
+            $targetAsaproj += $itemGroupEnd + $newline 
 
-# Create new file
-$targetAsaproj | Out-File $targetAsaprojFile 
+            # Footer
+            $targetAsaproj += $footer + $newline 
+
+            ################################################################################################################################
+            write-verbose "401 - Writing the content to disk"
+
+            # Create new file
+            $targetAsaproj | Out-File $targetAsaprojFile 
+
+        } #IF
+
+    } #PROCESS
+    END {}
+}
