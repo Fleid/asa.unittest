@@ -93,9 +93,13 @@ function New-AutAsaproj{
             write-verbose "401 - Writing the content to disk"
 
             # Create new file
-            $targetAsaproj | Out-File $targetAsaprojFile 
+            $targetAsaproj | ConvertTo-Xml | Out-File $targetAsaprojFile 
 
+            #$targetAsaproj | ConvertTo-Xml
         } #IF
+        else{
+            Write-VErbose "Paths are not valid"
+        }
 
     } #PROCESS
     END {}
