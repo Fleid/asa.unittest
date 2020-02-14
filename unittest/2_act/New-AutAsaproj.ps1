@@ -98,7 +98,7 @@ function New-AutAsaproj{
             #$targetAsaproj | ConvertTo-Xml
         } #IF
         else{
-            Write-VErbose "Paths are not valid"
+            Write-Verbose "Paths are not valid"
         }
 
     } #PROCESS
