@@ -25,8 +25,8 @@ Path to the solution (folder) containing both the Azure Stream Analytics folder 
 Name of the folder containing the test fixture (folders 1_Arrange, 2_act...), usually "unittest"
 
 .EXAMPLE
-.\Install-AutToolset.ps1 -solutionPath "C:\Users\fleide\Repos\asa.unittest" -verbose
-.\Install-AutToolset.ps1 -solutionPath "C:\Users\Florian\Source\Repos\utASAHello" -ASAnugetVersion 2.4.0 -unittestFolder ut
+.\Install-AutToolset.ps1 -testPath "C:\Users\fleide\Repos\asa.unittest\asa.unittest.test" -verbose
+.\Install-AutToolset.ps1 -testPath "C:\Users\Florian\Source\Repos\utASAHello" -ASAnugetVersion 2.4.0 -unittestFolder ut
 #>
 Function Install-AutToolset{
 
