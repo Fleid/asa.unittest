@@ -1,3 +1,7 @@
+$projectRoot = Resolve-Path "$PSScriptRoot\.."
+$moduleRoot = Split-Path (Resolve-Path "$projectRoot\*\*.psd1")
+$moduleName = Split-Path $moduleRoot -Leaf
+
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
 . "$here\$sut"
