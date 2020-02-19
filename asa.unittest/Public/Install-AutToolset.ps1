@@ -28,38 +28,46 @@ Name of the folder containing the test fixture (folders 1_Arrange, 2_act...), us
 .\Install-AutToolset.ps1 -solutionPath "C:\Users\fleide\Repos\asa.unittest" -verbose
 .\Install-AutToolset.ps1 -solutionPath "C:\Users\Florian\Source\Repos\utASAHello" -ASAnugetVersion 2.4.0 -unittestFolder ut
 #>
+Function Install-AutToolset{
 
-[CmdletBinding()]
-param (
-    [ValidateSet("2.3.0")]
-    [string]$ASAnugetVersion = "2.3.0",
-    [string]$solutionPath = $ENV:BUILD_SOURCESDIRECTORY,
-    [string]$unittestFolder ="unittest"
-)
+    [CmdletBinding()]
+    param (
+        [ValidateSet("2.3.0")]
+        [string]$ASAnugetVersion = "2.3.0",
+        [string]$solutionPath = $ENV:BUILD_SOURCESDIRECTORY,
+        [string]$unittestFolder ="unittest"
+    )
 
-$actPath = "$solutionPath\$unittestFolder\2_act"
+    BEGIN {}
 
-if (Test-Path $actPath)
-{
-    Set-Location $actPath
+    PROCESS {
 
-    # Windows - get nuget.exe from https://www.nuget.org/downloads
-    Write-Verbose "001 - Download nuget.exe"
-    Invoke-WebRequest `
-        -Uri https://dist.nuget.org/win-x86-commandline/latest/nuget.exe `
-        -OutFile nuget.exe |
-        Out-Null
-    
-    # Install ASA CI/CD package from nuget
-    Write-Verbose "002 - Install ASA.CICD nuget package"
-    Invoke-Expression "./nuget install Microsoft.Azure.StreamAnalytics.CICD -version $ASAnugetVersion" |
-        Out-Null
-    
-    # Install jsondiffpatch from npm
-    Write-Verbose "003 - Install jsondiffpatch npm package"
-    Invoke-Expression "npm install -g jsondiffpatch" |
-        Out-Null    
-}
-else {
-    throw("The path provided is not valid: $actPath")
+        $actPath = "$solutionPath\$unittestFolder\2_act"
+
+        if (Test-Path $actPath)
+        {
+            Set-Location $actPath
+
+            # Windows - get nuget.exe from https://www.nuget.org/downloads
+            Write-Verbose "001 - Download nuget.exe"
+            Invoke-WebRequest `
+                -Uri https://dist.nuget.org/win-x86-commandline/latest/nuget.exe `
+                -OutFile nuget.exe |
+                Out-Null
+            
+            # Install ASA CI/CD package from nuget
+            Write-Verbose "002 - Install ASA.CICD nuget package"
+            Invoke-Expression "./nuget install Microsoft.Azure.StreamAnalytics.CICD -version $ASAnugetVersion" |
+                Out-Null
+            
+            # Install jsondiffpatch from npm
+            Write-Verbose "003 - Install jsondiffpatch npm package"
+            Invoke-Expression "npm install -g jsondiffpatch" |
+                Out-Null    
+        }
+        else {
+            Throw("Install-AutToolset : The path provided is not valid: $actPath")
+        }
+    } # PROCESS
+    END {}
 }
