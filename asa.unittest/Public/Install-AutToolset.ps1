@@ -15,59 +15,53 @@ Finally the script will invoke npm to install the jsondiffpatch package. See htt
 This package will be installe globally (npm install -g).
 If npm is not available, please download node.js. See https://nodejs.org/en/download/
 
-.PARAMETER ASAnugetVersion
-Version of the Azure Stream Analytics CI/CD nuget package (Microsoft.Azure.StreamAnalytics.CICD) to be downloaded and used
-
-.PARAMETER solutionPath
-Path to the solution (folder) containing both the Azure Stream Analytics folder and the unittest folder
-
-.PARAMETER unittestFolder
-Name of the folder containing the test fixture (folders 1_Arrange, 2_act...), usually "unittest"
+.PARAMETER testPath
+Path to the test folder that will contain the fixture (1_arrange, 2_act, 3_assert sub-folders)
 
 .EXAMPLE
-.\Install-AutToolset.ps1 -testPath "C:\Users\fleide\Repos\asa.unittest\asa.unittest.test" -verbose
-.\Install-AutToolset.ps1 -testPath "C:\Users\Florian\Source\Repos\utASAHello" -ASAnugetVersion 2.4.0 -unittestFolder ut
+Install-AutToolset -installPath C:\Users\fleide\Repos\asa.unittest\examples\ASAHelloWorld.Tests\2_Act $npmpackages jsondiffpatch #nugetpackages Microsoft.Azure.StreamAnalytics.CICD
 #>
+
 Function Install-AutToolset{
 
     [CmdletBinding()]
     param (
-        [ValidateSet("2.3.0")]
-        [string]$ASAnugetVersion = "2.3.0",
-        [string]$solutionPath = $ENV:BUILD_SOURCESDIRECTORY,
-        [string]$unittestFolder ="unittest"
+        [Parameter(Mandatory=$True)]
+        [string]$installPath,
+        [string[]]$npmPackages, # = @("jsondiffpatch"),
+        [string[]]$nugetPackages # = @("Microsoft.Azure.StreamAnalytics.CICD")
     )
 
-    BEGIN {}
+    BEGIN {
+        if (-not (Test-Path $installPath)) {New-Item -ItemType Directory -Path $installPath | Out-Null}
+    }
 
     PROCESS {
 
-        $actPath = "$solutionPath\$unittestFolder\2_act"
-
-        if (Test-Path $actPath)
-        {
-            Set-Location $actPath
+        if ($nugetPackages.Count -gt 0){
 
             # Windows - get nuget.exe from https://www.nuget.org/downloads
             Write-Verbose "001 - Download nuget.exe"
             Invoke-WebRequest `
                 -Uri https://dist.nuget.org/win-x86-commandline/latest/nuget.exe `
-                -OutFile nuget.exe |
+                -OutFile (Join-Path $installPath "nuget.exe") |
                 Out-Null
             
-            # Install ASA CI/CD package from nuget
-            Write-Verbose "002 - Install ASA.CICD nuget package"
-            Invoke-Expression "./nuget install Microsoft.Azure.StreamAnalytics.CICD -version $ASAnugetVersion" |
-                Out-Null
-            
-            # Install jsondiffpatch from npm
-            Write-Verbose "003 - Install jsondiffpatch npm package"
-            Invoke-Expression "npm install -g jsondiffpatch" |
-                Out-Null    
-        }
-        else {
-            Throw("Install-AutToolset : The path provided is not valid: $actPath")
-        }
+            foreach ($nugetPackage in $nugetPackages){
+                Write-Verbose "002 - Installing nuget package : $nugetPackage"
+                Invoke-Expression -Command "./$installPath/nuget install $nugetPackage -OutputDirectory $installPath" |
+                    Out-Null
+            }
+        } #IF nuget
+
+        if ($npmPackages.Count -gt 0){
+            foreach ($npmPackage in $npmPackages){
+                Write-Verbose "003 - Installing npm package : $npmPackage"
+                Invoke-Expression -Command "npm install -g $npmPackage" |
+                    Out-Null
+            }
+        } #IF npm
+
     } # PROCESS
     END {}
 }
