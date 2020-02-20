@@ -1,7 +1,6 @@
 <#
 .SYNOPSIS
-PowerShell tool used to create a new XML asaproj file from a JSON one.
-If one already exists it will be overwritten.
+PowerShell tool used to create a new XML asaproj file from a JSON one. If one already exists it will be overwritten.
 
 .DESCRIPTION
 The tool used to run tests in unittest_prun (sa.exe) requires a manifest file (.asaproj) that describes the content of the asa project.
@@ -13,10 +12,10 @@ If one already exists it will be overwritten.
 Not every item will be ported, only those required during a test run will (asaql, jobconfig, local mock inputs).
 
 .PARAMETER sourceAsaproj
+PowerShell object converted from an asaproj.json. The easiest way to generate this is to use `(Get-Content asaproj.json | ConvertFrom-JSON)`
 
-PSObject 
 .EXAMPLE
-.\New-AUTAsaproj.ps1 -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\fleide\Repos\asa.unittest" -verbose
+(Get-Content asaproj.json | ConvertFrom-JSON) | New-AutAsaprojXML |Out-File ASAHelloWorld.asaproj
 #>
 
 function New-AutAsaprojXML{
@@ -41,6 +40,7 @@ function New-AutAsaprojXML{
         $footer = "</Project>"
         $itemGroupStart = "<ItemGroup>"
         $itemGroupEnd = "</ItemGroup>"
+        $itemFilter = @("InputMock","JobConfig")
 
         ################################################################################################################################
         write-verbose "101 - Generating the XML asaproj"
@@ -57,7 +57,7 @@ function New-AutAsaprojXML{
         $targetAsaproj += $itemGroupStart + $newline 
 
         $sourceAsaproj.configurations | `
-            Where-Object {$_.subType -in ("InputMock","JobConfig") } |
+            Where-Object {$_.subType -in $itemFilter} |
             Foreach-Object -process {
                 $targetAsaproj += "<Configure Include=`"$($_.filePath)`">" + $newline 
                 $targetAsaproj += "<SubType>$($_.subType)</SubType>" + $newline 
