@@ -23,7 +23,7 @@ List of npm packages to install
 List of nuget packages to install
 
 .EXAMPLE
-Install-AutToolset -installPath C:\Users\fleide\Repos\asa.unittest\examples\ASAHelloWorld.Tests\2_Act $npmpackages jsondiffpatch #nugetpackages Microsoft.Azure.StreamAnalytics.CICD
+Install-AutToolset -installPath C:\Users\fleide\Repos\asa.unittest\examples\ASAHelloWorld.Tests\2_act -npmpackages jsondiffpatch -nugetpackages Microsoft.Azure.StreamAnalytics.CICD
 #>
 
 Function Install-AutToolset{
@@ -44,16 +44,18 @@ Function Install-AutToolset{
 
         if ($nugetPackages.Count -gt 0){
 
-            # Windows - get nuget.exe from https://www.nuget.org/downloads
-            Write-Verbose "001 - Download nuget.exe"
-            Invoke-WebRequest `
-                -Uri https://dist.nuget.org/win-x86-commandline/latest/nuget.exe `
-                -OutFile (Join-Path $installPath "nuget.exe") |
-                Out-Null
-            
+            if (-not (Test-Path -Path "$installPath\nuget.exe" -PathType Leaf)){
+                # Windows - get nuget.exe from https://www.nuget.org/downloads
+                Write-Verbose "001 - Download nuget.exe"
+                Invoke-WebRequest `
+                    -Uri https://dist.nuget.org/win-x86-commandline/latest/nuget.exe `
+                    -OutFile (Join-Path $installPath "nuget.exe") |
+                    Out-Null
+            }
+
             foreach ($nugetPackage in $nugetPackages){
                 Write-Verbose "002 - Installing nuget package : $nugetPackage"
-                Invoke-Expression -Command "./$installPath/nuget install $nugetPackage -OutputDirectory $installPath" |
+                Invoke-Expression -Command "$installPath\nuget.exe install $nugetPackage -OutputDirectory $installPath" |
                     Out-Null
             }
         } #IF nuget
