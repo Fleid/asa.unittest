@@ -6,8 +6,10 @@
         "SOLUTIONFOLDERPATH",
         "asaproj",
         "asaql",
+        "aut",
         "jsondiffpatch",
         "prun",
+        "toolset",
         "unittest"
     ]
 }

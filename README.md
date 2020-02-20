@@ -25,7 +25,7 @@ In this article:
 
 ### Context
 
-At the time of writing, the major IDEs that support ASA ([VSCode](https://code.visualstudio.com/) and [Visual Studio](https://visualstudio.microsoft.com/vs/)) don't offer unit testing for it natively. 
+At the time of writing, the major IDEs that support ASA ([VSCode](https://code.visualstudio.com/) and [Visual Studio](https://visualstudio.microsoft.com/vs/)) don't offer unit testing for it natively.
 
 This solution intends to fill that gap by enabling:
 
@@ -186,10 +186,10 @@ Note that both scripts use default values for most parameters. These default val
 The mandatory parameters are:
 
 - For the **installation script** (`Install-AutToolset`)
-    - `$unittestFolder` if it's not the default (`unittest`)
+  - `$unittestFolder` if it's not the default (`unittest`)
 - For the **test runner** (`Start-AutRun`)
-    - `$asaProjectName`
-    - `$unittestFolder` if it's not the default (`unittest`)
+  - `$asaProjectName`
+  - `$unittestFolder` if it's not the default (`unittest`)
 
 ### Troubleshooting
 
@@ -219,7 +219,7 @@ PowerShell [remoting for jobs](https://docs.microsoft.com/en-us/powershell/modul
 
 ### Change Log
 
-- February 2020 : 
+- February 2020 :
   - Automated the generation of the XML asaproj file (required by sa.exe) from the JSON one (for VSCode project)
   - Renamed scripts to follow PowerShell standards, with backward compatibility
 
