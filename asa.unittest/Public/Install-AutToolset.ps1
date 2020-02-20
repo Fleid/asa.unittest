@@ -7,16 +7,20 @@ PS: VSCode has a weird behavior on that topic, use Terminal : https://github.com
 
 .DESCRIPTION
 This script will first download nuget.exe, the Nuget CLI tool for Windows. See https://docs.microsoft.com/en-us/nuget/install-nuget-client-tools#nugetexe-cli
+After that nuget.exe will be invoked to install the required packages from nuget.
 
-After that nuget.exe will be invoked to install the Microsoft.Azure.StreamAnalytics.CICD package from nuget. See https://www.nuget.org/packages/Microsoft.Azure.StreamAnalytics.CICD/
-This package contains sa.exe, the tool used to run unit tests.
-
-Finally the script will invoke npm to install the jsondiffpatch package. See https://www.npmjs.com/package/jsondiffpatch
-This package will be installe globally (npm install -g).
+Finally the script will invoke npm to install the npm packages.
+Thess packages will be installed globally (npm install -g).
 If npm is not available, please download node.js. See https://nodejs.org/en/download/
 
 .PARAMETER testPath
-Path to the test folder that will contain the fixture (1_arrange, 2_act, 3_assert sub-folders)
+Path to the test folder in the fixture that will contain the dependencies (.\ASAHelloWorld.Tests\2_act)
+
+.PARAMETER npmPackages
+List of npm packages to install
+
+.PARAMETER nugetPackages
+List of nuget packages to install
 
 .EXAMPLE
 Install-AutToolset -installPath C:\Users\fleide\Repos\asa.unittest\examples\ASAHelloWorld.Tests\2_Act $npmpackages jsondiffpatch #nugetpackages Microsoft.Azure.StreamAnalytics.CICD
