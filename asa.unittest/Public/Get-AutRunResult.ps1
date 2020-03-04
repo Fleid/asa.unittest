@@ -17,7 +17,7 @@ Function Get-AutRunResult{
 
     [CmdletBinding()]
     param (
-        [PSObject]$testDetails
+        [PSObject[]]$testDetails
     )
 
     BEGIN {}

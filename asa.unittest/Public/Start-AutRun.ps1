@@ -78,7 +78,7 @@ Function Start-AutRun{
         ForEach ($testCase in $testCases) { New-AutRunJob -saPath $saPath -testPath $testPath -testCase $testCase -asaProjectName $asaProjectName }
 
         write-verbose "402 - Waiting for all jobs to end..."
-        
+
         ## Wait for all jobs to complete and results ready to be received
         Wait-Job * | Out-Null
 
@@ -94,6 +94,16 @@ Function Start-AutRun{
         #>
 
         write-verbose "404 - Calculating diffs"
+
+        $testDetails = $testFiles | Select-Object `
+        @{Name = "FullName"; Expression = {$_.Name}}, `
+        @{Name = "FilePath"; Expression = {$_.Fullname}}, `
+        @{Name = "Basename"; Expression = {$_.Basename}}, `
+        @{Name = "TestCase"; Expression = {$parts = $_.Basename.Split("~"); $parts[0]}}, `
+        @{Name = "FileType"; Expression = {$parts = $_.Basename.Split("~"); $parts[1]}}, `
+        @{Name = "SourceName"; Expression = {$parts = $_.Basename.Split("~"); $parts[2]}}, `
+        @{Name = "TestLabel"; Expression = {$parts = $_.Basename.Split("~"); $parts[3]}}
+        
         ## For each Output test file, generate a testable file (adding brackets to it) then run the diff with the corresponding arranged output file
         $errorCounter = Get-AutRunResult -testDetails $testDetails
         #$testDetails | ... | Out-Null
