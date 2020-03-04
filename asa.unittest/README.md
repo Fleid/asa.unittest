@@ -24,7 +24,7 @@ Import-Module -Name .\asa.unittest.psm1 -verbose -force
 
 Install-AutToolset -installPath C:\Users\fleide\Repos\asa.unittest\examples\ASAHelloWorld.Tests\2_act -npmpackages jsondiffpatch -nugetpackages Microsoft.Azure.StreamAnalytics.CICD
 
-Start-AutRun -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\fleide\Repos\asa.unittest\examples" -unittestFolder "ASAHelloworld.Tests" -assertPath "C:\Users\fleide\Repos\asa.unittest\examples\ASAHelloworld.Tests\3_assert"-verbose
+Start-AutRun -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\fleide\Repos\asa.unittest\examples" -unittestFolder "ASAHelloworld.Tests" -verbose
 
 ```
 
@@ -33,6 +33,13 @@ Start-AutRun -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\fleide\Repo
 Scripts should be isolated in atomic .ps1 file, written as advanced functions.
 They can be loaded and ran directly.
 
+```PowerShell
+$ASAnugetVersion = "2.3.0"
+$solutionPath = "C:\Users\fleide\Repos\asa.unittest\examples"
+$asaProjectName = "ASAHelloWorld"
+$unittestFolder = "ASAHelloWorld.Tests"
+
+```
 
 ## Testing
 
