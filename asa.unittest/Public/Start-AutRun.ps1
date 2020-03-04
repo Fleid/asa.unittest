@@ -28,7 +28,7 @@ Name of the folder containing the test fixture (folders 1_Arrange, 2_act...), us
 Name of the target folder where test assets will be generated and test results will be output
 
 .EXAMPLE
-.\Start-AutRun.ps1 -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\fleide\Repos\asa.unittest" -assertPath "C:\Users\fleide\Repos\asa.unittest\unittest\3_assert"-verbose
+Start-AutRun.ps1 -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\fleide\Repos\asa.unittest" -assertPath "C:\Users\fleide\Repos\asa.unittest\unittest\3_assert"-verbose
 #>
 
 Function Start-AutRun{

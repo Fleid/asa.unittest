@@ -16,8 +16,16 @@ ModuleRoot
 From there, the module can be loaded via:
 
 ```PowerShell
+Set-Location C:\Users\fleide\Repos\asa.unittest\asa.unittest
 Import-Module -Name .\asa.unittest.psm1 -verbose -force
-Remove-Module asa.unittest
+
+#Remove-Module asa.unittest
+#then
+
+Install-AutToolset -installPath C:\Users\fleide\Repos\asa.unittest\examples\ASAHelloWorld.Tests\2_act -npmpackages jsondiffpatch -nugetpackages Microsoft.Azure.StreamAnalytics.CICD
+
+Start-AutRun -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\fleide\Repos\asa.unittest\examples" -unittestFolder "ASAHelloworld.Tests" -assertPath "C:\Users\fleide\Repos\asa.unittest\examples\ASAHelloworld.Tests\3_assert"-verbose
+
 ```
 
 ## Development
