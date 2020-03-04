@@ -75,15 +75,10 @@ Function Start-AutRun{
         # 4xx - Running the test
         write-verbose "401 - Run SA in parallel jobs"
 
-        ForEach ($testCase in $testCases ){
-            Start-Job -ArgumentList $saPath,$testPath,$testCase,$asaProjectName -ScriptBlock{
-                param($saPath,$testPath,$testCase,$asaProjectName)
-                & $saPath localrun -Project $testPath\$testCase\$asaProjectName\$asaProjectName.asaproj -OutputPath $testPath\$testCase} |   
-            Out-Null
-        }
+        ForEach ($testCase in $testCases) { New-AutRunJob -saPath $saPath -testPath $testPath -testCase $testCase -asaProjectName $asaProjectName }
 
         write-verbose "402 - Waiting for all jobs to end..."
-
+        
         ## Wait for all jobs to complete and results ready to be received
         Wait-Job * | Out-Null
 
