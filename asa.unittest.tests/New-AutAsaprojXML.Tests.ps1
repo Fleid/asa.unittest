@@ -102,6 +102,27 @@ Describe "New-AutAsaprojXML missing/empty startFile" {
         {New-AutAsaprojXML -sourceAsaproj $sourceAsaprojMock}  |
         Should -throw "Error : startFile (aka .asaql path) is missing or empty from input asaProj file"
     }
+}
 
+
+Describe "New-AutAsaprojXML missing JobConfig" {
+
+    $sourceAsaprojMockJSON = "{
+        `"name`": `"asaproject`",
+        `"startFile`": `"asaproject.asaql`",
+        `"configurations`": [
+            {
+                `"filePath`": `"Inputs\\Local_input.json`",
+                `"subType`": `"InputMock`"
+            }
+        ]
+    }"
+
+    $sourceAsaprojMock = $sourceAsaprojMockJSON | ConvertFrom-Json
+
+    It "fails if startFile(asaql) is missing from input" {
+        {New-AutAsaprojXML -sourceAsaproj $sourceAsaprojMock}  |
+        Should -throw "Error : JobConfig path is missing or empty from input asaProj file"
+    }
 
 }

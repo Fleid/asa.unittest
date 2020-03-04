@@ -29,10 +29,20 @@ function New-AutAsaprojXML{
     BEGIN {}
 
     PROCESS {
+        ################################################################################################################################
+        write-verbose "001 - Testing the input"
 
         if (($sourceAsaproj.startFile -eq $null) -or ($sourceAsaproj.startFile -eq "")) {
             Throw "Error : startFile (aka .asaql path) is missing or empty from input asaProj file"
         }
+
+        
+
+        if (-not ($sourceAsaproj.configurations | Where-Object {$_.subType -in "JobConfig"}).count -eq 1) {
+            Throw "Error : JobConfig path is missing or empty from input asaProj file"
+        }
+
+        ################################################################################################################################
 
         # Constants
         $newline = "`r`n"
