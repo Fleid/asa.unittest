@@ -100,23 +100,8 @@ Function Start-AutRun{
 
         write-verbose "404 - Calculating diffs"
         ## For each Output test file, generate a testable file (adding brackets to it) then run the diff with the corresponding arranged output file
-        $testDetails | 
-            Where-Object { $_.FileType -eq"Output" } |
-            Select-Object `
-                FullName,
-                SourceName,
-                TestCase,
-                @{Name = "rawContent"; Expression = {"$testPath\$($_.TestCase)\$($_.SourceName).json"}}, #sa.exe output
-                @{Name = "testableFilePath"; Expression = {"$testPath\$($_.TestCase)\$($_.SourceName).testable.json"}}, #to be generated
-                @{Name = "testCaseOutputFile"; Expression = {"$testPath\$($_.TestCase)\$asaProjectName\Inputs\$($_.FullName)"}} |
-            Foreach-Object -process {
-                $testableContent = "[$(Get-Content -Path $_.rawContent)]"; #adding brackets
-                Add-Content -Path $_.testableFilePath -Value $testableContent;
-                $testResult = jsondiffpatch $_.testCaseOutputFile $_.testableFilePath;
-                $testResult | Out-File "$testPath\$($_.TestCase)\$($_.SourceName).Result.txt"
-                if ($testResult) {$errorCounter++}
-            } |
-            Out-Null
+        $errorCounter = Get-AutRunResult -testDetails $testDetails
+        #$testDetails | ... | Out-Null
 
         ################################################################################################################################
         # Final result
