@@ -20,12 +20,14 @@ Function New-AutRunFixture{
         [string]$solutionPath,
         [string]$asaProjectName,
         [string]$unittestFolder,
-        [string]$testPath
+        [string]$testID
     )
 
     BEGIN {}
 
     PROCESS {
+
+        $testPath = "$solutionPath\$unittestFolder\3_assert\$testID"
 
         $asaProjectPath = "$solutionPath\$asaProjectName"
         $arrangePath = "$solutionPath\$unittestFolder\1_arrange"

@@ -50,22 +50,20 @@ Function Start-AutRun{
         ################################################################################################################################
         write-verbose "101 - Set Variables"
 
-        ## Set variables
         $testID = (Get-Date -Format "yyyyMMddHHmmss")
-
-        $assertPath = "$solutionPath\$unittestFolder\3_assert"
-        $testPath = "$assertPath\$testID"
-
         $exePath = "$solutionPath\$unittestFolder\2_act\Microsoft.Azure.StreamAnalytics.CICD.$ASAnugetVersion\tools\sa.exe"
 
-
         ################################################################################################################################
-        # 2xx - Arranging files
+        # 2xx - Creating run fixture
  
-        $testCases = New-AutRunFixture -solutionPath $solutionPath -asaProjectName $asaProjectName -testPath $testPath -unittestFolder $unittestFolder
+        $testCases = New-AutRunFixture `
+            -solutionPath $solutionPath `
+            -asaProjectName $asaProjectName `
+            -unittestFolder $unittestFolder `
+            -testID $testID
 
         ################################################################################################################################
-        # 4xx - Running the test
+        # 4xx - Running the jobs
         write-verbose "401 - Run SA in parallel jobs"
 
         ForEach ($testCase in $testCases) { 
@@ -94,7 +92,9 @@ Function Start-AutRun{
         }
         #>
 
-        write-verbose "404 - Calculating diffs"
+        ################################################################################################################################
+  
+        write-verbose "501 - Calculating diffs"
 
         $errorCounter = 0
 
