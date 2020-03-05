@@ -24,9 +24,6 @@ Name of the Azure Stream Analytics project = name of the project folder = name o
 .PARAMETER unittestFolder
 Name of the folder containing the test fixture (folders 1_Arrange, 2_act...), usually "unittest"
 
-.PARAMETER assertPath
-Name of the target folder where test assets will be generated and test results will be output
-
 .EXAMPLE
 Start-AutRun.ps1 -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\fleide\Repos\asa.unittest" -assertPath "C:\Users\fleide\Repos\asa.unittest\unittest\3_assert"-verbose
 #>
@@ -43,8 +40,7 @@ Function Start-AutRun{
         [Parameter(Mandatory=$True)]
         [string]$asaProjectName,
 
-        [string]$unittestFolder = "unittest",
-        [string]$assertPath = $ENV:COMMUB_TESTRESULTSDIRECTORY # Azure DevOps Pipelines default variable
+        [string]$unittestFolder = "unittest"
     )
 
     BEGIN {}
@@ -55,15 +51,13 @@ Function Start-AutRun{
         write-verbose "101 - Set Variables"
 
         ## Set variables
-        $timeStamp = (Get-Date -Format "yyyyMMddHHmmss")
+        $testID = (Get-Date -Format "yyyyMMddHHmmss")
 
-        if ($assertPath -eq "" -or $assertPath -eq $null) {$assertPath = "$solutionPath\$unittestFolder\3_assert"}
-        $testPath = "$assertPath\$timeStamp"
+        $assertPath = "$solutionPath\$unittestFolder\3_assert"
+        $testPath = "$assertPath\$testID"
 
         $actPath = "$solutionPath\$unittestFolder\2_act"
         $saPath = "$actPath\Microsoft.Azure.StreamAnalytics.CICD.$ASAnugetVersion\tools\sa.exe"
-
-        $errorCounter = 0
 
 
         ################################################################################################################################
@@ -95,18 +89,13 @@ Function Start-AutRun{
 
         write-verbose "404 - Calculating diffs"
 
-        $testDetails = $testFiles | Select-Object `
-        @{Name = "FullName"; Expression = {$_.Name}}, `
-        @{Name = "FilePath"; Expression = {$_.Fullname}}, `
-        @{Name = "Basename"; Expression = {$_.Basename}}, `
-        @{Name = "TestCase"; Expression = {$parts = $_.Basename.Split("~"); $parts[0]}}, `
-        @{Name = "FileType"; Expression = {$parts = $_.Basename.Split("~"); $parts[1]}}, `
-        @{Name = "SourceName"; Expression = {$parts = $_.Basename.Split("~"); $parts[2]}}, `
-        @{Name = "TestLabel"; Expression = {$parts = $_.Basename.Split("~"); $parts[3]}}
-        
+        $errorCounter = 0
+
         ## For each Output test file, generate a testable file (adding brackets to it) then run the diff with the corresponding arranged output file
-        $errorCounter = Get-AutRunResult -testDetails $testDetails
-        #$testDetails | ... | Out-Null
+        
+        ForEach ($testCase in $testCases) { 
+            $errorCounter += Get-AutRunResult -solutionPath $solutionPath -asaProjectName $asaProjectName -unittestFolder $unittestFolder -testID $testID -testCase $testCase
+        }
 
         ################################################################################################################################
         # Final result
