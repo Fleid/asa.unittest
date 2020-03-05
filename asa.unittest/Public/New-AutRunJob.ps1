@@ -17,18 +17,23 @@ Function New-AutRunJob{
 
     [CmdletBinding()]
     param (
-        [string]$saPath,
-        [string]$testPath,
+        [string]$solutionPath,
+        [string]$asaProjectName,
+        [string]$unittestFolder,
+        [string]$testID,
         [string]$testCase,
-        [string]$asaProjectName
+        [string]$exePath
     )
 
     BEGIN {}
 
     PROCESS {
-        Start-Job -ArgumentList $saPath,$testPath,$testCase,$asaProjectName -ScriptBlock{
-            param($saPath,$testPath,$testCase,$asaProjectName)
-            & $saPath localrun -Project $testPath\$testCase\$asaProjectName\$asaProjectName.asaproj -OutputPath $testPath\$testCase} |   
+
+        $testPath = "$solutionPath\$unittestFolder\3_assert\$testID"
+
+        Start-Job -ArgumentList $exePath,$testPath,$testCase,$asaProjectName -ScriptBlock{
+            param($exePath,$testPath,$testCase,$asaProjectName)
+            & $exePath localrun -Project $testPath\$testCase\$asaProjectName\$asaProjectName.asaproj -OutputPath $testPath\$testCase} |   
         Out-Null
 
     } #PROCESS

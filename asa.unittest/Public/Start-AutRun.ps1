@@ -56,8 +56,7 @@ Function Start-AutRun{
         $assertPath = "$solutionPath\$unittestFolder\3_assert"
         $testPath = "$assertPath\$testID"
 
-        $actPath = "$solutionPath\$unittestFolder\2_act"
-        $saPath = "$actPath\Microsoft.Azure.StreamAnalytics.CICD.$ASAnugetVersion\tools\sa.exe"
+        $exePath = "$solutionPath\$unittestFolder\2_act\Microsoft.Azure.StreamAnalytics.CICD.$ASAnugetVersion\tools\sa.exe"
 
 
         ################################################################################################################################
@@ -69,7 +68,15 @@ Function Start-AutRun{
         # 4xx - Running the test
         write-verbose "401 - Run SA in parallel jobs"
 
-        ForEach ($testCase in $testCases) { New-AutRunJob -saPath $saPath -testPath $testPath -testCase $testCase -asaProjectName $asaProjectName }
+        ForEach ($testCase in $testCases) { 
+            New-AutRunJob `
+                -solutionPath $solutionPath `
+                -asaProjectName $asaProjectName `
+                -unittestFolder $unittestFolder `
+                -testID $testID `
+                -testCase $testCase `
+                -exePath $exePath
+        }
 
         write-verbose "402 - Waiting for all jobs to end..."
 
@@ -94,7 +101,12 @@ Function Start-AutRun{
         ## For each Output test file, generate a testable file (adding brackets to it) then run the diff with the corresponding arranged output file
         
         ForEach ($testCase in $testCases) { 
-            $errorCounter += Get-AutRunResult -solutionPath $solutionPath -asaProjectName $asaProjectName -unittestFolder $unittestFolder -testID $testID -testCase $testCase
+            $errorCounter += Get-AutRunResult `
+                -solutionPath $solutionPath `
+                -asaProjectName $asaProjectName `
+                -unittestFolder $unittestFolder `
+                -testID $testID `
+                -testCase $testCase
         }
 
         ################################################################################################################################
