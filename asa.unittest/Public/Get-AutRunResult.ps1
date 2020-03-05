@@ -59,7 +59,7 @@ Function Get-AutRunResult{
             if ($testResult) {$errorCounter++}
         }
 
-        $errorCounter 
+        $errorCounter
 
     } #PROCESS
     END {}

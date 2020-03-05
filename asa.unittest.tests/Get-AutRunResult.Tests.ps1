@@ -8,19 +8,37 @@ Import-Module (Join-Path $moduleRoot "$moduleName.psm1") -force
 #############################################################################################################
 
 
-Describe "Get-AutRunResultNominal" {
+Describe "Get-AutRunResult Nominal" {
     InModuleScope $moduleName {
 
-        $testDetail1 = New-Object PSObject -Property @{foo = "bar1"}
-        $testDetail2 = New-Object PSObject -Property @{foo = "bar2"}
-        $testDetails = @($testDetail1, $testDetail2)
+        $solutionPath = "foo"
+        $asaProjectName = "bar"
+        $unittestFolder = "bar.Tests"
+        $testID = "xxx"
+        $testCase = "123"
 
+        Mock Get-ChildItem {}
         Mock Get-Content {}
         Mock Out-File {}
 
-        It "runs" {
-            Get-AutRunResult -testDetails $testDetails  | 
-            Assert-MockCalled Out-File -Times 0 -Scope It
+        It "tries to get a list of files" {
+            Get-AutRunResult `
+                -solutionPath $solutionPath `
+                -asaProjectName $asaProjectName `
+                -unittestFolder $unittestFolder `
+                -testID $testID `
+                -testCase $testCase  | Out-Null |
+            Assert-MockCalled Get-ChildItem -Times 1 -Scope It
+        }
+
+        It "tries nothing if it gets nothing" {
+            Get-AutRunResult `
+                -solutionPath $solutionPath `
+                -asaProjectName $asaProjectName `
+                -unittestFolder $unittestFolder `
+                -testID $testID `
+                -testCase $testCase  | Out-Null |
+            Assert-MockCalled Out-File -Times 0  -Scope It
         }
     }
 }
