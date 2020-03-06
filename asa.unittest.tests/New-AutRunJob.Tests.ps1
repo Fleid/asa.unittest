@@ -8,28 +8,28 @@ Import-Module (Join-Path $moduleRoot "$moduleName.psm1") -force
 #############################################################################################################
 
 
-Describe "New-AutRunFixture Nominal" {
+Describe "New-AutRunJob Nominal" {
     InModuleScope $moduleName {
 
         $solutionPath = "foo"
         $asaProjectName = "bar"
         $unittestFolder = "bar.Tests"
         $testID = "xxx"
+        $testCase = "123"
+        $exePath = "foo.exe"
 
         #Mock Test-Path {return $true}
-        Mock Get-ChildItem {}
-        Mock New-Item {} -ParameterFilter { $ItemType -and $ItemType -eq "Directory" }
-        Mock Copy-Item {}
-        Mock Test-Path {return $true}
-        Mock Out-File {}
+        Mock Start-Job {}
 
         It "runs" {
-            New-AutRunFixture `
-                -solutionPath $solutionPath `
-                -asaProjectName $asaProjectName `
-                -unittestFolder $unittestFolder `
-                -testID $testID | Out-Null | 
-            Assert-MockCalled New-Item -Times 0 -Scope It
+            New-AutRunJob `
+            -solutionPath $solutionPath `
+            -asaProjectName $asaProjectName `
+            -unittestFolder $unittestFolder `
+            -testID $testID `
+            -testCase $testCase `
+            -exePath $exePath |
+            Assert-MockCalled Start-Job -Times 1 -Scope It
         }
     }
 }

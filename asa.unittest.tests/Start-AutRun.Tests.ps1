@@ -8,8 +8,26 @@ Import-Module (Join-Path $moduleRoot "$moduleName.psm1") -force
 #############################################################################################################
 
 
-Describe "..\asa.unittest\Public\Start-AutRun" {
-    It "does something useful" {
-        $true | Should -Be $false
+Describe "Start-AutRun Nominal" {
+    InModuleScope $moduleName {
+
+        $ASAnugetVersion = "2.3.0"
+        $solutionPath = "foo"
+        $asaProjectName = "bar"
+        $unittestFolder = "bar.Tests"
+
+        #Mock Test-Path {return $true}
+        Mock New-AutRunFixture {}
+        Mock New-AutRunJob {}
+        Mock Get-AutRunResult {}
+
+        It "runs" {
+            Start-AutRun `
+                -ASAnugetVersion $ASAnugetVersion `
+                -solutionPath $solutionPath `
+                -asaProjectName $asaProjectName `
+                -unittestFolder $unittestFolder |
+            Assert-MockCalled New-AutRunFixture -Times 1 -Scope It
+        }
     }
 }
