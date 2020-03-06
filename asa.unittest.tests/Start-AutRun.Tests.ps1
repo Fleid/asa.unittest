@@ -6,6 +6,7 @@ $moduleName = Split-Path $moduleRoot -Leaf #Extract the module name from above
 Import-Module (Join-Path $moduleRoot "$moduleName.psm1") -force
 
 #############################################################################################################
+# Invoke-Pester .\Start-AutRun.Tests.ps1 -CodeCoverage .\..\asa.unittest\public\Start-AutRun.ps1
 
 
 Describe "Start-AutRun parameter asaNugetVersion" {
