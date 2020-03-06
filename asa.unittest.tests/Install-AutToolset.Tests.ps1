@@ -8,37 +8,44 @@ Import-Module (Join-Path $moduleRoot "$moduleName.psm1") -force
 #############################################################################################################
 # Invoke-Pester .\Install-AutToolset.Tests.ps1 -CodeCoverage .\..\asa.unittest\public\Install-AutToolset.ps1
 
-Describe "Install-AutToolset beginning" { 
+Describe "Install-AutToolset paramater installPath" { 
     InModuleScope $moduleName {
 
-        $installPath = "foo"
+        $t_installPath = "foo"
 
-        Mock Test-Path {return $true} -ParameterFilter {$Path -eq $installPath}
+        Mock Test-Path {return $true} -ParameterFilter {$Path -eq $t_installPath}
         Mock Test-Path {return $true} -ParameterFilter { $PathType -and $PathType -eq "Leaf" }
         Mock New-Item {}
         Mock Invoke-WebRequest {}
         Mock Invoke-Expression {}
 
-        It "doesn't create a folder" {
-            Install-AutToolset -installPath $installPath | 
-            Assert-MockCalled New-Item -Times 0 -Scope It  -ParameterFilter {$Path -eq $installPath}
+        It "fails if installPath is missing" {
+            { Install-AutToolset } | 
+            Should -throw "-installPath is required"
         }
 
-        Mock Test-Path {return $false} -ParameterFilter {$Path -eq $installPath}
-        It "does create a folder" {
-            Install-AutToolset -installPath $installPath | 
-            Assert-MockCalled New-Item -Times 1 -Scope It  -ParameterFilter {$Path -eq $installPath}
+        It "doesn't create a folder if it exists" {
+            Install-AutToolset -installPath $t_installPath | 
+            Assert-MockCalled New-Item -Times 0 -Scope It  -ParameterFilter {$Path -eq $t_installPath}
         }
+
+        Mock Test-Path {return $false} -ParameterFilter {$Path -eq $t_installPath}
+        It "does create a folder it doesn't" {
+            Install-AutToolset -installPath $t_installPath | 
+            Assert-MockCalled New-Item -Times 1 -Scope It  -ParameterFilter {$Path -eq $t_installPath}
+        }
+        
     }
 }
 
-Describe "Install-AutToolset nuget" {
+Describe "Install-AutToolset behavior nuget" {
     InModuleScope $moduleName {
 
-        $installPath = "foo"
+        $t_installPath = "foo"
+        $t_nugetPackages = "bar"
 
         # The test folder exists
-        Mock Test-Path {return $true} -ParameterFilter { $Path -and $Path -eq $installPath }
+        Mock Test-Path {return $true} -ParameterFilter { $Path -and $Path -eq $t_installPath }
         # Nuget.exe is not there
         Mock Test-Path {return $false} -ParameterFilter { $PathType -and $PathType -eq "Leaf" }
         Mock New-Item {}
@@ -46,69 +53,87 @@ Describe "Install-AutToolset nuget" {
         Mock Invoke-Expression {} #Nuget or npm executions
 
         It "does not download nuget on default parameter" {
-            Install-AutToolset -installPath $installPath | 
+            Install-AutToolset -installPath $t_installPath | 
             Assert-MockCalled Invoke-WebRequest -Times 0 -Scope It
         }
 
+        $t_nugetPackages = "bar"
         It "does download nuget once for 1 package" {
-            Install-AutToolset -installPath $installPath -nugetPackages "bar" | 
+            Install-AutToolset -installPath $t_installPath -nugetPackages $t_nugetPackages | 
             Assert-MockCalled Invoke-WebRequest -Times 1 -Scope It
         }
 
+        $t_nugetPackages = "bar1","bar2" 
         It "does download nuget once for N packages" {
-            Install-AutToolset -installPath $installPath -nugetPackages "bar1","bar2" | 
+            Install-AutToolset -installPath $t_installPath -nugetPackages $t_nugetPackages | 
             Assert-MockCalled Invoke-WebRequest -Times 1 -Scope It
         }
 
-        It "does not invoke nuget on default parameter" {
-            Install-AutToolset -installPath $installPath | 
-            Assert-MockCalled Invoke-Expression -Times 0 -Scope It -ParameterFilter { $Command -like "$installPath\nuget*" }
-        }
-
-        It "does invoke nuget once for 1 package" {
-            Install-AutToolset -installPath $installPath -nugetPackages "bar" | 
-            Assert-MockCalled Invoke-Expression -Times 1 -Scope It -ParameterFilter { $Command -like "$installPath\nuget*" }
-        }
-
-        It "does invoke nuget N times for N packages (N=2)" {
-            Install-AutToolset -installPath $installPath -nugetPackages "bar1","bar2" | 
-            Assert-MockCalled Invoke-Expression -Times 2 -Scope It -ParameterFilter { $Command -like "$installPath\nuget*" }
-        }
-
+        $t_nugetPackages = "bar"
         # Nuget.exe is already there
         Mock Test-Path {return $true} -ParameterFilter { $PathType -and $PathType -eq "Leaf" }
         It "does not download nuget when needed but already there" {
-            Install-AutToolset -installPath $installPath -nugetPackages "bar" | 
+            Install-AutToolset -installPath $t_installPath -nugetPackages $t_nugetPackages | 
             Assert-MockCalled Invoke-WebRequest -Times 0 -Scope It
         }
+
+        $t_nugetPackages = 
+        It "does not invoke nuget on default parameter" {
+            Install-AutToolset -installPath $t_installPath | 
+            Assert-MockCalled Invoke-Expression -Times 0 -Scope It -ParameterFilter { $Command -like "$t_installPath\nuget*" }
+        }
+
+        $t_nugetPackages = "bar"
+        It "does invoke nuget once for 1 package" {
+            Install-AutToolset -installPath $t_installPath -nugetPackages $t_nugetPackages | 
+            Assert-MockCalled Invoke-Expression -Times 1 -Scope It -ParameterFilter { $Command -like "$t_installPath\nuget*" }
+        }
+
+        $t_nugetPackages = "bar1","bar2"
+        It "does invoke nuget N times for N packages (N=2)" {
+            Install-AutToolset -installPath $t_installPath -nugetPackages $t_nugetPackages  | 
+            Assert-MockCalled Invoke-Expression -Times 2 -Scope It -ParameterFilter { $Command -like "$t_installPath\nuget*" }
+        }
+
+
     }
 }
 
 Describe "Install-AutToolset npm" {
         InModuleScope $moduleName {
     
-            $installPath = "foo"
+            $t_installPath = "foo"
 
             # The test folder exists
-            Mock Test-Path {return $true} -ParameterFilter { $Path -and $Path -eq $installPath }
+            Mock Test-Path {return $true} -ParameterFilter { $Path -and $Path -eq $t_installPath }
             Mock New-Item {}
             Mock Invoke-WebRequest {} #Nuget download
             Mock Invoke-Expression {} #Nuget or npm executions
 
             It "does not invoke npm on default parameter" {
-                Install-AutToolset -installPath $installPath | 
+                Install-AutToolset -installPath $t_installPath | 
                 Assert-MockCalled Invoke-Expression -Times 0 -Scope It -ParameterFilter { $Command -like "npm*" }
             }
-    
+
+            $t_npmPackages = "bar"    
             It "does invoke npm once for 1 package" {
-                Install-AutToolset -installPath $installPath -npmPackages "bar" | 
+                Install-AutToolset -installPath $t_installPath -npmPackages $t_npmPackages | 
                 Assert-MockCalled Invoke-Expression -Times 1 -Scope It -ParameterFilter { $Command -like "npm*" }
             }
     
+            $t_npmPackages = "bar1","bar2"
             It "does invoke npm N times for N packages (N=2)" {
-                Install-AutToolset -installPath $installPath -npmPackages "bar1","bar2" | 
+                Install-AutToolset -installPath $t_installPath -npmPackages $t_npmPackages | 
                 Assert-MockCalled Invoke-Expression -Times 2 -Scope It -ParameterFilter { $Command -like "npm*" }
             }
+
+            Mock Invoke-Expression {Throw "npm: The term 'npm' is not"} -ParameterFilter { $Command -like "npm*" }
+            $t_npmPackages = "bar"    
+            It "fails if npm is not installed" {
+                {Install-AutToolset -installPath $t_installPath -npmPackages $t_npmPackages} | 
+                Should -throw "npm: The term 'npm' is not"
+            }
+            Mock Invoke-Expression {} #Nuget or npm executions
         }
 }
 
