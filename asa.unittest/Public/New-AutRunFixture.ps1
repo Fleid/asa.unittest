@@ -17,9 +17,13 @@ Function New-AutRunFixture{
 
     [CmdletBinding()]
     param (
+        [Parameter(Mandatory=$True)]
         [string]$solutionPath,
+        [Parameter(Mandatory=$True)]
         [string]$asaProjectName,
+        [Parameter(Mandatory=$True)]
         [string]$unittestFolder,
+        [Parameter(Mandatory=$True)]
         [string]$testID
     )
 

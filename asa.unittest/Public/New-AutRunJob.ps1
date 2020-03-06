@@ -17,11 +17,17 @@ Function New-AutRunJob{
 
     [CmdletBinding()]
     param (
+        [Parameter(Mandatory=$True)]
         [string]$solutionPath,
+        [Parameter(Mandatory=$True)]
         [string]$asaProjectName,
+        [Parameter(Mandatory=$True)]
         [string]$unittestFolder,
+        [Parameter(Mandatory=$True)]
         [string]$testID,
+        [Parameter(Mandatory=$True)]
         [string]$testCase,
+        [Parameter(Mandatory=$True)]
         [string]$exePath
     )
 
