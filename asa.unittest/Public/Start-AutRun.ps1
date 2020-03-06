@@ -37,8 +37,7 @@ Function Start-AutRun{
 
         [string]$solutionPath = $ENV:BUILD_SOURCESDIRECTORY, # Azure DevOps Pipelines default variable
 
-        [Parameter(Mandatory=$True)]
-        [string]$asaProjectName,
+        [string]$asaProjectName = $(Throw '-asaProjectName is required'),
 
         [string]$unittestFolder = "unittest"
     )
