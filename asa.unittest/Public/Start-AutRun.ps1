@@ -37,12 +37,23 @@ Function Start-AutRun{
 
         [string]$solutionPath = $ENV:BUILD_SOURCESDIRECTORY, # Azure DevOps Pipelines default variable
 
-        [string]$asaProjectName = $(Throw '-asaProjectName is required'),
+        [string]$asaProjectName = $(Throw "-asaProjectName is required"),
 
         [string]$unittestFolder = "unittest"
     )
 
-    BEGIN {}
+    BEGIN {
+        if (-not (Test-Path $solutionPath)) {Throw "Invalid -solutionPath"}
+        if (-not (`
+                     ($asaProjectName -match '^[a-zA-Z0-9_-]+$') `
+                -and ($asaProjectName.Length -ge 3) `
+                -and ($asaProjectName.Length -le 63) `
+        )) {Throw "Invalid -asaProjectName (3-63 alp_ha-num)"}
+
+        $exePath = "$solutionPath\$unittestFolder\2_act\Microsoft.Azure.StreamAnalytics.CICD.$asaNugetVersion\tools\sa.exe"
+
+        if (-not (Test-Path $exePath -PathType Leaf)) {Throw "Can't find sa.exe at $solutionPath\$unittestFolder\2_act\Microsoft.Azure.StreamAnalytics.CICD.$asaNugetVersion\tools\sa.exe"}
+    }
 
     PROCESS {
 
@@ -50,8 +61,6 @@ Function Start-AutRun{
         write-verbose "101 - Set Variables"
 
         $testID = (Get-Date -Format "yyyyMMddHHmmss")
-        $exePath = "$solutionPath\$unittestFolder\2_act\Microsoft.Azure.StreamAnalytics.CICD.$asaNugetVersion\tools\sa.exe"
-
         ################################################################################################################################
         # 2xx - Creating run fixture
  
