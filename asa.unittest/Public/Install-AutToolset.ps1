@@ -1,20 +1,22 @@
 <#
 .SYNOPSIS
-PowerShell script used to install the dependencies required for the main unit test script to run
+Companion script used to install the dependencies required for the main package
 
 In case of issues with PowerShell Execution Policies, see https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_scripts?view=powershell-7 
 PS: VSCode has a weird behavior on that topic, use Terminal : https://github.com/PowerShell/vscode-powershell/issues/1217
 
 .DESCRIPTION
+See documentation for more information : https://github.com/Fleid/asa.unittest
+
 This script will first download nuget.exe, the Nuget CLI tool for Windows. See https://docs.microsoft.com/en-us/nuget/install-nuget-client-tools#nugetexe-cli
 After that nuget.exe will be invoked to install the required packages from nuget.
 
 Finally the script will invoke npm to install the npm packages.
-Thess packages will be installed globally (npm install -g).
+These packages will be installed globally (npm install -g).
 If npm is not available, please download node.js. See https://nodejs.org/en/download/
 
-.PARAMETER testPath
-Path to the test folder in the fixture that will contain the dependencies (.\ASAHelloWorld.Tests\2_act)
+.PARAMETER installPath
+Path to the folder in the fixture that will contain the dependencies, usually (solutionPath\asaProjectName.Tests\2_act)
 
 .PARAMETER npmPackages
 List of npm packages to install
