@@ -33,7 +33,7 @@ Function Start-AutRun{
     [CmdletBinding()]
     param (
         [ValidateSet("2.3.0")]
-        [string]$ASAnugetVersion = "2.3.0",
+        [string]$asaNugetVersion = "2.3.0",
 
         [string]$solutionPath = $ENV:BUILD_SOURCESDIRECTORY, # Azure DevOps Pipelines default variable
 
@@ -51,7 +51,7 @@ Function Start-AutRun{
         write-verbose "101 - Set Variables"
 
         $testID = (Get-Date -Format "yyyyMMddHHmmss")
-        $exePath = "$solutionPath\$unittestFolder\2_act\Microsoft.Azure.StreamAnalytics.CICD.$ASAnugetVersion\tools\sa.exe"
+        $exePath = "$solutionPath\$unittestFolder\2_act\Microsoft.Azure.StreamAnalytics.CICD.$asaNugetVersion\tools\sa.exe"
 
         ################################################################################################################################
         # 2xx - Creating run fixture
