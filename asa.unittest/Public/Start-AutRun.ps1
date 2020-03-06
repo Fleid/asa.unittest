@@ -1,31 +1,30 @@
 <#
 .SYNOPSIS
-Powershell script used to run unit tests on an Azure Stream Analytics project
+Orchestrator script used to run unit tests on an Azure Stream Analytics project
 
 In case of issues with PowerShell Execution Policies, see https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_scripts?view=powershell-7 
-PS: VSCode has a weird behavior on that topic, use Terminal : https://github.com/PowerShell/vscode-powershell/issues/1217
+PS: VSCode has a weird behavior on that topic, use Windows Terminal instead : https://github.com/PowerShell/vscode-powershell/issues/1217
 
 .DESCRIPTION
-This script will leverage a text fixture (folder structure + filename convention) to run unit tests for a given ASA project.
+See documentation for more information : https://github.com/Fleid/asa.unittest
 
-It requires dependencies installed by a companion script Install_AutToolset.ps1
+This script leverages a text fixture (folder structure + filename convention) to run unit tests for a given ASA project.
+It requires dependencies installed by the companion script Install_AutToolset
 
-See documentation for more information.
-
-.PARAMETER ASAnugetVersion
+.PARAMETER asaNugetVersion
 Version of the Azure Stream Analytics CI/CD nuget package (Microsoft.Azure.StreamAnalytics.CICD) to be downloaded and used
 
 .PARAMETER solutionPath
-Path to the solution (folder) containing both the Azure Stream Analytics folder and the unittest folder
+Path to the solution (folder) containing both the Azure Stream Analytics folder and the Tests folder
 
 .PARAMETER asaProjectName
 Name of the Azure Stream Analytics project = name of the project folder = name of the query in that folder (.asaql) = name of the project description file (.asaproj)
 
 .PARAMETER unittestFolder
-Name of the folder containing the test fixture (folders 1_Arrange, 2_act...), usually "unittest"
+Name of the folder containing the test fixture (folders 1_arrange, 2_act, 3_assert), usually "asaProjectName.Tests"
 
 .EXAMPLE
-Start-AutRun.ps1 -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\fleide\Repos\asa.unittest" -assertPath "C:\Users\fleide\Repos\asa.unittest\unittest\3_assert"-verbose
+Start-AutRun.ps1 -solutionPath "C:\Users\fleide\Repos\asa.unittest" -asaProjectName "ASAHelloWorld" -verbose
 #>
 
 Function Start-AutRun{
@@ -39,28 +38,31 @@ Function Start-AutRun{
 
         [string]$asaProjectName = $(Throw "-asaProjectName is required"),
 
-        [string]$unittestFolder = "unittest"
+        [string]$unittestFolder
     )
 
     BEGIN {
+        ################################################################################################################################
+        write-verbose "101 - Set and check variables"
+        
         if (-not (Test-Path $solutionPath)) {Throw "Invalid -solutionPath"}
+
         if (-not (`
                      ($asaProjectName -match '^[a-zA-Z0-9_-]+$') `
                 -and ($asaProjectName.Length -ge 3) `
                 -and ($asaProjectName.Length -le 63) `
         )) {Throw "Invalid -asaProjectName (3-63 alp_ha-num)"}
 
+        $unittestFolder = "$asaProjectName.Tests"
+        if (-not (Test-Path "$unittestFolder\1_arrange")) {Throw "Can't find 1_arrange folder at $unittestFolder\1_arrange"}
+    
         $exePath = "$solutionPath\$unittestFolder\2_act\Microsoft.Azure.StreamAnalytics.CICD.$asaNugetVersion\tools\sa.exe"
-
         if (-not (Test-Path $exePath -PathType Leaf)) {Throw "Can't find sa.exe at $solutionPath\$unittestFolder\2_act\Microsoft.Azure.StreamAnalytics.CICD.$asaNugetVersion\tools\sa.exe"}
+
+        $testID = (Get-Date -Format "yyyyMMddHHmmss")
     }
 
     PROCESS {
-
-        ################################################################################################################################
-        write-verbose "101 - Set Variables"
-
-        $testID = (Get-Date -Format "yyyyMMddHHmmss")
         ################################################################################################################################
         # 2xx - Creating run fixture
  
@@ -84,15 +86,15 @@ Function Start-AutRun{
                 -exePath $exePath
         }
 
+        ## Wait for all jobs to complete and results ready to be received
         write-verbose "402 - Waiting for all jobs to end..."
 
-        ## Wait for all jobs to complete and results ready to be received
         Wait-Job * | Out-Null
 
         write-verbose "403 - Jobs done"
 
-        <#
-        ## Process the results
+        <# 
+        ## Debug ~ Process the results
         foreach($job in Get-Job)
         {
             $result = Receive-Job $job
@@ -118,6 +120,7 @@ Function Start-AutRun{
         }
 
         ################################################################################################################################
+        
         # Final result
         if ($errorCounter -gt 0) {Write-Verbose "Ending Test Run with $errorCounter errors"}
         if ($errorCounter -gt 0) {throw("Ending Test Run with $errorCounter errors")}

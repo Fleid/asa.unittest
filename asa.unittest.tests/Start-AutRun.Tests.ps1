@@ -21,6 +21,7 @@ Describe "Start-AutRun parameter asaNugetVersion" {
 
         Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_solutionPath}
         Mock Test-Path {return $true} -ParameterFilter {$path -like "*sa.exe"}
+        Mock Test-Path {return $true} -ParameterFilter {$path -like "*1_arrange"}
         Mock Get-Date {return $internalTimeStamp}
         Mock New-AutRunFixture {}
         Mock New-AutRunJob {}
@@ -93,6 +94,7 @@ Describe "Start-AutRun parameter solutionPath" {
 
         Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_solutionPath}
         Mock Test-Path {return $true} -ParameterFilter {$path -like "*sa.exe"}
+        Mock Test-Path {return $true} -ParameterFilter {$path -like "*1_arrange"}
         Mock Get-Date {return $internalTimeStamp}
         Mock New-AutRunFixture {}
         Mock New-AutRunJob {}
@@ -161,6 +163,7 @@ Describe "Start-AutRun parameter asaProjectName" {
 
         Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_solutionPath}
         Mock Test-Path {return $true} -ParameterFilter {$path -like "*sa.exe"}
+        Mock Test-Path {return $true} -ParameterFilter {$path -like "*1_arrange"}
         Mock Get-Date {return $internalTimeStamp}
         Mock New-AutRunFixture {}
         Mock New-AutRunJob {}
@@ -248,6 +251,7 @@ Describe "Start-AutRun parameter unittestFolder" {`
 
         Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_solutionPath}
         Mock Test-Path {return $true} -ParameterFilter {$path -like "*sa.exe"}
+        Mock Test-Path {return $true} -ParameterFilter {$path -like "*1_arrange"}
  
         Mock Get-Date {return $internalTimeStamp}
         Mock New-AutRunFixture {}
@@ -271,12 +275,12 @@ Describe "Start-AutRun parameter unittestFolder" {`
             Should -not -throw
         }
 
-        It "loads the default unittestFolder" {
+        It "loads the default unittestFolder (bar.Tests)" {
             Start-AutRun `
                 -asaNugetVersion $t_asaNugetVersion `
-                -asaProjectName $t_asaProjectName `
-                -unittestFolder $t_unittestFolder |
-            Assert-MockCalled New-AutRunFixture -Times 1 -Scope It -ParameterFilter { $unittestFolder -eq $t_unittestFolder}
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName |
+            Assert-MockCalled New-AutRunFixture -Times 1 -Scope It -ParameterFilter { $unittestFolder -eq "$t_asaProjectName.Tests"}
         }
         
         Mock Test-Path {return $false} -ParameterFilter {$path -like "*sa.exe"}
@@ -289,6 +293,17 @@ Describe "Start-AutRun parameter unittestFolder" {`
             Should -throw "Can't find sa.exe at"
         }
         Mock Test-Path {return $true} -ParameterFilter {$path -like "*sa.exe"}
+
+        Mock Test-Path {return $false} -ParameterFilter {$path -like "*1_arrange"}
+        It "fails if unittest doesn't lead to 1_arrange" {
+            {Start-AutRun `
+                -asaNugetVersion $t_asaNugetVersion `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder} |
+            Should -throw "Can't find 1_arrange folder at"
+        }
+        Mock Test-Path {return $true} -ParameterFilter {$path -like "*1_arrange"}
 
     }
 }
@@ -305,6 +320,7 @@ Describe "Start-AutRun behavior orchestration" {`
 
         Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_solutionPath}
         Mock Test-Path {return $true} -ParameterFilter {$path -like "*sa.exe"}
+        Mock Test-Path {return $true} -ParameterFilter {$path -like "*1_arrange"}
  
         Mock Get-Date {return $internalTimeStamp}
 
@@ -394,6 +410,7 @@ Describe "Start-AutRun behavior result processing" {`
 
         Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_solutionPath}
         Mock Test-Path {return $true} -ParameterFilter {$path -like "*sa.exe"}
+        Mock Test-Path {return $true} -ParameterFilter {$path -like "*1_arrange"}
  
         Mock Get-Date {return $internalTimeStamp}
 
