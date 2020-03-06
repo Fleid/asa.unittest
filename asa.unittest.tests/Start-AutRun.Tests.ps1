@@ -180,7 +180,7 @@ Describe "Start-AutRun parameter asaProjectName" {
                 -asaNugetVersion $t_asaNugetVersion `
                 -solutionPath $t_solutionPath `
                 -unittestFolder $t_unittestFolder} |
-            Should -throw
+            Should -throw "-asaProjectName is required"
         }
 
         $t_asaProjectName = ""
@@ -190,7 +190,7 @@ Describe "Start-AutRun parameter asaProjectName" {
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder} |
-            Should -throw
+            Should -throw "Invalid -asaProjectName (3"
         }
 
         $t_asaProjectName = " "
@@ -200,7 +200,7 @@ Describe "Start-AutRun parameter asaProjectName" {
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder} |
-            Should -throw
+            Should -throw "Invalid -asaProjectName (3"
         }
 
         $t_asaProjectName = "aa"
@@ -210,7 +210,7 @@ Describe "Start-AutRun parameter asaProjectName" {
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder} |
-            Should -throw
+            Should -throw "Invalid -asaProjectName (3"
         }
 
         $t_asaProjectName = "aaa+9"
@@ -220,7 +220,7 @@ Describe "Start-AutRun parameter asaProjectName" {
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder} |
-            Should -throw
+            Should -throw "Invalid -asaProjectName (3"
         }
 
         $t_asaProjectName = "12345678901234567890123456789012345678901234567890123456789012345678901234567890"
@@ -230,12 +230,12 @@ Describe "Start-AutRun parameter asaProjectName" {
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder} |
-            Should -throw "Invalid -asaProjectName (3-"
+            Should -throw "Invalid -asaProjectName (3"
         }
     }
 }
 
-Describe "Start-AutRun parameter unittestFolder" {
+Describe "Start-AutRun parameter unittestFolder" {`
     InModuleScope $moduleName {
 
         $t_asaNugetVersion = "2.3.0"
@@ -292,3 +292,143 @@ Describe "Start-AutRun parameter unittestFolder" {
     }
 }
 
+Describe "Start-AutRun behavior orchestration" {`
+    InModuleScope $moduleName {
+
+        $t_asaNugetVersion = "2.3.0"
+        $t_solutionPath = "C:\foo"
+        $t_asaProjectName = "bar"
+        $t_unittestFolder = "bar.Tests"
+
+        $internalTimeStamp = (Get-Date -Format "yyyyMMddHHmmss")
+
+        Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_solutionPath}
+        Mock Test-Path {return $true} -ParameterFilter {$path -like "*sa.exe"}
+ 
+        Mock Get-Date {return $internalTimeStamp}
+
+        Mock New-AutRunFixture {}
+        Mock New-AutRunJob {}
+        Mock Get-AutRunResult {}
+
+        It "runs a single New-AutRunFixture" {
+            Start-AutRun `
+                -asaNugetVersion $t_asaNugetVersion `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder |
+            Assert-MockCalled New-AutRunFixture -Times 1 -Scope It
+        }
+
+        It "doesn't run New-AutRunJob for 0 test case" {
+            Start-AutRun `
+                -asaNugetVersion $t_asaNugetVersion `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder |
+            Assert-MockCalled New-AutRunJob -Times 0 -Scope It
+        }
+
+        It "doesn't run Get-AutRunResult for 0 test case" {
+            Start-AutRun `
+                -asaNugetVersion $t_asaNugetVersion `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder |
+            Assert-MockCalled Get-AutRunResult -Times 0 -Scope It
+        }
+
+        Mock New-AutRunFixture {return @{test="001"}}
+        It "runs New-AutRunJob 1 time for 1 test case" {
+            Start-AutRun `
+                -asaNugetVersion $t_asaNugetVersion `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder |
+            Assert-MockCalled New-AutRunJob -Times 1 -Scope It
+        }
+
+        Mock New-AutRunFixture {return @(@{test="001"},@{test="002"})}
+        It "runs New-AutRunJob 2 times for 2 test cases" {
+            Start-AutRun `
+                -asaNugetVersion $t_asaNugetVersion `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder |
+            Assert-MockCalled New-AutRunJob -Times 2 -Scope It
+        }
+
+        Mock New-AutRunFixture {return @{test="001"}}
+        It "runs Get-AutRunResult 1 time for 1 test case" {
+            Start-AutRun `
+                -asaNugetVersion $t_asaNugetVersion `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder |
+            Assert-MockCalled Get-AutRunResult -Times 1 -Scope It
+        }
+
+        Mock New-AutRunFixture {return @(@{test="001"},@{test="002"})}
+        It "runs New-AutRunJob 2 times for 2 test cases" {
+            Start-AutRun `
+                -asaNugetVersion $t_asaNugetVersion `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder |
+            Assert-MockCalled Get-AutRunResult -Times 2 -Scope It
+        }
+
+    }
+}
+
+Describe "Start-AutRun behavior result processing" {`
+    InModuleScope $moduleName {
+
+        $t_asaNugetVersion = "2.3.0"
+        $t_solutionPath = "C:\foo"
+        $t_asaProjectName = "bar"
+        $t_unittestFolder = "bar.Tests"
+
+        $internalTimeStamp = (Get-Date -Format "yyyyMMddHHmmss")
+
+        Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_solutionPath}
+        Mock Test-Path {return $true} -ParameterFilter {$path -like "*sa.exe"}
+ 
+        Mock Get-Date {return $internalTimeStamp}
+
+        Mock New-AutRunFixture {return @(@{test="001"},@{test="002"})}
+        Mock New-AutRunJob {}
+        Mock Get-AutRunResult {return 0}
+
+        It "doesn't throw for 0 errors" {
+            {Start-AutRun `
+                -asaNugetVersion $t_asaNugetVersion `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder} |
+            Should -not -throw
+        }
+
+        Mock New-AutRunFixture {return @{test="002"}}
+        Mock Get-AutRunResult {return 1}
+        It "does throw for 1 errors" {
+            {Start-AutRun `
+                -asaNugetVersion $t_asaNugetVersion `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder} |
+            Should -throw "Ending Test Run with 1 errors"
+        }
+
+        Mock New-AutRunFixture {return @(@{test="001"},@{test="002"})}
+        Mock Get-AutRunResult {return 1}
+        It "does throw for 2 errors" {
+            {Start-AutRun `
+                -asaNugetVersion $t_asaNugetVersion `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder} |
+            Should -throw "Ending Test Run with 2 errors"
+        }
+    }
+}
