@@ -52,7 +52,7 @@ Describe "Start-AutRun parameter asaNugetVersion" {
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder} |
-            Should -throw
+            Should -throw "Cannot validate argument on parameter 'asaNugetVersion'"
         }
 
         $t_asaNugetVersion = ""
@@ -62,9 +62,10 @@ Describe "Start-AutRun parameter asaNugetVersion" {
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder} |
-            Should -throw
+            Should -throw "Cannot validate argument on parameter 'asaNugetVersion'"
         }
 
+        $t_asaNugetVersion = "2.3.0"
         Mock Test-Path {return $false} -ParameterFilter {$path -like "*sa.exe"}
         It "fails if asaNugetVersion doesn't lead to sa.exe" {
             {Start-AutRun `
@@ -72,7 +73,7 @@ Describe "Start-AutRun parameter asaNugetVersion" {
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder} |
-            Should -throw
+            Should -throw "Can't find sa.exe at"
         }
         Mock Test-Path {return $true} -ParameterFilter {$path -like "*sa.exe"}
 
@@ -129,7 +130,7 @@ Describe "Start-AutRun parameter solutionPath" {
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder} |
-            Should -throw
+            Should -throw "Invalid -solutionPath"
         }
         Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_solutionPath}
 
@@ -140,7 +141,7 @@ Describe "Start-AutRun parameter solutionPath" {
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder} |
-            Should -throw
+            Should -throw  "Can't find sa.exe"
         }
         Mock Test-Path {return $true} -ParameterFilter {$path -like "*sa.exe"}
 
@@ -229,7 +230,7 @@ Describe "Start-AutRun parameter asaProjectName" {
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder} |
-            Should -throw
+            Should -throw "Invalid -asaProjectName (3-"
         }
     }
 }
@@ -284,7 +285,7 @@ Describe "Start-AutRun parameter unittestFolder" {
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder} |
-            Should -throw
+            Should -throw "Can't find sa.exe at"
         }
         Mock Test-Path {return $true} -ParameterFilter {$path -like "*sa.exe"}
 
