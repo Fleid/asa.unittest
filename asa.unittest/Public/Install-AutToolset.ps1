@@ -32,8 +32,7 @@ Function Install-AutToolset{
 
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory=$True)]
-        [string]$installPath,
+        [string]$installPath = $(Throw "-asaProjectName is required"),
         [string[]]$npmPackages, # = @("jsondiffpatch"),
         [string[]]$nugetPackages # = @("Microsoft.Azure.StreamAnalytics.CICD")
     )
