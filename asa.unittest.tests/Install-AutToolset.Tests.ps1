@@ -6,28 +6,28 @@ $moduleName = Split-Path $moduleRoot -Leaf #Extract the module name from above
 Import-Module (Join-Path $moduleRoot "$moduleName.psm1") -force
 
 #############################################################################################################
-
+# Invoke-Pester .\Install-AutToolset.Tests.ps1 -CodeCoverage .\..\asa.unittest\public\Install-AutToolset.ps1
 
 Describe "Install-AutToolset beginning" { 
     InModuleScope $moduleName {
 
         $installPath = "foo"
 
-        Mock Test-Path {return $true}
+        Mock Test-Path {return $true} -ParameterFilter {$Path -eq $installPath}
+        Mock Test-Path {return $true} -ParameterFilter { $PathType -and $PathType -eq "Leaf" }
         Mock New-Item {}
         Mock Invoke-WebRequest {}
         Mock Invoke-Expression {}
 
         It "doesn't create a folder" {
             Install-AutToolset -installPath $installPath | 
-            Assert-MockCalled New-Item -Times 0 -Scope It
+            Assert-MockCalled New-Item -Times 0 -Scope It  -ParameterFilter {$Path -eq $installPath}
         }
 
-        Mock Test-Path {return $false}
-
+        Mock Test-Path {return $false} -ParameterFilter {$Path -eq $installPath}
         It "does create a folder" {
             Install-AutToolset -installPath $installPath | 
-            Assert-MockCalled New-Item -Times 1 -Scope It
+            Assert-MockCalled New-Item -Times 1 -Scope It  -ParameterFilter {$Path -eq $installPath}
         }
     }
 }
@@ -75,7 +75,7 @@ Describe "Install-AutToolset nuget" {
             Assert-MockCalled Invoke-Expression -Times 2 -Scope It -ParameterFilter { $Command -like "$installPath\nuget*" }
         }
 
-        # Nuget.exe is already not there
+        # Nuget.exe is already there
         Mock Test-Path {return $true} -ParameterFilter { $PathType -and $PathType -eq "Leaf" }
         It "does not download nuget when needed but already there" {
             Install-AutToolset -installPath $installPath -nugetPackages "bar" | 
