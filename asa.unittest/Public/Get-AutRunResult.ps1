@@ -1,32 +1,38 @@
 <#
 .SYNOPSIS
-Powershell script used to...
+Controller script used to generate results of a test run
 
 .DESCRIPTION
-This script will ...
-See documentation for more information.
+See documentation for more information : https://github.com/Fleid/asa.unittest
 
 .PARAMETER solutionPath
 Path to the solution (folder) containing both the Azure Stream Analytics folder and the unittest folder
 
+.PARAMETER asaProjectName
+Name of the Azure Stream Analytics project = name of the project folder = name of the query in that folder (.asaql) = name of the project description file (.asaproj)
+
+.PARAMETER unittestFolder
+Name of the folder containing the test fixture (folders 1_arrange, 2_act, 3_assert), usually "asaProjectName.Tests"
+
+.PARAMETER testId
+Timestamp of the test run (yyyyMMddHHmmss), will be used in the folder structure
+
+.PARAMETER testCase
+Current test to be run (001, 002, 003...)
+
 .EXAMPLE
-Get-AutRunResult -testDetails $testDetails 
+Get-AutRunResult -solutionPath $solutionPath -asaProjectName $asaProjectName -unittestFolder $unittestFolder -testID $testID -testCase $testCase
 #>
 
 Function Get-AutRunResult{
 
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory=$True)]
-        [string]$solutionPath,
-        [Parameter(Mandatory=$True)]
-        [string]$asaProjectName,
-        [Parameter(Mandatory=$True)]
-        [string]$unittestFolder,
-        [Parameter(Mandatory=$True)]
-        [string]$testID,
-        [Parameter(Mandatory=$True)]
-        [string]$testCase
+        [string]$solutionPath = $(Throw "-solutionPath is required"),
+        [string]$asaProjectName = $(Throw "-asaProjectName is required"),
+        [string]$unittestFolder = $(Throw "-unittestFolder is required"),
+        [string]$testID = $(Throw "-testID is required"),
+        [string]$testCase = $(Throw "-testCase is required")
     )
 
     BEGIN {}
