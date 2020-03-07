@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-PowerShell tool used to create a new XML asaproj file from a JSON one. If one already exists it will be overwritten.
+Controller script used to create a new XML asaproj file from a JSON one. If one already exists it will be overwritten.
 
 .DESCRIPTION
 The tool used to run tests in unittest_prun (sa.exe) requires a manifest file (.asaproj) that describes the content of the asa project.
@@ -10,6 +10,8 @@ The XML ones are the one expected by sa.exe.
 New-AUTAsaparoj will take a JSON asaproj file (generated previously by Visual Studio Code), and create the equivalent XML file.
 If one already exists it will be overwritten.
 Not every item will be ported, only those required during a test run will (asaql, jobconfig, local mock inputs).
+
+See documentation for more information : https://github.com/Fleid/asa.unittest
 
 .PARAMETER sourceAsaproj
 PowerShell object converted from an asaproj.json. The easiest way to generate this is to use `(Get-Content asaproj.json | ConvertFrom-JSON)`
@@ -22,7 +24,7 @@ function New-AutAsaprojXML{
 
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory=$True,ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipeline=$true)]
         [PSCustomObject]$sourceAsaproj
     )
 
