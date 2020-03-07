@@ -25,7 +25,7 @@ Current test to be run (001, 002, 003...)
 Path to sa.exe, usually $exePath = "$solutionPath\$unittestFolder\2_act\Microsoft.Azure.StreamAnalytics.CICD.$asaNugetVersion\tools\sa.exe"
 
 .EXAMPLE
-New-AutRunFixture -solutionPath $solutionPath -asaProjectName $asaProjectName -unittestFolder $unittestFolder -testID $testID -testCase $testCase -exePath $exePath
+New-AutRunJob -solutionPath $solutionPath -asaProjectName $asaProjectName -unittestFolder $unittestFolder -testID $testID -testCase $testCase -exePath $exePath
 #>
 
 Function New-AutRunJob{
