@@ -54,7 +54,7 @@ Function Start-AutRun{
         )) {Throw "Invalid -asaProjectName (3-63 alp_ha-num)"}
 
         $unittestFolder = "$asaProjectName.Tests"
-        if (-not (Test-Path "$unittestFolder\1_arrange")) {Throw "Can't find 1_arrange folder at $unittestFolder\1_arrange"}
+        if (-not (Test-Path "$solutionPath\$unittestFolder\1_arrange")) {Throw "Can't find 1_arrange folder at $solutionPath\$unittestFolder\1_arrange"}
     
         $exePath = "$solutionPath\$unittestFolder\2_act\Microsoft.Azure.StreamAnalytics.CICD.$asaNugetVersion\tools\sa.exe"
         if (-not (Test-Path $exePath -PathType Leaf)) {Throw "Can't find sa.exe at $solutionPath\$unittestFolder\2_act\Microsoft.Azure.StreamAnalytics.CICD.$asaNugetVersion\tools\sa.exe"}
