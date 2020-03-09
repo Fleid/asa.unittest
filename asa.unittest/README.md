@@ -38,7 +38,7 @@ $ASAnugetVersion = "2.3.0"
 $solutionPath = "C:\Users\fleide\Repos\asa.unittest\examples"
 $asaProjectName = "ASAHelloWorld"
 $unittestFolder = "ASAHelloWorld.Tests"
-
+$testID = (Get-Date -Format "yyyyMMddHHmmss")
 ```
 
 ## Testing

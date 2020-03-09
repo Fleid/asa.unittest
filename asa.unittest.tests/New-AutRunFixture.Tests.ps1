@@ -8,28 +8,32 @@ Import-Module (Join-Path $moduleRoot "$moduleName.psm1") -force
 #############################################################################################################
 
 
-Describe "New-AutRunFixture Nominal" {
+Describe "New-AutRunFixture parameters"  {
     InModuleScope $moduleName {
 
-        $solutionPath = "foo"
+        $solutionPath = "TestDrive:\"
         $asaProjectName = "bar"
         $unittestFolder = "bar.Tests"
-        $testID = "xxx"
+        $testID = "yyyymmddhhmmss"
 
         #Mock Test-Path {return $true}
-        Mock Get-ChildItem {}
-        Mock New-Item {} -ParameterFilter { $ItemType -and $ItemType -eq "Directory" }
+        Mock Get-ChildItem {return (Get-ChildItem -Path $solutionPath -File)}
+        Mock Get-AutFieldFromFileInfo {}
+        Mock New-Item {} #-ParameterFilter { $ItemType -and $ItemType -eq "Directory" }
         Mock Copy-Item {}
         Mock Test-Path {return $true}
         Mock Out-File {}
 
-        It "runs" {
+        It "runs with a valid set of parameters" {
             New-AutRunFixture `
                 -solutionPath $solutionPath `
                 -asaProjectName $asaProjectName `
                 -unittestFolder $unittestFolder `
                 -testID $testID | Out-Null | 
-            Assert-MockCalled New-Item -Times 0 -Scope It
+            Assert-MockCalled Get-AutFieldFromFileInfo -Times 1 -Scope It
         }
+
+        It "doesn't run without a solutionPath" {}
+
     }
 }
