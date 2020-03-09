@@ -63,7 +63,7 @@ Import-Module (Join-Path $moduleRoot "$moduleName.psm1") -force
 ### Running a test
 
 ```PowerShell
-cd asa.unittest.test
+Set-Location C:\Users\fleide\Repos\asa.unittest\asa.unittest.tests
 Invoke-Pester .\MyScript.Tests.ps1
 Invoke-Pester
 ```
