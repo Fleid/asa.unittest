@@ -11,26 +11,34 @@ Import-Module (Join-Path $moduleRoot "$moduleName.psm1") -force
 Describe "New-AutRunFixture parameters"  {
     InModuleScope $moduleName {
 
-        $solutionPath = "TestDrive:\"
+        $solutionPath = "TestDrive:\foo"
         $asaProjectName = "bar"
         $unittestFolder = "bar.Tests"
         $testID = "yyyymmddhhmmss"
 
+        $asaProjectPath = "$solutionPath\$asaProjectName"
+        $arrangePath = "$solutionPath\$unittestFolder\1_arrange"
+        New-Item -Path $asaProjectPath -ItemType Directory
+        New-Item -Path $arrangePath -ItemType Directory
+        New-item -Path $arrangePath -ItemType File -Name "001~Input~hwsource~nominal.csv"
+        New-item -Path $arrangePath -ItemType File -Name "001~Output~outputall.json"
+
+
         #Mock Test-Path {return $true}
-        Mock Get-ChildItem {return (Get-ChildItem -Path $solutionPath -File)}
-        Mock Get-AutFieldFromFileInfo {}
         Mock New-Item {} #-ParameterFilter { $ItemType -and $ItemType -eq "Directory" }
         Mock Copy-Item {}
         Mock Test-Path {return $true}
+        Mock New-AUTAsaprojXML {}
+        Mock Get-Content {return (@{FilePath="foobar"} | ConvertTo-Json)}
         Mock Out-File {}
 
         It "runs with a valid set of parameters" {
-            New-AutRunFixture `
+           { New-AutRunFixture `
                 -solutionPath $solutionPath `
                 -asaProjectName $asaProjectName `
                 -unittestFolder $unittestFolder `
-                -testID $testID | Out-Null | 
-            Assert-MockCalled Get-AutFieldFromFileInfo -Times 1 -Scope It
+                -testID $testID }|
+            Should -not -throw
         }
 
         It "doesn't run without a solutionPath" {}

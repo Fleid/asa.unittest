@@ -42,13 +42,13 @@ Function New-AutRunFixture{
         $testDetails = (Get-ChildItem -Path $arrangePath -File) | 
             Get-AutFieldFromFileInfo -s "~" -n 4 |
             Select-Object `
-                @{Name = "FullName"; Expression = {$_.Name}}, `
-                @{Name = "FilePath"; Expression = {$_.Fullname}}, `
-                @{Name = "Basename"; Expression = {$_.Basename}}, `
-                @{Name = "TestCase"; Expression = {$_.Basename1}}, `
-                @{Name = "FileType"; Expression = {$_.Basename2}}, `
-                @{Name = "SourceName"; Expression = {$_.Basename3}}, `
-                @{Name = "TestLabel"; Expression = {$_.Basename4}}, `
+                FullName, `
+                FilePath, `
+                Basename, `
+                @{Name = "TestCase"; Expression = {$_.Basename0}}, `
+                @{Name = "FileType"; Expression = {$_.Basename1}}, `
+                @{Name = "SourceName"; Expression = {$_.Basename2}}, `
+                @{Name = "TestLabel"; Expression = {$_.Basename3}}
 
         write-verbose "201 - Create and populate test folders"
 
@@ -76,8 +76,7 @@ Function New-AutRunFixture{
         $testFolders | 
             ForEach-Object -Process {
                 if (-not(Test-Path "$($_.Path)\$asaProjectName\$asaProjectName.asaproj" -PathType leaf)) {
-                    $exe = "$actPath\New-AUTAsaproj.ps1"
-                    & $exe -asaProjectName $asaProjectName -solutionPath $_.Path
+                    New-AUTAsaprojXML -asaProjectName $asaProjectName -solutionPath $_.Path
                 }
             }
 
