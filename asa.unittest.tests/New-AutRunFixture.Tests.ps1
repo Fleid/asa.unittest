@@ -17,7 +17,7 @@ Describe "New-AutRunFixture nominal"  {
         $t_testID = "yyyymmddhhmmss"
 
         Mock Get-ChildItem {return 1}
-        Mock Get-AutFieldFromFileInfo {return @(@{Basename0="003";FilePath="foobar"},@{Basename0="001";FilePath="foobar"},@{Basename0="001";FilePath="foobar"},@{Basename0="002";FilePath="foobar"})}
+        Mock Get-AutFieldFromFileInfo {return @(@{Basename0="003";FilePath="foobar";Basename1="Input";FullName="fb"},@{Basename0="001";FilePath="foobar1";Basename1="Input";FullName="fb"},@{Basename0="001";FilePath="foobar2"},@{Basename0="002";FilePath="foobar"})}
         Mock New-Item {} 
         Mock Copy-Item {}
         Mock Test-Path {return $true}
@@ -67,10 +67,9 @@ Describe "New-AutRunFixture nominal"  {
             Assert-MockCalled New-Item -Times 1 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\002\$t_asaProjectName\Inputs\")}
             Assert-MockCalled New-Item -Times 1 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\003\$t_asaProjectName\Inputs\")}
             Assert-MockCalled New-Item -Times 3 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\00?\$t_asaProjectName\Inputs\")}
-            
         }
 
-        It "copies ASA files in each test case folders" {
+        It "copies ASA config files in each test case folders" {
             New-AutRunFixture `
                  -solutionPath $t_solutionPath `
                  -asaProjectName $t_asaProjectName `
@@ -90,6 +89,49 @@ Describe "New-AutRunFixture nominal"  {
             
             Assert-MockCalled New-AUTAsaprojXML -Times 3 -Exactly -Scope It            
         }
+
+        Mock Test-Path {return $true} -ParameterFilter {$Path -like "*.asaproj"}
+        It "doesn't call New-AUTAsaprojXML unnecessarily" {
+            New-AutRunFixture `
+                 -solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 -testID $t_testID
+            
+            Assert-MockCalled New-AUTAsaprojXML -Times 0 -Exactly -Scope It            
+        }
+        Mock Test-Path {return $true}
+
+        It "copies ASA mock input files in each test case folders" {
+            New-AutRunFixture `
+                 -solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 -testID $t_testID
+            
+            Assert-MockCalled Copy-Item -Times 3 -Exactly -Scope It -ParameterFilter {$Path -like "*Local*.json"}            
+        }
+
+        It "copies test files from 1_arrange in each test case folders" {
+            New-AutRunFixture `
+                 -solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 -testID $t_testID
+            
+            Assert-MockCalled Copy-Item -Times 4 -Exactly -Scope It -ParameterFilter {$Path -like "foobar*"}            
+        }
+
+        It "edit the ASA conf file for each input files" {
+            New-AutRunFixture `
+                 -solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 -testID $t_testID
+            
+            Assert-MockCalled Out-File -Times 2 -Exactly -Scope It   
+        }
+
     }
 }
 
@@ -101,15 +143,25 @@ Describe "New-AutRunFixture empty folders"  {
         $t_unittestFolder = "bar.Tests"
         $t_testID = "yyyymmddhhmmss"
 
-        Mock Get-ChildItem {return 1}
-        Mock Get-AutFieldFromFileInfo {return @(@{Basename0="003";FilePath="foobar"},@{Basename0="001";FilePath="foobar"},@{Basename0="001";FilePath="foobar"},@{Basename0="002";FilePath="foobar"})}
+        Mock Test-Path {return $true}      
+
+        Mock Get-ChildItem {}
+        Mock Get-AutFieldFromFileInfo {}
+
         Mock New-Item {} 
         Mock Copy-Item {}
-        Mock Test-Path {return $true}
         Mock New-AUTAsaprojXML {}
         Mock Get-Content {return (@{FilePath="foobar"} | ConvertTo-Json)}
         Mock Out-File {}
 
+        It "provides an empty output on an empty folder" {
+            New-AutRunFixture `
+                 -solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 -testID $t_testID |
+             Should -be @()
+         }
     }
 }
 
