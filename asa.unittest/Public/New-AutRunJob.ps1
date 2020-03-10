@@ -40,11 +40,16 @@ Function New-AutRunJob{
         [string]$exePath = $(Throw "-exePath is required")
     )
 
-    BEGIN {}
+    BEGIN {
 
-    PROCESS {
+        if (-not (Test-Path -Path $exePath -PathType Leaf)) {throw "No file found at $exePath"}
 
         $testPath = "$solutionPath\$unittestFolder\3_assert\$testID"
+        if (-not (Test-Path -Path $testPath)) {throw "$testPath is not a valid path"}
+
+    }
+
+    PROCESS {
 
         Start-Job -ArgumentList $exePath,$testPath,$testCase,$asaProjectName -ScriptBlock{
             param($exePath,$testPath,$testCase,$asaProjectName)
