@@ -6,6 +6,7 @@ $moduleName = Split-Path $moduleRoot -Leaf #Extract the module name from above
 Import-Module (Join-Path $moduleRoot "$moduleName.psm1") -force
 
 #############################################################################################################
+# Invoke-Pester .\New-AutRunFixture.Tests.ps1 -CodeCoverage .\..\asa.unittest\public\New-AutRunFixture.ps1
 
 
 Describe "New-AutRunFixture nominal"  {
