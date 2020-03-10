@@ -34,7 +34,7 @@ Describe "Start-AutRun parameter asaNugetVersion" {
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder |
-            Assert-MockCalled New-AutRunFixture -Times 1 -Scope It
+            Assert-MockCalled New-AutRunFixture -Times 1 -Exactly -Scope It
         }
 
         Mock New-AutRunFixture {return @{test="001"}}
@@ -43,7 +43,7 @@ Describe "Start-AutRun parameter asaNugetVersion" {
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder |
-            Assert-MockCalled New-AutRunJob -Times 1 -Scope It -ParameterFilter { $exePath -like "*$t_asaNugetVersion*"}
+            Assert-MockCalled New-AutRunJob -Times 1 -Exactly -Scope It -ParameterFilter { $exePath -like "*$t_asaNugetVersion*"}
         }
         Mock New-AutRunFixture {}
 
@@ -106,7 +106,7 @@ Describe "Start-AutRun parameter solutionPath" {
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder |
-            Assert-MockCalled New-AutRunFixture -Times 1 -Scope It
+            Assert-MockCalled New-AutRunFixture -Times 1 -Exactly -Scope It
         }
 
         $ENV:BUILD_SOURCESDIRECTORY = $null
@@ -124,7 +124,7 @@ Describe "Start-AutRun parameter solutionPath" {
                 -asaNugetVersion $t_asaNugetVersion `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder |
-            Assert-MockCalled New-AutRunFixture -Times 1 -Scope It -ParameterFilter { $solutionPath -eq $t_solutionPath}
+            Assert-MockCalled New-AutRunFixture -Times 1 -Exactly -Scope It -ParameterFilter { $solutionPath -eq $t_solutionPath}
         }
         
         Mock Test-Path {return $false} -ParameterFilter {$path -eq $t_solutionPath}
@@ -177,7 +177,7 @@ Describe "Start-AutRun parameter asaProjectName" {
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder |
-            Assert-MockCalled New-AutRunFixture -Times 1 -Scope It
+            Assert-MockCalled New-AutRunFixture -Times 1 -Exactly -Scope It
         }
 
         It "fails without a asaProjectName" {
@@ -265,7 +265,7 @@ Describe "Start-AutRun parameter unittestFolder" {`
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder |
-            Assert-MockCalled New-AutRunFixture -Times 1 -Scope It
+            Assert-MockCalled New-AutRunFixture -Times 1 -Exactly -Scope It
         }
 
         It "runs without a unittestFolder" {
@@ -281,7 +281,7 @@ Describe "Start-AutRun parameter unittestFolder" {`
                 -asaNugetVersion $t_asaNugetVersion `
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName |
-            Assert-MockCalled New-AutRunFixture -Times 1 -Scope It -ParameterFilter { $unittestFolder -eq "$t_asaProjectName.Tests"}
+            Assert-MockCalled New-AutRunFixture -Times 1 -Exactly -Scope It -ParameterFilter { $unittestFolder -eq "$t_asaProjectName.Tests"}
         }
         
         Mock Test-Path {return $false} -ParameterFilter {$path -like "*sa.exe"}
@@ -335,7 +335,7 @@ Describe "Start-AutRun behavior orchestration" {`
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder |
-            Assert-MockCalled New-AutRunFixture -Times 1 -Scope It
+            Assert-MockCalled New-AutRunFixture -Times 1 -Exactly -Scope It
         }
 
         It "doesn't run New-AutRunJob for 0 test case" {
@@ -344,7 +344,7 @@ Describe "Start-AutRun behavior orchestration" {`
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder |
-            Assert-MockCalled New-AutRunJob -Times 0 -Scope It
+            Assert-MockCalled New-AutRunJob -Times 0 -Exactly -Scope It
         }
 
         It "doesn't run Get-AutRunResult for 0 test case" {
@@ -353,7 +353,7 @@ Describe "Start-AutRun behavior orchestration" {`
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder |
-            Assert-MockCalled Get-AutRunResult -Times 0 -Scope It
+            Assert-MockCalled Get-AutRunResult -Times 0 -Exactly -Scope It
         }
 
         Mock New-AutRunFixture {return @{test="001"}}
@@ -363,7 +363,7 @@ Describe "Start-AutRun behavior orchestration" {`
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder |
-            Assert-MockCalled New-AutRunJob -Times 1 -Scope It
+            Assert-MockCalled New-AutRunJob -Times 1 -Exactly -Scope It
         }
 
         Mock New-AutRunFixture {return @(@{test="001"},@{test="002"})}
@@ -373,7 +373,7 @@ Describe "Start-AutRun behavior orchestration" {`
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder |
-            Assert-MockCalled New-AutRunJob -Times 2 -Scope It
+            Assert-MockCalled New-AutRunJob -Times 2 -Exactly -Scope It
         }
 
         Mock New-AutRunFixture {return @{test="001"}}
@@ -383,7 +383,7 @@ Describe "Start-AutRun behavior orchestration" {`
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder |
-            Assert-MockCalled Get-AutRunResult -Times 1 -Scope It
+            Assert-MockCalled Get-AutRunResult -Times 1 -Exactly -Scope It
         }
 
         Mock New-AutRunFixture {return @(@{test="001"},@{test="002"})}
@@ -393,7 +393,7 @@ Describe "Start-AutRun behavior orchestration" {`
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder |
-            Assert-MockCalled Get-AutRunResult -Times 2 -Scope It
+            Assert-MockCalled Get-AutRunResult -Times 2 -Exactly -Scope It
         }
 
     }

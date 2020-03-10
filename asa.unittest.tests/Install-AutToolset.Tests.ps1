@@ -26,13 +26,13 @@ Describe "Install-AutToolset paramater installPath" {
 
         It "doesn't create a folder if it exists" {
             Install-AutToolset -installPath $t_installPath | 
-            Assert-MockCalled New-Item -Times 0 -Scope It  -ParameterFilter {$Path -eq $t_installPath}
+            Assert-MockCalled New-Item -Times 0 -Exactly -Scope It  -ParameterFilter {$Path -eq $t_installPath}
         }
 
         Mock Test-Path {return $false} -ParameterFilter {$Path -eq $t_installPath}
         It "does create a folder it doesn't" {
             Install-AutToolset -installPath $t_installPath | 
-            Assert-MockCalled New-Item -Times 1 -Scope It  -ParameterFilter {$Path -eq $t_installPath}
+            Assert-MockCalled New-Item -Times 1 -Exactly -Scope It  -ParameterFilter {$Path -eq $t_installPath}
         }
         
     }
@@ -54,19 +54,19 @@ Describe "Install-AutToolset behavior nuget" {
 
         It "does not download nuget on default parameter" {
             Install-AutToolset -installPath $t_installPath | 
-            Assert-MockCalled Invoke-WebRequest -Times 0 -Scope It
+            Assert-MockCalled Invoke-WebRequest -Times 0 -Exactly -Scope It
         }
 
         $t_nugetPackages = "bar"
         It "does download nuget once for 1 package" {
             Install-AutToolset -installPath $t_installPath -nugetPackages $t_nugetPackages | 
-            Assert-MockCalled Invoke-WebRequest -Times 1 -Scope It
+            Assert-MockCalled Invoke-WebRequest -Times 1 -Exactly -Scope It
         }
 
         $t_nugetPackages = "bar1","bar2" 
         It "does download nuget once for N packages" {
             Install-AutToolset -installPath $t_installPath -nugetPackages $t_nugetPackages | 
-            Assert-MockCalled Invoke-WebRequest -Times 1 -Scope It
+            Assert-MockCalled Invoke-WebRequest -Times 1 -Exactly -Scope It
         }
 
         $t_nugetPackages = "bar"
@@ -74,25 +74,25 @@ Describe "Install-AutToolset behavior nuget" {
         Mock Test-Path {return $true} -ParameterFilter { $PathType -and $PathType -eq "Leaf" }
         It "does not download nuget when needed but already there" {
             Install-AutToolset -installPath $t_installPath -nugetPackages $t_nugetPackages | 
-            Assert-MockCalled Invoke-WebRequest -Times 0 -Scope It
+            Assert-MockCalled Invoke-WebRequest -Times 0 -Exactly -Scope It
         }
 
         $t_nugetPackages = 
         It "does not invoke nuget on default parameter" {
             Install-AutToolset -installPath $t_installPath | 
-            Assert-MockCalled Invoke-Expression -Times 0 -Scope It -ParameterFilter { $Command -like "$t_installPath\nuget*" }
+            Assert-MockCalled Invoke-Expression -Times 0 -Exactly -Scope It -ParameterFilter { $Command -like "$t_installPath\nuget*" }
         }
 
         $t_nugetPackages = "bar"
         It "does invoke nuget once for 1 package" {
             Install-AutToolset -installPath $t_installPath -nugetPackages $t_nugetPackages | 
-            Assert-MockCalled Invoke-Expression -Times 1 -Scope It -ParameterFilter { $Command -like "$t_installPath\nuget*" }
+            Assert-MockCalled Invoke-Expression -Times 1 -Exactly -Scope It -ParameterFilter { $Command -like "$t_installPath\nuget*" }
         }
 
         $t_nugetPackages = "bar1","bar2"
         It "does invoke nuget N times for N packages (N=2)" {
             Install-AutToolset -installPath $t_installPath -nugetPackages $t_nugetPackages  | 
-            Assert-MockCalled Invoke-Expression -Times 2 -Scope It -ParameterFilter { $Command -like "$t_installPath\nuget*" }
+            Assert-MockCalled Invoke-Expression -Times 2 -Exactly -Scope It -ParameterFilter { $Command -like "$t_installPath\nuget*" }
         }
 
 
@@ -112,19 +112,19 @@ Describe "Install-AutToolset npm" {
 
             It "does not invoke npm on default parameter" {
                 Install-AutToolset -installPath $t_installPath | 
-                Assert-MockCalled Invoke-Expression -Times 0 -Scope It -ParameterFilter { $Command -like "npm*" }
+                Assert-MockCalled Invoke-Expression -Times 0 -Exactly -Scope It -ParameterFilter { $Command -like "npm*" }
             }
 
             $t_npmPackages = "bar"    
             It "does invoke npm once for 1 package" {
                 Install-AutToolset -installPath $t_installPath -npmPackages $t_npmPackages | 
-                Assert-MockCalled Invoke-Expression -Times 1 -Scope It -ParameterFilter { $Command -like "npm*" }
+                Assert-MockCalled Invoke-Expression -Times 1 -Exactly -Scope It -ParameterFilter { $Command -like "npm*" }
             }
     
             $t_npmPackages = "bar1","bar2"
             It "does invoke npm N times for N packages (N=2)" {
                 Install-AutToolset -installPath $t_installPath -npmPackages $t_npmPackages | 
-                Assert-MockCalled Invoke-Expression -Times 2 -Scope It -ParameterFilter { $Command -like "npm*" }
+                Assert-MockCalled Invoke-Expression -Times 2 -Exactly -Scope It -ParameterFilter { $Command -like "npm*" }
             }
 
             Mock Invoke-Expression {Throw "npm: The term 'npm' is not"} -ParameterFilter { $Command -like "npm*" }
@@ -152,12 +152,12 @@ Describe "Install-AutToolset nuget + npm" {
 
         It "does invoke nuget for nuget + npm" {
             Install-AutToolset -installPath $installPath -nugetPackages "bar1","bar2" -npmPackages "bar1","bar2" | 
-            Assert-MockCalled Invoke-Expression -Times 2 -Scope It -ParameterFilter { $Command -like "$installPath\nuget*" }
+            Assert-MockCalled Invoke-Expression -Times 2 -Exactly -Scope It -ParameterFilter { $Command -like "$installPath\nuget*" }
         }
 
         It "does invoke npm for nuget + npm" {
             Install-AutToolset -installPath $installPath -nugetPackages "bar1","bar2" -npmPackages "bar1","bar2" | 
-            Assert-MockCalled Invoke-Expression -Times 2 -Scope It -ParameterFilter { $Command -like "npm*" }
+            Assert-MockCalled Invoke-Expression -Times 2 -Exactly -Scope It -ParameterFilter { $Command -like "npm*" }
         }
 
     }

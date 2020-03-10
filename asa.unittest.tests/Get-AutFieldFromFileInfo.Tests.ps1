@@ -6,6 +6,8 @@ $moduleName = Split-Path $moduleRoot -Leaf #Extract the module name from above
 Import-Module (Join-Path $moduleRoot "$moduleName.psm1") -force
 
 #############################################################################################################
+# Invoke-Pester .\Get-AutFieldFromFileInfo.Tests.ps1 -CodeCoverage .\..\asa.unittest\public\Get-AutFieldFromFileInfo.ps1
+
 
 Describe "Get-AutFieldFromFileInfo parameters"  {
     InModuleScope $moduleName {
@@ -17,12 +19,12 @@ Describe "Get-AutFieldFromFileInfo parameters"  {
         }
         
 
-        $testPath = "TestDrive:\users\fleide\Repos\asa.unittest\examples\ASAHelloWorld.Tests\1_arrange"
-        New-Item -Path $testPath -ItemType Directory
-        New-item -Path $testPath -ItemType File -Name "001~Input~hwsource~nominal.csv"
-        New-item -Path $testPath -ItemType File -Name "001~Output~outputall.json"
+        $t_testPath = "TestDrive:\users\fleide\Repos\asa.unittest\examples\ASAHelloWorld.Tests\1_arrange"
+        New-Item -Path $t_testPath -ItemType Directory
+        New-item -Path $t_testPath -ItemType File -Name "001~Input~hwsource~nominal.csv"
+        New-item -Path $t_testPath -ItemType File -Name "001~Output~outputall.json"
 
-        $t_thisFileInfo = (Get-ChildItem -Path $testPath -File)
+        $t_thisFileInfo = (Get-ChildItem -Path $t_testPath -File)
         $t_separatorOfFields = "~"
         $t_numberOfFields = 4
 

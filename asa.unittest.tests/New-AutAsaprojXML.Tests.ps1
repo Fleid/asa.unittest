@@ -6,6 +6,8 @@ $moduleName = Split-Path $moduleRoot -Leaf #Extract the module name from above
 Import-Module (Join-Path $moduleRoot "$moduleName.psm1") -force
 
 #############################################################################################################
+# Invoke-Pester .\New-AutAsaprojXML.Tests.ps1 -CodeCoverage .\..\asa.unittest\public\New-AutAsaprojXML.ps1
+
 
 Describe "New-AutAsaprojXML Nominal" {
 
