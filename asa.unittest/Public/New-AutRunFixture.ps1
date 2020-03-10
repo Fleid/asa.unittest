@@ -35,13 +35,13 @@ Function New-AutRunFixture{
         if (-not (Test-Path($solutionPath))) {throw "$solutionPath is not a valid path"}
 
         $asaProjectPath = "$solutionPath\$asaProjectName"
-        if (-not (Test-Path($asaProjectPath))) {throw "$solutionPath\$asaProjectName is not a valid path"}
+        if (-not (Test-Path($asaProjectPath))) {throw "$asaProjectPath is not a valid path"}
 
         $arrangePath = "$solutionPath\$unittestFolder\1_arrange"
-        if (-not (Test-Path($asaProjectPath))) {throw "$solutionPath\$unittestFolder\1_arrange is not a valid path"}
+        if (-not (Test-Path($arrangePath))) {throw "$arrangePath is not a valid path"}
 
         $testPath = "$solutionPath\$unittestFolder\3_assert\$testID"
-        if (-not (Test-Path($asaProjectPath))) {throw "$solutionPath\$unittestFolder\3_assert\$testID is not a valid path"}
+        if (-not (Test-Path("$solutionPath\$unittestFolder\3_assert\"))) {throw "$testPath is not a valid path"}
 
     }
 
@@ -84,7 +84,7 @@ Function New-AutRunFixture{
         $testFolders | 
             ForEach-Object -Process {
                 if (-not(Test-Path "$($_.Path)\$asaProjectName\$asaProjectName.asaproj" -PathType leaf)) {
-                    New-AUTAsaprojXML -asaProjectName $asaProjectName -solutionPath $_.Path
+                    Get-Content "$($_.Path)\$asaProjectName\asaproj.json" | ConvertFrom-JSON | New-AUTAsaprojXML -Verbose:$false  | Out-File "$($_.Path)\$asaProjectName\$asaProjectName.asaproj"
                 }
             }
 
