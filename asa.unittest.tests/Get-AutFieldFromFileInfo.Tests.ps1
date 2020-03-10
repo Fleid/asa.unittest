@@ -80,7 +80,7 @@ Describe "Get-AutFieldFromFileInfo parameters"  {
             $t | Should -be $true
         }
 
-        It "runs with the pipeline" {
+        It "runs from the pipeline" {
             $actual = $t_thisFileInfo[0] | Get-AutFieldFromFileInfo -s "~" -n 4
             
             $t = $true

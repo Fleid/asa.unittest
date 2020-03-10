@@ -31,14 +31,22 @@ Function New-AutRunFixture{
         [string]$testID = $(Throw "-testID is required")
     )
 
-    BEGIN {}
+    BEGIN {
+        if (-not (Test-Path($solutionPath))) {throw "$solutionPath is not a valid path"}
+
+        $asaProjectPath = "$solutionPath\$asaProjectName"
+        if (-not (Test-Path($asaProjectPath))) {throw "$solutionPath\$asaProjectName is not a valid path"}
+
+        $arrangePath = "$solutionPath\$unittestFolder\1_arrange"
+        if (-not (Test-Path($asaProjectPath))) {throw "$solutionPath\$unittestFolder\1_arrange is not a valid path"}
+
+        $testPath = "$solutionPath\$unittestFolder\3_assert\$testID"
+        if (-not (Test-Path($asaProjectPath))) {throw "$solutionPath\$unittestFolder\3_assert\$testID is not a valid path"}
+
+    }
 
     PROCESS {
 
-        $asaProjectPath = "$solutionPath\$asaProjectName"
-        $testPath = "$solutionPath\$unittestFolder\3_assert\$testID"
-
-        $arrangePath = "$solutionPath\$unittestFolder\1_arrange"
         $testDetails = (Get-ChildItem -Path $arrangePath -File) | 
             Get-AutFieldFromFileInfo -s "~" -n 4 |
             Select-Object `
