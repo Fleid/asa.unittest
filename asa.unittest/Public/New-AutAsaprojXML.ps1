@@ -34,7 +34,7 @@ function New-AutAsaprojXML{
         ################################################################################################################################
         write-verbose "001 - Testing the input"
 
-        if (($sourceAsaproj.startFile -eq $null) -or ($sourceAsaproj.startFile -eq "")) {
+        if (($null -eq $sourceAsaproj.startFile) -or ($sourceAsaproj.startFile -eq "")) {
             Throw "Error : startFile (aka .asaql path) is missing or empty from input asaProj file"
         }
 
