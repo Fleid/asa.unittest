@@ -80,6 +80,6 @@ Install-Module -Name PSScriptAnalyzer
 
 Set-Location C:\Users\fleide\Repos\asa.unittest
 Invoke-ScriptAnalyzer -Path .
-Invoke-ScriptAnalyzer -Path .\Public
-Invoke-ScriptAnalyzer -Path .\Private
+Invoke-ScriptAnalyzer -Path .\public
+Invoke-ScriptAnalyzer -Path .\private
 ```

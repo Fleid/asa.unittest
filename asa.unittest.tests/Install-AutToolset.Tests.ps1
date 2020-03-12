@@ -17,7 +17,8 @@ Describe "Install-AutToolset paramater installPath" {
         Mock Test-Path {return $true} -ParameterFilter { $PathType -and $PathType -eq "Leaf" }
         Mock New-Item {}
         Mock Invoke-WebRequest {}
-        Mock Invoke-Expression {}
+        Mock Invoke-External {} -ParameterFilter {$LiteralPath -like "*nuget*"}
+        Mock Invoke-External {} -ParameterFilter {$LiteralPath -eq "npm"}
 
         It "fails if installPath is missing" {
             { Install-AutToolset } | 
@@ -50,7 +51,8 @@ Describe "Install-AutToolset behavior nuget" {
         Mock Test-Path {return $false} -ParameterFilter { $PathType -and $PathType -eq "Leaf" }
         Mock New-Item {}
         Mock Invoke-WebRequest {} #Nuget download
-        Mock Invoke-Expression {} #Nuget or npm executions
+        Mock Invoke-External {} -ParameterFilter {$LiteralPath -like "*nuget*"}
+        Mock Invoke-External {} -ParameterFilter {$LiteralPath -eq "npm"}
 
         It "does not download nuget on default parameter" {
             Install-AutToolset -installPath $t_installPath | 
@@ -80,19 +82,19 @@ Describe "Install-AutToolset behavior nuget" {
         $t_nugetPackages = 
         It "does not invoke nuget on default parameter" {
             Install-AutToolset -installPath $t_installPath | 
-            Assert-MockCalled Invoke-Expression -Times 0 -Exactly -Scope It -ParameterFilter { $Command -like "$t_installPath\nuget*" }
+            Assert-MockCalled Invoke-External -Times 0 -Exactly -Scope It -ParameterFilter { $LiteralPath -like "$t_installPath\nuget*" }
         }
 
         $t_nugetPackages = "bar"
         It "does invoke nuget once for 1 package" {
             Install-AutToolset -installPath $t_installPath -nugetPackages $t_nugetPackages | 
-            Assert-MockCalled Invoke-Expression -Times 1 -Exactly -Scope It -ParameterFilter { $Command -like "$t_installPath\nuget*" }
+            Assert-MockCalled Invoke-External -Times 1 -Exactly -Scope It -ParameterFilter { $LiteralPath -like "$t_installPath\nuget*" }
         }
 
         $t_nugetPackages = "bar1","bar2"
         It "does invoke nuget N times for N packages (N=2)" {
             Install-AutToolset -installPath $t_installPath -nugetPackages $t_nugetPackages  | 
-            Assert-MockCalled Invoke-Expression -Times 2 -Exactly -Scope It -ParameterFilter { $Command -like "$t_installPath\nuget*" }
+            Assert-MockCalled Invoke-External -Times 2 -Exactly -Scope It -ParameterFilter { $LiteralPath -like "$t_installPath\nuget*" }
         }
 
 
@@ -108,32 +110,33 @@ Describe "Install-AutToolset npm" {
             Mock Test-Path {return $true} -ParameterFilter { $Path -and $Path -eq $t_installPath }
             Mock New-Item {}
             Mock Invoke-WebRequest {} #Nuget download
-            Mock Invoke-Expression {} #Nuget or npm executions
+            Mock Invoke-External {} -ParameterFilter {$LiteralPath -like "*nuget*"}
+            Mock Invoke-External {} -ParameterFilter {$LiteralPath -eq "npm"}
 
             It "does not invoke npm on default parameter" {
                 Install-AutToolset -installPath $t_installPath | 
-                Assert-MockCalled Invoke-Expression -Times 0 -Exactly -Scope It -ParameterFilter { $Command -like "npm*" }
+                Assert-MockCalled Invoke-External -Times 0 -Exactly -Scope It -ParameterFilter { $LiteralPath -like "npm*" }
             }
 
             $t_npmPackages = "bar"    
             It "does invoke npm once for 1 package" {
                 Install-AutToolset -installPath $t_installPath -npmPackages $t_npmPackages | 
-                Assert-MockCalled Invoke-Expression -Times 1 -Exactly -Scope It -ParameterFilter { $Command -like "npm*" }
+                Assert-MockCalled Invoke-External -Times 1 -Exactly -Scope It -ParameterFilter { $LiteralPath -like "npm*" }
             }
     
             $t_npmPackages = "bar1","bar2"
             It "does invoke npm N times for N packages (N=2)" {
                 Install-AutToolset -installPath $t_installPath -npmPackages $t_npmPackages | 
-                Assert-MockCalled Invoke-Expression -Times 2 -Exactly -Scope It -ParameterFilter { $Command -like "npm*" }
+                Assert-MockCalled Invoke-External -Times 2 -Exactly -Scope It -ParameterFilter { $LiteralPath -like "npm*" }
             }
 
-            Mock Invoke-Expression {Throw "npm: The term 'npm' is not"} -ParameterFilter { $Command -like "npm*" }
+            Mock Invoke-External {Throw "npm: The term 'npm' is not"} -ParameterFilter { $LiteralPath -like "npm*" }
             $t_npmPackages = "bar"    
             It "fails if npm is not installed" {
                 {Install-AutToolset -installPath $t_installPath -npmPackages $t_npmPackages} | 
                 Should -throw "npm: The term 'npm' is not"
             }
-            Mock Invoke-Expression {} #Nuget or npm executions
+            Mock Invoke-External {} #Nuget or npm executions
         }
 }
 
@@ -148,16 +151,17 @@ Describe "Install-AutToolset nuget + npm" {
         Mock Test-Path {return $false} -ParameterFilter { $PathType -and $PathType -eq "Leaf" }
         Mock New-Item {}
         Mock Invoke-WebRequest {} #Nuget download
-        Mock Invoke-Expression {} #Nuget or npm executions
+        Mock Invoke-External {} -ParameterFilter {$LiteralPath -like "*nuget*"}
+        Mock Invoke-External {} -ParameterFilter {$LiteralPath -eq "npm"}
 
         It "does invoke nuget for nuget + npm" {
             Install-AutToolset -installPath $installPath -nugetPackages "bar1","bar2" -npmPackages "bar1","bar2" | 
-            Assert-MockCalled Invoke-Expression -Times 2 -Exactly -Scope It -ParameterFilter { $Command -like "$installPath\nuget*" }
+            Assert-MockCalled Invoke-External -Times 2 -Exactly -Scope It -ParameterFilter { $LiteralPath -like "*nuget*" }
         }
 
         It "does invoke npm for nuget + npm" {
             Install-AutToolset -installPath $installPath -nugetPackages "bar1","bar2" -npmPackages "bar1","bar2" | 
-            Assert-MockCalled Invoke-Expression -Times 2 -Exactly -Scope It -ParameterFilter { $Command -like "npm*" }
+            Assert-MockCalled Invoke-External -Times 2 -Exactly -Scope It -ParameterFilter { $LiteralPath -like "npm*" }
         }
 
     }

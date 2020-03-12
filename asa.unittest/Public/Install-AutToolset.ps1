@@ -56,7 +56,7 @@ Function Install-AutToolset{
 
             foreach ($nugetPackage in $nugetPackages){
                 Write-Verbose "002 - Installing nuget package : $nugetPackage"
-                Invoke-Expression -Command "$installPath\nuget.exe install $nugetPackage -OutputDirectory $installPath" |
+                Invoke-External -l "$installPath\nuget.exe" install $nugetPackage -OutputDirectory $installPath |
                     Out-Null
             }
         } #IF nuget
@@ -64,11 +64,24 @@ Function Install-AutToolset{
         if ($npmPackages.Count -gt 0){
             foreach ($npmPackage in $npmPackages){
                 Write-Verbose "003 - Installing npm package : $npmPackage"
-                Invoke-Expression -Command "npm install -g $npmPackage" |
-                    Out-Null
+                Invoke-External -l "npm" install -g $npmPackage | Out-Null
             }
         } #IF npm
 
     } # PROCESS
     END {}
 }
+
+
+# Helper function for invoking an external utility (executable).
+# The raison d'être for this function is to allow
+# calls to external executables via their *full paths* to be mocked in Pester.
+function Invoke-External {
+    param(
+      [Parameter(Mandatory=$true)]
+      [string] $LiteralPath,
+      [Parameter(ValueFromRemainingArguments=$true)]
+      $PassThruArgs
+    )
+    & $LiteralPath $PassThruArgs
+  }
