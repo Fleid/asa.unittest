@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
 Companion script used to install the dependencies required for the main package
 
