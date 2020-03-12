@@ -42,7 +42,7 @@ Describe "New-AutRunJob Nominal" {
             -testCase $t_testCase `
             -exePath $t_exePath `
             -WhatIf
-            
+
             Assert-MockCalled Start-Job -Times 0 -Exactly -Scope It
         }
     }
@@ -123,7 +123,7 @@ Describe "New-AutRunJob Parameter" {
             -unittestFolder $t_unittestFolder `
             -testID $t_testID `
             -testCase $t_testCase `
-            #-exePath $t_exePath 
+            #-exePath $t_exePath
             }|
             Should -throw "-exePath is required"
         }
@@ -165,7 +165,7 @@ Describe "New-AutRunJob Paths" {
             -unittestFolder $t_unittestFolder `
             -testID $t_testID `
             -testCase $t_testCase `
-            -exePath $t_exePath 
+            -exePath $t_exePath
             }|
             Should -throw "$t_testPath is not a valid path"
         }

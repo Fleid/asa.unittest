@@ -126,7 +126,7 @@ Describe "Start-AutRun parameter solutionPath" {
                 -unittestFolder $t_unittestFolder |
             Assert-MockCalled New-AutRunFixture -Times 1 -Exactly -Scope It -ParameterFilter { $solutionPath -eq $t_solutionPath}
         }
-        
+
         Mock Test-Path {return $false} -ParameterFilter {$path -eq $t_solutionPath}
         It "fails with an empty/invalid solutionPath" {
             {Start-AutRun `
@@ -253,7 +253,7 @@ Describe "Start-AutRun parameter unittestFolder" {`
         Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_solutionPath}
         Mock Test-Path {return $true} -ParameterFilter {$path -like "*sa.exe"}
         Mock Test-Path {return $true} -ParameterFilter {$path -like "*1_arrange"}
- 
+
         Mock Get-Date {return $internalTimeStamp}
         Mock New-AutRunFixture {}
         Mock New-AutRunJob {}
@@ -283,7 +283,7 @@ Describe "Start-AutRun parameter unittestFolder" {`
                 -asaProjectName $t_asaProjectName |
             Assert-MockCalled New-AutRunFixture -Times 1 -Exactly -Scope It -ParameterFilter { $unittestFolder -eq "$t_asaProjectName.Tests"}
         }
-        
+
         Mock Test-Path {return $false} -ParameterFilter {$path -like "*sa.exe"}
         It "fails if unittest doesn't lead to sa.exe" {
             {Start-AutRun `
@@ -322,7 +322,7 @@ Describe "Start-AutRun behavior orchestration" {`
         Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_solutionPath}
         Mock Test-Path {return $true} -ParameterFilter {$path -like "*sa.exe"}
         Mock Test-Path {return $true} -ParameterFilter {$path -like "*1_arrange"}
- 
+
         Mock Get-Date {return $internalTimeStamp}
 
         Mock New-AutRunFixture {}
@@ -422,7 +422,7 @@ Describe "Start-AutRun behavior result processing" {`
         Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_solutionPath}
         Mock Test-Path {return $true} -ParameterFilter {$path -like "*sa.exe"}
         Mock Test-Path {return $true} -ParameterFilter {$path -like "*1_arrange"}
- 
+
         Mock Get-Date {return $internalTimeStamp}
 
         Mock New-AutRunFixture {return @(@{test="001"},@{test="002"})}

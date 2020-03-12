@@ -19,7 +19,7 @@ Describe "New-AutRunFixture nominal"  {
 
         Mock Get-ChildItem {return 1}
         Mock Get-AutFieldFromFileInfo {return @(@{Basename0="003";FilePath="foobar";Basename1="Input";FullName="fb"},@{Basename0="001";FilePath="foobar1";Basename1="Input";FullName="fb"},@{Basename0="001";FilePath="foobar2"},@{Basename0="002";FilePath="foobar"})}
-        Mock New-Item {} 
+        Mock New-Item {}
         Mock Copy-Item {}
         Mock Test-Path {return $true}
         Mock New-AUTAsaprojXML {}
@@ -62,7 +62,7 @@ Describe "New-AutRunFixture nominal"  {
                  -asaProjectName $t_asaProjectName `
                  -unittestFolder $t_unittestFolder `
                  -testID $t_testID
-            
+
             Assert-MockCalled New-Item -Times 1 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\001")}
             Assert-MockCalled New-Item -Times 1 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\002")}
             Assert-MockCalled New-Item -Times 1 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\003")}
@@ -75,7 +75,7 @@ Describe "New-AutRunFixture nominal"  {
                  -asaProjectName $t_asaProjectName `
                  -unittestFolder $t_unittestFolder `
                  -testID $t_testID
-            
+
             Assert-MockCalled New-Item -Times 1 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\001\$t_asaProjectName\Inputs\")}
             Assert-MockCalled New-Item -Times 1 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\002\$t_asaProjectName\Inputs\")}
             Assert-MockCalled New-Item -Times 1 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\003\$t_asaProjectName\Inputs\")}
@@ -88,8 +88,8 @@ Describe "New-AutRunFixture nominal"  {
                  -asaProjectName $t_asaProjectName `
                  -unittestFolder $t_unittestFolder `
                  -testID $t_testID
-            
-            Assert-MockCalled Copy-Item -Times 3 -Exactly -Scope It -ParameterFilter {$Path -like "*.as*"}            
+
+            Assert-MockCalled Copy-Item -Times 3 -Exactly -Scope It -ParameterFilter {$Path -like "*.as*"}
         }
 
         Mock Test-Path {return $false} -ParameterFilter {$Path -like "*.asaproj"}
@@ -99,8 +99,8 @@ Describe "New-AutRunFixture nominal"  {
                  -asaProjectName $t_asaProjectName `
                  -unittestFolder $t_unittestFolder `
                  -testID $t_testID
-            
-            Assert-MockCalled New-AUTAsaprojXML -Times 3 -Exactly -Scope It            
+
+            Assert-MockCalled New-AUTAsaprojXML -Times 3 -Exactly -Scope It
         }
 
         Mock Test-Path {return $true} -ParameterFilter {$Path -like "*.asaproj"}
@@ -110,8 +110,8 @@ Describe "New-AutRunFixture nominal"  {
                  -asaProjectName $t_asaProjectName `
                  -unittestFolder $t_unittestFolder `
                  -testID $t_testID
-            
-            Assert-MockCalled New-AUTAsaprojXML -Times 0 -Exactly -Scope It            
+
+            Assert-MockCalled New-AUTAsaprojXML -Times 0 -Exactly -Scope It
         }
         Mock Test-Path {return $true}
 
@@ -121,8 +121,8 @@ Describe "New-AutRunFixture nominal"  {
                  -asaProjectName $t_asaProjectName `
                  -unittestFolder $t_unittestFolder `
                  -testID $t_testID
-            
-            Assert-MockCalled Copy-Item -Times 3 -Exactly -Scope It -ParameterFilter {$Path -like "*Local*.json"}            
+
+            Assert-MockCalled Copy-Item -Times 3 -Exactly -Scope It -ParameterFilter {$Path -like "*Local*.json"}
         }
 
         It "copies test files from 1_arrange in each test case folders" {
@@ -131,8 +131,8 @@ Describe "New-AutRunFixture nominal"  {
                  -asaProjectName $t_asaProjectName `
                  -unittestFolder $t_unittestFolder `
                  -testID $t_testID
-            
-            Assert-MockCalled Copy-Item -Times 4 -Exactly -Scope It -ParameterFilter {$Path -like "foobar*"}            
+
+            Assert-MockCalled Copy-Item -Times 4 -Exactly -Scope It -ParameterFilter {$Path -like "foobar*"}
         }
 
         It "edit the ASA conf file for each input files" {
@@ -141,8 +141,8 @@ Describe "New-AutRunFixture nominal"  {
                  -asaProjectName $t_asaProjectName `
                  -unittestFolder $t_unittestFolder `
                  -testID $t_testID
-            
-            Assert-MockCalled Out-File -Times 2 -Exactly -Scope It   
+
+            Assert-MockCalled Out-File -Times 2 -Exactly -Scope It
         }
 
     }
@@ -156,12 +156,12 @@ Describe "New-AutRunFixture empty folders"  {
         $t_unittestFolder = "bar.Tests"
         $t_testID = "yyyymmddhhmmss"
 
-        Mock Test-Path {return $true}      
+        Mock Test-Path {return $true}
 
         Mock Get-ChildItem {}
         Mock Get-AutFieldFromFileInfo {}
 
-        Mock New-Item {} 
+        Mock New-Item {}
         Mock Copy-Item {}
         Mock New-AUTAsaprojXML {}
         Mock Get-Content {return (@{FilePath="foobar"} | ConvertTo-Json)}
@@ -188,7 +188,7 @@ Describe "New-AutRunFixture parameters"  {
 
         Mock Get-ChildItem {}
         Mock Get-AutFieldFromFileInfo  {}
-        Mock New-Item {} 
+        Mock New-Item {}
         Mock Copy-Item {}
         Mock Test-Path {return $true}
         Mock New-AUTAsaprojXML {}
@@ -203,7 +203,7 @@ Describe "New-AutRunFixture parameters"  {
                 -testID $t_testID }|
             Should -not -throw "-* is required"
         }
-        
+
         It "fails without -solutionPath" {
             { New-AutRunFixture `
                  #-solutionPath $t_solutionPath `
@@ -236,7 +236,7 @@ Describe "New-AutRunFixture parameters"  {
                  -solutionPath $t_solutionPath `
                  -asaProjectName $t_asaProjectName `
                  -unittestFolder $t_unittestFolder `
-                 #-testID $t_testID 
+                 #-testID $t_testID
                 }|
              Should -throw "-testID is required"
         }
@@ -253,7 +253,7 @@ Describe "New-AutRunFixture paths"  {
 
         Mock Get-ChildItem {}
         Mock Get-AutFieldFromFileInfo  {}
-        Mock New-Item {} 
+        Mock New-Item {}
         Mock Copy-Item {}
         Mock New-AUTAsaprojXML {}
         Mock Get-Content {return (@{FilePath="foobar"} | ConvertTo-Json)}
@@ -278,7 +278,7 @@ Describe "New-AutRunFixture paths"  {
                 -testID $t_testID }|
             Should -throw "$t_solutionPath is not a valid path"
         }
-        
+
         Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_solutionPath}
         It "fails when asaProjectPath is not a valid path" {
             { New-AutRunFixture `

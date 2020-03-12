@@ -17,7 +17,7 @@ Describe "Get-AutFieldFromFileInfo parameters"  {
             )
             return $Path.Replace('TestDrive:', (Get-PSDrive TestDrive).Root)
         }
-        
+
 
         $t_testPath = "TestDrive:\users\fleide\Repos\asa.unittest\examples\ASAHelloWorld.Tests\1_arrange"
         New-Item -Path $t_testPath -ItemType Directory
@@ -54,14 +54,14 @@ Describe "Get-AutFieldFromFileInfo parameters"  {
                 -t $t_thisFileInfo[0] `
                 -s $t_separatorOfFields `
                 -n $t_numberOfFields
-            
+
             $t = $true
 
             foreach($actual_properties in $actual.PSObject.Properties)
             {
                 $t = $t -and ($Output_1.($actual_properties.Name) -eq $actual_properties.value)
             }
-            
+
             $t | Should -be $true
         }
 
@@ -71,27 +71,27 @@ Describe "Get-AutFieldFromFileInfo parameters"  {
                 -t $t_thisFileInfo[1] `
                 -s $t_separatorOfFields `
                 -n $t_numberOfFields
-            
+
             $t = $true
 
             foreach($actual_properties in $actual.PSObject.Properties)
             {
                 $t = $t -and ($Output_2.($actual_properties.Name) -eq $actual_properties.value)
             }
-            
+
             $t | Should -be $true
         }
 
         It "runs from the pipeline" {
             $actual = $t_thisFileInfo[0] | Get-AutFieldFromFileInfo -s "~" -n 4
-            
+
             $t = $true
 
             foreach($actual_properties in $actual.PSObject.Properties)
             {
                 $t = $t -and ($Output_1.($actual_properties.Name) -eq $actual_properties.value)
             }
-            
+
             $t | Should -be $true
         }
     }

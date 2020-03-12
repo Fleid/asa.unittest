@@ -33,7 +33,7 @@ Describe "Get-AutRunResult Nominal" {
                 -unittestFolder $t_unittestFolder `
                 -testID $t_testID `
                 -testCase $t_testCase  | Out-Null
-            
+
             Assert-MockCalled Get-ChildItem -Times 1 -Exactly -Scope It
         }
 
@@ -45,9 +45,9 @@ Describe "Get-AutRunResult Nominal" {
                 -unittestFolder $t_unittestFolder `
                 -testID $t_testID `
                 -testCase $t_testCase  | Out-Null
-            
+
             Assert-MockCalled Out-File -Times 0  -Exactly -Scope It
-        }        
+        }
 
         Mock Get-ChildItem {return 1}
         It "calls Get-AutFieldFromFileInfo if find files" {
@@ -57,7 +57,7 @@ Describe "Get-AutRunResult Nominal" {
                 -unittestFolder $t_unittestFolder `
                 -testID $t_testID `
                 -testCase $t_testCase  | Out-Null
-            
+
             Assert-MockCalled Get-AutFieldFromFileInfo -Times 1 -Exactly -Scope It
         }
 
@@ -74,7 +74,7 @@ Describe "Get-AutRunResult Nominal" {
                 -unittestFolder $t_unittestFolder `
                 -testID $t_testID `
                 -testCase $t_testCase  | Out-Null
-            
+
             Assert-MockCalled Get-Content -Times 4 -Exactly -Scope It
             Assert-MockCalled Add-Content -Times 4 -Exactly -Scope It
         }
@@ -93,7 +93,7 @@ Describe "Get-AutRunResult Nominal" {
                 -unittestFolder $t_unittestFolder `
                 -testID $t_testID `
                 -testCase $t_testCase  | Out-Null
-            
+
             Assert-MockCalled jsondiffpatch -Times 4 -Exactly -Scope It
             Assert-MockCalled Out-File -Times 4 -Exactly -Scope It
         }
@@ -152,7 +152,7 @@ Describe "New-AutRunFixture empty folders"  {
                  -unittestFolder $t_unittestFolder `
                  -testID $t_testID `
                  -testCase $t_testCase | Out-Null
-            
+
             Assert-MockCalled Out-File -Times 0  -Exactly -Scope It
         }
     }
@@ -185,7 +185,7 @@ Describe "Get-AutRunResult parameters"  {
                 -testCase $t_testCase } |
             Should -not -throw "-* is required"
         }
-        
+
         It "fails without -solutionPath" {
             { Get-AutRunResult `
                  #-solutionPath $t_solutionPath `
@@ -232,7 +232,7 @@ Describe "Get-AutRunResult parameters"  {
                  -asaProjectName $t_asaProjectName `
                  -unittestFolder $t_unittestFolder `
                  -testID $t_testID `
-                 #-testCase $t_testCase 
+                 #-testCase $t_testCase
                 } |
              Should -throw "-testCase is required"
         }
