@@ -30,7 +30,8 @@ Describe "Get-AutRunResult Nominal" {
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder `
                 -testID $t_testID `
-                -testCase $t_testCase  | Out-Null |
+                -testCase $t_testCase  | Out-Null
+            
             Assert-MockCalled Get-ChildItem -Times 1 -Exactly -Scope It
         }
 
@@ -40,11 +41,51 @@ Describe "Get-AutRunResult Nominal" {
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder `
                 -testID $t_testID `
-                -testCase $t_testCase  | Out-Null |
+                -testCase $t_testCase  | Out-Null
+            
             Assert-MockCalled Out-File -Times 0  -Exactly -Scope It
         }
     }
 }
+
+Describe "New-AutRunFixture empty folders"  {
+    InModuleScope $moduleName {
+
+        $t_solutionPath = "TestDrive:\foo"
+        $t_asaProjectName = "bar"
+        $t_unittestFolder = "bar.Tests"
+        $t_testID = "yyyymmddhhmmss"
+        $t_testCase = "123"
+
+        Mock Test-Path {return $true}
+        Mock Get-ChildItem {}
+        Mock Get-AutFieldFromFileInfo {}
+        Mock Get-Content {}
+        Mock Out-File {}
+
+        It "provides 0 error in output pipeline on an empty folder" {
+            Get-AutRunResult `
+                 -solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 -testID $t_testID `
+                 -testCase $t_testCase |
+            Should -be 0
+        }
+
+        It "generates no file on an empty folder" {
+            Get-AutRunResult `
+                 -solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 -testID $t_testID `
+                 -testCase $t_testCase | Out-Null
+            
+            Assert-MockCalled Out-File -Times 0  -Exactly -Scope It
+        }
+    }
+}
+
 
 Describe "Get-AutRunResult parameters"  {
     InModuleScope $moduleName {
