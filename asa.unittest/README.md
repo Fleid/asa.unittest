@@ -4,6 +4,7 @@
 
 Proper folder hierarchy:
 
+```PowerShell
 ModuleRoot
 |- Examples
 |- Module.test
@@ -12,26 +13,28 @@ ModuleRoot
     |- Public (.ps1 functions)
     |- Module.psm1 (module in auto loader mode, see the file directly)
     |- Module.psd1 (manifest auto generated via `New-ModuleManifest`
+```
 
 From there, the module can be loaded via:
 
 ```PowerShell
 Set-Location C:\Users\fleide\Repos\asa.unittest\asa.unittest
 Import-Module -Name .\asa.unittest.psm1 -verbose -force
-
 #Remove-Module asa.unittest
-#then
+
+# Then
 
 Install-AutToolset -installPath C:\Users\fleide\Repos\asa.unittest\examples\ASAHelloWorld.Tests\2_act -npmpackages jsondiffpatch -nugetpackages Microsoft.Azure.StreamAnalytics.CICD
 
 Start-AutRun -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\fleide\Repos\asa.unittest\examples" -unittestFolder "ASAHelloworld.Tests" -verbose
-
 ```
 
 ## Development
 
 Scripts should be isolated in atomic .ps1 file, written as advanced functions.
 They can be loaded and ran directly.
+
+Common parameters:
 
 ```PowerShell
 $ASAnugetVersion = "2.3.0"

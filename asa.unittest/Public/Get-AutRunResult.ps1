@@ -35,26 +35,31 @@ Function Get-AutRunResult{
         [string]$testCase = $(Throw "-testCase is required")
     )
 
-    BEGIN {}
+    BEGIN {
+        if (-not (Test-Path($solutionPath))) {throw "$solutionPath is not a valid path"}
+
+        $testPath = "$solutionPath\$unittestFolder\3_assert\$testID\$testCase"
+        if (-not (Test-Path($testPath))) {throw "$testPath is not a valid path"}
+
+        $outputSourcePath = "$testPath\$asaProjectName\Inputs"
+        if (-not (Test-Path($outputSourcePath))) {throw "$outputSourcePath is not a valid path"}
+    }
 
     PROCESS {
         $errorCounter = 0
-        
-        $testPath = "$solutionPath\$unittestFolder\3_assert\$testID\$testCase"
-        $outputSourcePath = "$testPath\$asaProjectName\Inputs"
 
-        $testFiles = (Get-ChildItem -Path $outputSourcePath -File) 
+        $testDetails = (Get-ChildItem -Path $outputSourcePath -File) | 
+            Get-AutFieldFromFileInfo -s "~" -n 4 |
+            Select-Object `
+                FullName, `
+                FilePath, `
+                Basename, `
+                @{Name = "TestCase"; Expression = {$_.Basename0}}, `
+                @{Name = "FileType"; Expression = {$_.Basename1}}, `
+                @{Name = "SourceName"; Expression = {$_.Basename2}}, `
+                @{Name = "TestLabel"; Expression = {$_.Basename3}}
 
-        $testDetails = $testFiles | Select-Object `
-        @{Name = "FullName"; Expression = {$_.Name}}, `
-        @{Name = "FilePath"; Expression = {$_.Fullname}}, `
-        @{Name = "Basename"; Expression = {$_.Basename}}, `
-        @{Name = "TestCase"; Expression = {$parts = $_.Basename.Split("~"); $parts[0]}}, `
-        @{Name = "FileType"; Expression = {$parts = $_.Basename.Split("~"); $parts[1]}}, `
-        @{Name = "SourceName"; Expression = {$parts = $_.Basename.Split("~"); $parts[2]}}, `
-        @{Name = "TestLabel"; Expression = {$parts = $_.Basename.Split("~"); $parts[3]}}
-
-        $testDetails | Where-Object { $_.FileType -eq"Output" } |
+        $testDetails | Where-Object { $_.FileType -eq "Output" } |
         Select-Object `
             FullName,
             SourceName,

@@ -18,8 +18,10 @@ Describe "Get-AutRunResult Nominal" {
         $t_testID = "yyyymmddhhmmss"
         $t_testCase = "123"
 
-        Mock Get-ChildItem {}
-        Mock Get-Content {}
+        Mock Test-Path {return $true}
+        Mock Get-ChildItem {return 1}
+        Mock Get-AutFieldFromFileInfo {}
+        Mock Get-Content {return (@{FilePath="foobar"} | ConvertTo-Json)}
         Mock Out-File {}
 
         It "tries to get a list of files" {
@@ -40,6 +42,147 @@ Describe "Get-AutRunResult Nominal" {
                 -testID $t_testID `
                 -testCase $t_testCase  | Out-Null |
             Assert-MockCalled Out-File -Times 0  -Exactly -Scope It
+        }
+    }
+}
+
+Describe "Get-AutRunResult parameters"  {
+    InModuleScope $moduleName {
+
+        $t_solutionPath = "TestDrive:\foo"
+        $t_asaProjectName = "bar"
+        $t_unittestFolder = "bar.Tests"
+        $t_testID = "yyyymmddhhmmss"
+        $t_testCase = "123"
+
+        Mock Test-Path {return $true}
+        Mock Get-ChildItem {return 1}
+        Mock Get-AutFieldFromFileInfo {}
+        Mock Get-Content {return (@{FilePath="foobar"} | ConvertTo-Json)}
+        Mock Out-File {}
+
+        It "runs with a valid set of parameters" {
+           { Get-AutRunResult `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder `
+                -testID $t_testID `
+                -testCase $t_testCase } |
+            Should -not -throw "-* is required"
+        }
+        
+        It "fails without -solutionPath" {
+            { Get-AutRunResult `
+                 #-solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 -testID $t_testID `
+                 -testCase $t_testCase } |
+             Should -throw "-solutionPath is required"
+        }
+
+        It "fails without -asaProjectName" {
+            { Get-AutRunResult `
+                 -solutionPath $t_solutionPath `
+                 #-asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 -testID $t_testID `
+                 -testCase $t_testCase } |
+             Should -throw "-asaProjectName is required"
+        }
+
+        It "fails without -unittestFolder" {
+            { Get-AutRunResult `
+                 -solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 #-unittestFolder $t_unittestFolder `
+                 -testID $t_testID `
+                 -testCase $t_testCase } |
+             Should -throw "-unittestFolder is required"
+        }
+
+        It "fails without -testID" {
+            { Get-AutRunResult `
+                 -solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 #-testID $t_testID `
+                 -testCase $t_testCase } |
+             Should -throw "-testID is required"
+        }
+
+        It "fails without -testCase" {
+            { Get-AutRunResult `
+                 -solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 -testID $t_testID `
+                 #-testCase $t_testCase 
+                } |
+             Should -throw "-testCase is required"
+        }
+    }
+}
+
+Describe "Get-AutRunResult paths"  {
+    InModuleScope $moduleName {
+
+        $t_solutionPath = "TestDrive:\foo"
+        $t_asaProjectName = "bar"
+        $t_unittestFolder = "bar.Tests"
+        $t_testID = "yyyymmddhhmmss"
+        $t_testCase = "123"
+
+        Mock Test-Path {return $true}
+        Mock Get-ChildItem {return 1}
+        Mock Get-AutFieldFromFileInfo {}
+        Mock Get-Content {return (@{FilePath="foobar"} | ConvertTo-Json)}
+        Mock Out-File {}
+
+        Mock Test-Path {return $true}
+        It "runs with a valid set of paths" {
+           { Get-AutRunResult `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder `
+                -testID $t_testID `
+                -testCase $t_testCase } |
+            Should -not -throw
+        }
+
+        Mock Test-Path {return $false}
+        It "fails when solutionPath is not a valid path" {
+           { Get-AutRunResult `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder `
+                -testID $t_testID `
+                -testCase $t_testCase } |
+            Should -throw "$t_solutionPath is not a valid path"
+        }
+
+        $t_testPath = "$t_solutionPath\$t_unittestFolder\3_assert\$t_testID\$t_testCase"
+        Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_solutionPath}
+        It "fails when testPath is not a valid path" {
+        { Get-AutRunResult `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder `
+                -testID $t_testID `
+                -testCase $t_testCase } |
+            Should -throw "$t_testPath is not a valid path"
+        }
+
+        $t_outputSourcePath = "$t_testPath\$t_asaProjectName\Inputs"
+        Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_testPath}
+        It "fails when outputSourcePath is not a valid path" {
+        { Get-AutRunResult `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder `
+                -testID $t_testID `
+                -testCase $t_testCase } |
+            Should -throw "$t_outputSourcePath is not a valid path"
         }
     }
 }
