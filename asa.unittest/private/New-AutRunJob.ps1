@@ -53,7 +53,7 @@ Function New-AutRunJob{
 
         Start-Job -ArgumentList $exePath,$testPath,$testCase,$asaProjectName -ScriptBlock{
             param($exePath,$testPath,$testCase,$asaProjectName)
-            & $exePath localrun -Project $testPath\$testCase\$asaProjectName\$asaProjectName.asaproj -OutputPath $testPath\$testCase} |   
+            & $exePath localrun -Project $testPath\$testCase\$asaProjectName\$asaProjectName.asaproj -OutputPath $testPath\$testCase} |
         Out-Null
 
     } #PROCESS

@@ -2,7 +2,7 @@
 .SYNOPSIS
 Orchestrator script used to run unit tests on an Azure Stream Analytics project
 
-In case of issues with PowerShell Execution Policies, see https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_scripts?view=powershell-7 
+In case of issues with PowerShell Execution Policies, see https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_scripts?view=powershell-7
 PS: VSCode has a weird behavior on that topic, use Windows Terminal instead : https://github.com/PowerShell/vscode-powershell/issues/1217
 
 .DESCRIPTION
@@ -44,7 +44,7 @@ Function Start-AutRun{
     BEGIN {
         ################################################################################################################################
         write-verbose "101 - Set and check variables"
-        
+
         if (-not (Test-Path $solutionPath)) {Throw "Invalid -solutionPath"}
 
         if (-not (`
@@ -55,7 +55,7 @@ Function Start-AutRun{
 
         $unittestFolder = "$asaProjectName.Tests"
         if (-not (Test-Path "$solutionPath\$unittestFolder\1_arrange")) {Throw "Can't find 1_arrange folder at $solutionPath\$unittestFolder\1_arrange"}
-    
+
         $exePath = "$solutionPath\$unittestFolder\2_act\Microsoft.Azure.StreamAnalytics.CICD.$asaNugetVersion\tools\sa.exe"
         if (-not (Test-Path $exePath -PathType Leaf)) {Throw "Can't find sa.exe at $solutionPath\$unittestFolder\2_act\Microsoft.Azure.StreamAnalytics.CICD.$asaNugetVersion\tools\sa.exe"}
 
@@ -65,7 +65,7 @@ Function Start-AutRun{
     PROCESS {
         ################################################################################################################################
         # 2xx - Creating run fixture
- 
+
         $testCases = New-AutRunFixture `
             -solutionPath $solutionPath `
             -asaProjectName $asaProjectName `
@@ -76,7 +76,7 @@ Function Start-AutRun{
         # 4xx - Running the jobs
         write-verbose "401 - Run SA in parallel jobs"
 
-        ForEach ($testCase in $testCases) { 
+        ForEach ($testCase in $testCases) {
             New-AutRunJob `
                 -solutionPath $solutionPath `
                 -asaProjectName $asaProjectName `
@@ -93,7 +93,7 @@ Function Start-AutRun{
 
         write-verbose "403 - Jobs done"
 
-        <# 
+        <#
         ## Debug ~ Process the results
         foreach($job in Get-Job)
         {
@@ -103,14 +103,14 @@ Function Start-AutRun{
         #>
 
         ################################################################################################################################
-  
+
         write-verbose "501 - Calculating diffs"
 
         $errorCounter = 0
 
         ## For each Output test file, generate a testable file (adding brackets to it) then run the diff with the corresponding arranged output file
-        
-        ForEach ($testCase in $testCases) { 
+
+        ForEach ($testCase in $testCases) {
             $errorCounter += Get-AutRunResult `
                 -solutionPath $solutionPath `
                 -asaProjectName $asaProjectName `
@@ -120,11 +120,11 @@ Function Start-AutRun{
         }
 
         ################################################################################################################################
-        
+
         # Final result
         if ($errorCounter -gt 0) {Write-Verbose "Ending Test Run with $errorCounter errors"}
         if ($errorCounter -gt 0) {throw("Ending Test Run with $errorCounter errors")}
-        
+
     } #PROCESS
     END {}
 }

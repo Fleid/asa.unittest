@@ -4,7 +4,7 @@ Controller script used to create a new XML asaproj file from a JSON one. If one 
 
 .DESCRIPTION
 The tool used to run tests in unittest_prun (sa.exe) requires a manifest file (.asaproj) that describes the content of the asa project.
-At the moment, Visual Studio generates XML asaproj files, Visual Studio Code generates JSON asaproj files. 
+At the moment, Visual Studio generates XML asaproj files, Visual Studio Code generates JSON asaproj files.
 The XML ones are the one expected by sa.exe.
 
 New-AUTAsaparoj will take a JSON asaproj file (generated previously by Visual Studio Code), and create the equivalent XML file.
@@ -38,8 +38,6 @@ function New-AutAsaprojXML{
             Throw "Error : startFile (aka .asaql path) is missing or empty from input asaProj file"
         }
 
-        
-
         if (-not ($sourceAsaproj.configurations | Where-Object {$_.subType -in "JobConfig"}).count -eq 1) {
             Throw "Error : JobConfig path is missing or empty from input asaProj file"
         }
@@ -48,7 +46,7 @@ function New-AutAsaprojXML{
 
         # Constants
         $newline = "`r`n"
-        $header = "<Project ToolsVersion=`"4.0`" DefaultTargets=`"Build`" xmlns=`"http://schemas.microsoft.com/developer/msbuild/2003`">" 
+        $header = "<Project ToolsVersion=`"4.0`" DefaultTargets=`"Build`" xmlns=`"http://schemas.microsoft.com/developer/msbuild/2003`">"
         $footer = "</Project>"
         $itemGroupStart = "<ItemGroup>"
         $itemGroupEnd = "</ItemGroup>"
@@ -61,32 +59,32 @@ function New-AutAsaprojXML{
         $targetAsaproj = $header + $newline
 
         # First ItemGroup for script file (asaql)
-        $targetAsaproj += $itemGroupStart + $newline 
-        $targetAsaproj += "<Script Include=`"$($sourceAsaproj.startFile)`"/>" + $newline 
-        $targetAsaproj += $itemGroupEnd + $newline 
+        $targetAsaproj += $itemGroupStart + $newline
+        $targetAsaproj += "<Script Include=`"$($sourceAsaproj.startFile)`"/>" + $newline
+        $targetAsaproj += $itemGroupEnd + $newline
 
         # Second ItemGroup for InputMock (local input config files) and JobConfig
-        $targetAsaproj += $itemGroupStart + $newline 
+        $targetAsaproj += $itemGroupStart + $newline
 
         $sourceAsaproj.configurations | `
             Where-Object {$_.subType -in $itemFilter} |
             Foreach-Object -process {
-                $targetAsaproj += "<Configure Include=`"$($_.filePath)`">" + $newline 
-                $targetAsaproj += "<SubType>$($_.subType)</SubType>" + $newline 
-                $targetAsaproj += "</Configure>" + $newline 
+                $targetAsaproj += "<Configure Include=`"$($_.filePath)`">" + $newline
+                $targetAsaproj += "<SubType>$($_.subType)</SubType>" + $newline
+                $targetAsaproj += "</Configure>" + $newline
             }
 
-        $targetAsaproj += $itemGroupEnd + $newline 
+        $targetAsaproj += $itemGroupEnd + $newline
 
         # Footer
-        $targetAsaproj += $footer + $newline 
+        $targetAsaproj += $footer + $newline
 
         ################################################################################################################################
         write-verbose "401 - Writing the content to ouptut pipeline"
 
         # Create new object
         $outputObject = $targetAsaproj
-        
+
         $outputObject
 
     } #PROCESS

@@ -47,7 +47,7 @@ Function New-AutRunFixture{
 
     PROCESS {
 
-        $testDetails = (Get-ChildItem -Path $arrangePath -File) | 
+        $testDetails = (Get-ChildItem -Path $arrangePath -File) |
             Get-AutFieldFromFileInfo -s "~" -n 4 |
             Select-Object `
                 FullName, `
@@ -61,7 +61,7 @@ Function New-AutRunFixture{
         write-verbose "201 - Create and populate test folders"
 
         $testFolders = `
-            $testDetails | 
+            $testDetails |
             Select-Object @{Name = "Path"; Expression = {"$testPath\$($_.TestCase)"}} |
             Sort-Object -Property Path -Unique
 
@@ -75,13 +75,13 @@ Function New-AutRunFixture{
             Out-Null
 
         ## Copy .asaql, .asaproj (XML) and JobConfig, asaproj (JSON) required for run in each test case folder
-        $testFolders | 
+        $testFolders |
             Select-Object @{Name="Destination"; Expression = {"$($_.Path)\$asaProjectName\"}} |
             Copy-Item -Path "$asaProjectPath\*.as*","$asaProjectPath\*.json" -recurse |
             Out-Null
 
         ## If there isn't a XML asaproj, generate it from the JSON one
-        $testFolders | 
+        $testFolders |
             ForEach-Object -Process {
                 if (-not(Test-Path "$($_.Path)\$asaProjectName\$asaProjectName.asaproj" -PathType leaf)) {
                     Get-Content "$($_.Path)\$asaProjectName\asaproj.json" | ConvertFrom-JSON | New-AUTAsaprojXML -Verbose:$false  | Out-File "$($_.Path)\$asaProjectName\$asaProjectName.asaproj"
@@ -89,13 +89,13 @@ Function New-AutRunFixture{
             }
 
         ## Copy the local input mock file required for run in each test case folder
-        $testFolders | 
+        $testFolders |
             Select-Object @{Name="Destination"; Expression = {"$($_.Path)\$asaProjectName\Inputs\"}} |
             Copy-Item -Path "$asaProjectPath\Inputs\Local*.json" -recurse |
             Out-Null
 
-        ## Copy test files from 1_arrange to each test case folder 
-        $testDetails | 
+        ## Copy test files from 1_arrange to each test case folder
+        $testDetails |
             Select-Object `
                 @{Name = "Destination"; Expression = {"$testPath\$($_.TestCase)\$asaProjectName\Inputs\"}},
                 @{Name = "Path"; Expression = {$_.FilePath}} |
@@ -107,7 +107,7 @@ Function New-AutRunFixture{
         write-verbose "301 - Update each conf file"
 
         ## For each Input test file, edit the corresponding Local config file in the test case Input folder to point to it
-        $testDetails | 
+        $testDetails |
             Where-Object { $_.FileType -eq"Input" } |
             Select-Object `
                 FullName,

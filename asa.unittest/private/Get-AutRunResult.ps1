@@ -27,6 +27,7 @@ Get-AutRunResult -solutionPath $solutionPath -asaProjectName $asaProjectName -un
 Function Get-AutRunResult{
 
     [CmdletBinding()]
+    [OutputType([int])]
     param (
         [string]$solutionPath = $(Throw "-solutionPath is required"),
         [string]$asaProjectName = $(Throw "-asaProjectName is required"),
@@ -48,7 +49,7 @@ Function Get-AutRunResult{
     PROCESS {
         $errorCounter = 0
 
-        $testDetails = (Get-ChildItem -Path $outputSourcePath -File) | 
+        $testDetails = (Get-ChildItem -Path $outputSourcePath -File) |
             Get-AutFieldFromFileInfo -s "~" -n 4 |
             Select-Object `
                 FullName, `

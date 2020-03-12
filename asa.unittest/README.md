@@ -70,3 +70,16 @@ Set-Location C:\Users\fleide\Repos\asa.unittest\asa.unittest.tests
 Invoke-Pester .\MyScript.Tests.ps1
 Invoke-Pester
 ```
+
+### Linting
+
+```PowerShell
+
+# Install-PackageProvider Nuget -MinimumVersion 2.8.5.201 –Force
+Install-Module -Name PSScriptAnalyzer
+
+Set-Location C:\Users\fleide\Repos\asa.unittest
+Invoke-ScriptAnalyzer -Path .
+Invoke-ScriptAnalyzer -Path .\Public
+Invoke-ScriptAnalyzer -Path .\Private
+```
