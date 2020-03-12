@@ -44,6 +44,18 @@ Describe "New-AutRunFixture nominal"  {
              Should -be @("001","002","003")
          }
 
+         It "tests a job with -WhatIf" {
+            New-AutRunFixture `
+                 -solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 -testID $t_testID `
+                 -WhatIf |
+             Should -be $null
+
+            Assert-MockCalled New-Item -Times 0 -Exactly -Scope It
+         }
+
         It "creates test case folders" {
             New-AutRunFixture `
                  -solutionPath $t_solutionPath `

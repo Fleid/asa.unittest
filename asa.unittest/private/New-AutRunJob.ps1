@@ -30,7 +30,10 @@ New-AutRunJob -solutionPath $solutionPath -asaProjectName $asaProjectName -unitt
 
 Function New-AutRunJob{
 
-    [CmdletBinding()]
+    [CmdletBinding(
+        SupportsShouldProcess=$true,
+        ConfirmImpact="Low"
+        )]
     param (
         [string]$solutionPath = $(Throw "-solutionPath is required"),
         [string]$asaProjectName = $(Throw "-asaProjectName is required"),
@@ -51,11 +54,13 @@ Function New-AutRunJob{
 
     PROCESS {
 
-        Start-Job -ArgumentList $exePath,$testPath,$testCase,$asaProjectName -ScriptBlock{
-            param($exePath,$testPath,$testCase,$asaProjectName)
-            & $exePath localrun -Project $testPath\$testCase\$asaProjectName\$asaProjectName.asaproj -OutputPath $testPath\$testCase} |
-        Out-Null
-
+        if ($pscmdlet.ShouldProcess("Running $exePath"))
+        {
+            Start-Job -ArgumentList $exePath,$testPath,$testCase,$asaProjectName -ScriptBlock{
+                param($exePath,$testPath,$testCase,$asaProjectName)
+                & $exePath localrun -Project $testPath\$testCase\$asaProjectName\$asaProjectName.asaproj -OutputPath $testPath\$testCase} |
+            Out-Null
+        }
     } #PROCESS
     END {}
 }

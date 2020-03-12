@@ -28,8 +28,22 @@ Describe "New-AutRunJob Nominal" {
             -unittestFolder $t_unittestFolder `
             -testID $t_testID `
             -testCase $t_testCase `
-            -exePath $t_exePath |
+            -exePath $t_exePath
+
             Assert-MockCalled Start-Job -Times 1 -Exactly -Scope It
+        }
+
+        It "tests a job -WhatIf" {
+            New-AutRunJob `
+            -solutionPath $t_solutionPath `
+            -asaProjectName $t_asaProjectName `
+            -unittestFolder $t_unittestFolder `
+            -testID $t_testID `
+            -testCase $t_testCase `
+            -exePath $t_exePath `
+            -WhatIf
+            
+            Assert-MockCalled Start-Job -Times 0 -Exactly -Scope It
         }
     }
 }
