@@ -29,7 +29,10 @@ Start-AutRun.ps1 -solutionPath "C:\Users\fleide\Repos\asa.unittest" -asaProjectN
 
 Function Start-AutRun{
 
-    [CmdletBinding()]
+    [CmdletBinding(
+        SupportsShouldProcess=$true,
+        ConfirmImpact="Low"
+        )]
     param (
         [ValidateSet("2.3.0")]
         [string]$asaNugetVersion = "2.3.0",
@@ -63,68 +66,71 @@ Function Start-AutRun{
     }
 
     PROCESS {
-        ################################################################################################################################
-        # 2xx - Creating run fixture
-
-        $testCases = New-AutRunFixture `
-            -solutionPath $solutionPath `
-            -asaProjectName $asaProjectName `
-            -unittestFolder $unittestFolder `
-            -testID $testID
-
-        ################################################################################################################################
-        # 4xx - Running the jobs
-        write-verbose "401 - Run SA in parallel jobs"
-
-        ForEach ($testCase in $testCases) {
-            New-AutRunJob `
-                -solutionPath $solutionPath `
-                -asaProjectName $asaProjectName `
-                -unittestFolder $unittestFolder `
-                -testID $testID `
-                -testCase $testCase `
-                -exePath $exePath
-        }
-
-        ## Wait for all jobs to complete and results ready to be received
-        write-verbose "402 - Waiting for all jobs to end..."
-
-        Wait-Job * | Out-Null
-
-        write-verbose "403 - Jobs done"
-
-        <#
-        ## Debug ~ Process the results
-        foreach($job in Get-Job)
+        if ($pscmdlet.ShouldProcess("Starting an asa.unittest run for $asaProjectName at $unittestFolder"))
         {
-            $result = Receive-Job $job
-            Write-Host $result
-        }
-        #>
+            ################################################################################################################################
+            # 2xx - Creating run fixture
 
-        ################################################################################################################################
-
-        write-verbose "501 - Calculating diffs"
-
-        $errorCounter = 0
-
-        ## For each Output test file, generate a testable file (adding brackets to it) then run the diff with the corresponding arranged output file
-
-        ForEach ($testCase in $testCases) {
-            $errorCounter += Get-AutRunResult `
+            $testCases = New-AutRunFixture `
                 -solutionPath $solutionPath `
                 -asaProjectName $asaProjectName `
                 -unittestFolder $unittestFolder `
-                -testID $testID `
-                -testCase $testCase
-        }
+                -testID $testID
 
-        ################################################################################################################################
+            ################################################################################################################################
+            # 4xx - Running the jobs
+            write-verbose "401 - Run SA in parallel jobs"
 
-        # Final result
-        if ($errorCounter -gt 0) {Write-Verbose "Ending Test Run with $errorCounter errors"}
-        if ($errorCounter -gt 0) {throw("Ending Test Run with $errorCounter errors")}
+            ForEach ($testCase in $testCases) {
+                New-AutRunJob `
+                    -solutionPath $solutionPath `
+                    -asaProjectName $asaProjectName `
+                    -unittestFolder $unittestFolder `
+                    -testID $testID `
+                    -testCase $testCase `
+                    -exePath $exePath
+            }
 
+            ## Wait for all jobs to complete and results ready to be received
+            write-verbose "402 - Waiting for all jobs to end..."
+
+            Wait-Job * | Out-Null
+
+            write-verbose "403 - Jobs done"
+
+            <#
+            ## Debug ~ Process the results
+            foreach($job in Get-Job)
+            {
+                $result = Receive-Job $job
+                Write-Host $result
+            }
+            #>
+
+            ################################################################################################################################
+
+            write-verbose "501 - Calculating diffs"
+
+            $errorCounter = 0
+
+            ## For each Output test file, generate a testable file (adding brackets to it) then run the diff with the corresponding arranged output file
+
+            ForEach ($testCase in $testCases) {
+                $errorCounter += Get-AutRunResult `
+                    -solutionPath $solutionPath `
+                    -asaProjectName $asaProjectName `
+                    -unittestFolder $unittestFolder `
+                    -testID $testID `
+                    -testCase $testCase
+            }
+
+            ################################################################################################################################
+
+            # Final result
+            if ($errorCounter -gt 0) {Write-Verbose "Ending Test Run with $errorCounter errors"}
+            if ($errorCounter -gt 0) {throw("Ending Test Run with $errorCounter errors")}
+
+        } #ShouldProcess
     } #PROCESS
     END {}
 }

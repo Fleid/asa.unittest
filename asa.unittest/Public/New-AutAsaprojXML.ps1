@@ -22,7 +22,10 @@ PowerShell object converted from an asaproj.json. The easiest way to generate th
 
 function New-AutAsaprojXML{
 
-    [CmdletBinding()]
+    [CmdletBinding(
+        SupportsShouldProcess=$true,
+        ConfirmImpact="Low"
+        )]
     param (
         [Parameter(ValueFromPipeline=$true)]
         [PSCustomObject]$sourceAsaproj
@@ -31,62 +34,66 @@ function New-AutAsaprojXML{
     BEGIN {}
 
     PROCESS {
-        ################################################################################################################################
-        write-verbose "001 - Testing the input"
+        if ($pscmdlet.ShouldProcess("Generating a XML file for $sourceAsaproj"))
+            {
 
-        if (($null -eq $sourceAsaproj.startFile) -or ($sourceAsaproj.startFile -eq "")) {
-            Throw "Error : startFile (aka .asaql path) is missing or empty from input asaProj file"
-        }
+            ################################################################################################################################
+            write-verbose "001 - Testing the input"
 
-        if (-not ($sourceAsaproj.configurations | Where-Object {$_.subType -in "JobConfig"}).count -eq 1) {
-            Throw "Error : JobConfig path is missing or empty from input asaProj file"
-        }
-
-        ################################################################################################################################
-
-        # Constants
-        $newline = "`r`n"
-        $header = "<Project ToolsVersion=`"4.0`" DefaultTargets=`"Build`" xmlns=`"http://schemas.microsoft.com/developer/msbuild/2003`">"
-        $footer = "</Project>"
-        $itemGroupStart = "<ItemGroup>"
-        $itemGroupEnd = "</ItemGroup>"
-        $itemFilter = @("InputMock","JobConfig")
-
-        ################################################################################################################################
-        write-verbose "101 - Generating the XML asaproj"
-
-        # Header
-        $targetAsaproj = $header + $newline
-
-        # First ItemGroup for script file (asaql)
-        $targetAsaproj += $itemGroupStart + $newline
-        $targetAsaproj += "<Script Include=`"$($sourceAsaproj.startFile)`"/>" + $newline
-        $targetAsaproj += $itemGroupEnd + $newline
-
-        # Second ItemGroup for InputMock (local input config files) and JobConfig
-        $targetAsaproj += $itemGroupStart + $newline
-
-        $sourceAsaproj.configurations | `
-            Where-Object {$_.subType -in $itemFilter} |
-            Foreach-Object -process {
-                $targetAsaproj += "<Configure Include=`"$($_.filePath)`">" + $newline
-                $targetAsaproj += "<SubType>$($_.subType)</SubType>" + $newline
-                $targetAsaproj += "</Configure>" + $newline
+            if (($null -eq $sourceAsaproj.startFile) -or ($sourceAsaproj.startFile -eq "")) {
+                Throw "Error : startFile (aka .asaql path) is missing or empty from input asaProj file"
             }
 
-        $targetAsaproj += $itemGroupEnd + $newline
+            if (-not ($sourceAsaproj.configurations | Where-Object {$_.subType -in "JobConfig"}).count -eq 1) {
+                Throw "Error : JobConfig path is missing or empty from input asaProj file"
+            }
 
-        # Footer
-        $targetAsaproj += $footer + $newline
+            ################################################################################################################################
 
-        ################################################################################################################################
-        write-verbose "401 - Writing the content to ouptut pipeline"
+            # Constants
+            $newline = "`r`n"
+            $header = "<Project ToolsVersion=`"4.0`" DefaultTargets=`"Build`" xmlns=`"http://schemas.microsoft.com/developer/msbuild/2003`">"
+            $footer = "</Project>"
+            $itemGroupStart = "<ItemGroup>"
+            $itemGroupEnd = "</ItemGroup>"
+            $itemFilter = @("InputMock","JobConfig")
 
-        # Create new object
-        $outputObject = $targetAsaproj
+            ################################################################################################################################
+            write-verbose "101 - Generating the XML asaproj"
 
-        $outputObject
+            # Header
+            $targetAsaproj = $header + $newline
 
+            # First ItemGroup for script file (asaql)
+            $targetAsaproj += $itemGroupStart + $newline
+            $targetAsaproj += "<Script Include=`"$($sourceAsaproj.startFile)`"/>" + $newline
+            $targetAsaproj += $itemGroupEnd + $newline
+
+            # Second ItemGroup for InputMock (local input config files) and JobConfig
+            $targetAsaproj += $itemGroupStart + $newline
+
+            $sourceAsaproj.configurations | `
+                Where-Object {$_.subType -in $itemFilter} |
+                Foreach-Object -process {
+                    $targetAsaproj += "<Configure Include=`"$($_.filePath)`">" + $newline
+                    $targetAsaproj += "<SubType>$($_.subType)</SubType>" + $newline
+                    $targetAsaproj += "</Configure>" + $newline
+                }
+
+            $targetAsaproj += $itemGroupEnd + $newline
+
+            # Footer
+            $targetAsaproj += $footer + $newline
+
+            ################################################################################################################################
+            write-verbose "401 - Writing the content to ouptut pipeline"
+
+            # Create new object
+            $outputObject = $targetAsaproj
+
+            $outputObject
+
+        } #ShouldProcess
     } #PROCESS
     END {}
 }

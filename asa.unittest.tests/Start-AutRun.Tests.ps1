@@ -329,6 +329,16 @@ Describe "Start-AutRun behavior orchestration" {`
         Mock New-AutRunJob {}
         Mock Get-AutRunResult {}
 
+        It "doesn't run on -Whatif" {
+            Start-AutRun `
+                -asaNugetVersion $t_asaNugetVersion `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder `
+                -WhatIf |
+            Assert-MockCalled New-AutRunJob -Times 0 -Exactly -Scope It
+        }
+
         It "runs a single New-AutRunFixture" {
             Start-AutRun `
                 -asaNugetVersion $t_asaNugetVersion `

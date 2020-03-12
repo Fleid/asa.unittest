@@ -58,6 +58,11 @@ Describe "New-AutAsaprojXML Nominal" {
         Should -be $outputXMLstring
     }
 
+    It "does nothing on -WhatIf" {
+        $sourceAsaprojMock | New-AutAsaprojXML -Whatif |
+        Should -be $null
+    }
+
 }
 
 Describe "New-AutAsaprojXML missing/empty startFile" {
