@@ -22,6 +22,8 @@ Describe "Get-AutRunResult Nominal" {
         Mock Get-ChildItem {return 1}
         Mock Get-AutFieldFromFileInfo {}
         Mock Get-Content {return (@{FilePath="foobar"} | ConvertTo-Json)}
+        Mock Add-Content {}
+        Mock jsondiffpatch {}
         Mock Out-File {}
 
         It "tries to get a list of files" {
@@ -35,6 +37,7 @@ Describe "Get-AutRunResult Nominal" {
             Assert-MockCalled Get-ChildItem -Times 1 -Exactly -Scope It
         }
 
+        Mock Get-AutFieldFromFileInfo {}
         It "tries nothing if it gets nothing" {
             Get-AutRunResult `
                 -solutionPath $t_solutionPath `
@@ -44,6 +47,73 @@ Describe "Get-AutRunResult Nominal" {
                 -testCase $t_testCase  | Out-Null
             
             Assert-MockCalled Out-File -Times 0  -Exactly -Scope It
+        }        
+
+        Mock Get-ChildItem {return 1}
+        It "calls Get-AutFieldFromFileInfo if find files" {
+            Get-AutRunResult `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder `
+                -testID $t_testID `
+                -testCase $t_testCase  | Out-Null
+            
+            Assert-MockCalled Get-AutFieldFromFileInfo -Times 1 -Exactly -Scope It
+        }
+
+        Mock Get-AutFieldFromFileInfo {return @(`
+                @{Basename0="003";FilePath="foobar";Basename1="Output";Basename2="fb3"},`
+                @{Basename0="001";FilePath="foobar1";Basename1="Output";Basename2="fb11"},`
+                @{Basename0="001";FilePath="foobar2";Basename1="Output";Basename2="fb12"},`
+                @{Basename0="002";FilePath="foobar";Basename1="Output";Basename2="fb2"}`
+            )}
+        It "Generates N testable files for N output files" {
+            Get-AutRunResult `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder `
+                -testID $t_testID `
+                -testCase $t_testCase  | Out-Null
+            
+            Assert-MockCalled Get-Content -Times 4 -Exactly -Scope It
+            Assert-MockCalled Add-Content -Times 4 -Exactly -Scope It
+        }
+
+        Mock Get-AutFieldFromFileInfo {return @(`
+            @{Basename0="003";FilePath="foobar";Basename1="Output";Basename2="fb3"},`
+            @{Basename0="001";FilePath="foobar1";Basename1="Output";Basename2="fb11"},`
+            @{Basename0="001";FilePath="foobar2";Basename1="Output";Basename2="fb12"},`
+            @{Basename0="002";FilePath="foobar";Basename1="Output";Basename2="fb2"}`
+        )}
+        Mock jsondiffpatch {return $null}
+        It "Tests and generates N result files for N output files" {
+            Get-AutRunResult `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder `
+                -testID $t_testID `
+                -testCase $t_testCase  | Out-Null
+            
+            Assert-MockCalled jsondiffpatch -Times 4 -Exactly -Scope It
+            Assert-MockCalled Out-File -Times 4 -Exactly -Scope It
+        }
+
+        Mock Get-AutFieldFromFileInfo {return @(`
+            @{Basename0="003";FilePath="foobar";Basename1="Output";Basename2="fb3"},`
+            @{Basename0="001";FilePath="foobar1";Basename1="Output";Basename2="fb11"},`
+            @{Basename0="001";FilePath="foobar2";Basename1="Output";Basename2="fb12"},`
+            @{Basename0="001";FilePath="foobar3";Basename1="Output";Basename2="fb13"},`
+            @{Basename0="002";FilePath="foobar";Basename1="Output";Basename2="fb2"}`
+        )}
+        Mock jsondiffpatch {return "a"}
+        It "returns N for N errors" {
+            Get-AutRunResult `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder `
+                -testID $t_testID `
+                -testCase $t_testCase  |
+            Should -be 5
         }
     }
 }
@@ -61,6 +131,8 @@ Describe "New-AutRunFixture empty folders"  {
         Mock Get-ChildItem {}
         Mock Get-AutFieldFromFileInfo {}
         Mock Get-Content {}
+        Mock Add-Content {}
+        Mock jsondiffpatch {}
         Mock Out-File {}
 
         It "provides 0 error in output pipeline on an empty folder" {
@@ -100,6 +172,8 @@ Describe "Get-AutRunResult parameters"  {
         Mock Get-ChildItem {return 1}
         Mock Get-AutFieldFromFileInfo {}
         Mock Get-Content {return (@{FilePath="foobar"} | ConvertTo-Json)}
+        Mock Add-Content {}
+        Mock jsondiffpatch {}
         Mock Out-File {}
 
         It "runs with a valid set of parameters" {
@@ -178,6 +252,8 @@ Describe "Get-AutRunResult paths"  {
         Mock Get-ChildItem {return 1}
         Mock Get-AutFieldFromFileInfo {}
         Mock Get-Content {return (@{FilePath="foobar"} | ConvertTo-Json)}
+        Mock Add-Content {}
+        Mock jsondiffpatch {}
         Mock Out-File {}
 
         Mock Test-Path {return $true}
