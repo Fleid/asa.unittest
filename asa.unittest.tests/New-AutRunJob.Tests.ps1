@@ -8,6 +8,32 @@ Import-Module (Join-Path $moduleRoot "$moduleName.psm1") -force
 #############################################################################################################
 # Invoke-Pester .\New-AutRunJob.Tests.ps1 -CodeCoverage .\..\asa.unittest\public\New-AutRunJob.ps1
 
+Describe "New-AutRunJob Nominal" {
+    InModuleScope $moduleName {
+
+        $t_solutionPath = "TestDrive:\foo"
+        $t_asaProjectName = "bar"
+        $t_unittestFolder = "bar.Tests"
+        $t_testID = "yyyymmddhhmmss"
+        $t_testCase = "123"
+        $t_exePath = "sa"
+
+        Mock Test-Path {return $true}
+        Mock Start-Job {}
+
+        It "starts a job" {
+            New-AutRunJob `
+            -solutionPath $t_solutionPath `
+            -asaProjectName $t_asaProjectName `
+            -unittestFolder $t_unittestFolder `
+            -testID $t_testID `
+            -testCase $t_testCase `
+            -exePath $t_exePath |
+            Assert-MockCalled Start-Job -Times 1 -Exactly -Scope It
+        }
+    }
+}
+
 Describe "New-AutRunJob Parameter" {
     InModuleScope $moduleName {
 
@@ -133,29 +159,3 @@ Describe "New-AutRunJob Paths" {
 }
 
 
-Describe "New-AutRunJob Nominal" {
-    InModuleScope $moduleName {
-
-        $t_solutionPath = "TestDrive:\foo"
-        $t_asaProjectName = "bar"
-        $t_unittestFolder = "bar.Tests"
-        $t_testID = "yyyymmddhhmmss"
-        $t_testCase = "123"
-        $t_exePath = "foo.exe"
-
-        Mock Test-Path {return $true}
-        Mock Start-Job {}
-
-        It "runs" {
-            New-AutRunJob `
-            -solutionPath $t_solutionPath `
-            -asaProjectName $t_asaProjectName `
-            -unittestFolder $t_unittestFolder `
-            -testID $t_testID `
-            -testCase $t_testCase `
-            -exePath $t_exePath |
-            Assert-MockCalled Start-Job -Times 1 -Exactly -Scope It
-        }
-
-    }
-}
