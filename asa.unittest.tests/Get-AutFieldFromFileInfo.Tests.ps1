@@ -6,7 +6,7 @@ $moduleName = Split-Path $moduleRoot -Leaf #Extract the module name from above
 Import-Module (Join-Path $moduleRoot "$moduleName.psm1") -force
 
 #############################################################################################################
-# Invoke-Pester .\Get-AutFieldFromFileInfo.Tests.ps1 -CodeCoverage .\..\asa.unittest\public\Get-AutFieldFromFileInfo.ps1
+# Invoke-Pester .\Get-AutFieldFromFileInfo.Tests.ps1 -CodeCoverage .\..\asa.unittest\private\Get-AutFieldFromFileInfo.ps1
 
 
 Describe "Get-AutFieldFromFileInfo parameters"  {
