@@ -98,9 +98,14 @@ Invoke-Pester
 # Install-PackageProvider Nuget -MinimumVersion 2.8.5.201 –Force
 Install-Module -Name PSScriptAnalyzer
 
-Set-Location C:\Users\fleide\Repos\asa.unittest
+$moduleFolder = "C:\Users\fleide\Repos\asa.unittest\asa.unittest"
+Set-Location $moduleFolder
 Invoke-ScriptAnalyzer -Path .
 Invoke-ScriptAnalyzer -Path .\public
 Invoke-ScriptAnalyzer -Path .\private
 
 ```
+
+### Code Coverage
+
+Command in comment at the top each test file
