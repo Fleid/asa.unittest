@@ -1,10 +1,10 @@
-# Developer experience
+# Developer Experience
 
-## Preparing the solution
+## Solution
 
-Proper folder hierarchy:
+Folder hierarchy:
 
-```PowerShell
+```Text
 ModuleRoot
 |- Examples
 |- Module.test
@@ -15,24 +15,40 @@ ModuleRoot
     |- Module.psd1 (manifest auto generated via `New-ModuleManifest`
 ```
 
-From there, the module can be loaded via:
+Loading the module manually:
 
 ```PowerShell
-Set-Location C:\Users\fleide\Repos\asa.unittest\asa.unittest
-Import-Module -Name .\asa.unittest.psm1 -verbose -force
+$moduleFolder = "C:\Users\fleide\Repos\asa.unittest\asa.unittest"
+$moduleFile = ".\asa.unittest.psm1"
+Set-Location $moduleFolder
+Import-Module -Name $moduleFile -verbose -force
 #Remove-Module asa.unittest
 
-# Then
+```
 
-Install-AutToolset -installPath C:\Users\fleide\Repos\asa.unittest\examples\ASAHelloWorld.Tests\2_act -npmpackages jsondiffpatch -nugetpackages Microsoft.Azure.StreamAnalytics.CICD
+Testing a run
 
-Start-AutRun -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\fleide\Repos\asa.unittest\examples" -unittestFolder "ASAHelloworld.Tests" -verbose
+```PowerShell
+$installFolder = "C:\Users\fleide\Repos\asa.unittest\examples\ASAHelloWorld.Tests\2_act"
+Install-AutToolset `
+    -installPath $installFolder `
+    -npmPackages jsondiffpatch `
+    -nugetPackages Microsoft.Azure.StreamAnalytics.CICD
+
+$asaProjectName = "ASAHelloWorld"
+$solutionPath = "C:\Users\fleide\Repos\asa.unittest\examples"
+$unittestFolder = "ASAHelloworld.Tests"
+Start-AutRun `
+    -asaProjectName $asaProjectName `
+    -solutionPath $solutionPath `
+    -unittestFolder $unittestFolder `
+    -verbose
+
 ```
 
 ## Development
 
-Scripts should be isolated in atomic .ps1 file, written as advanced functions.
-They can be loaded and ran directly.
+Scripts should be isolated in atomic .ps1 file, written as advanced functions. They can then be loaded and ran directly.
 
 Common parameters:
 
@@ -42,6 +58,7 @@ $solutionPath = "C:\Users\fleide\Repos\asa.unittest\examples"
 $asaProjectName = "ASAHelloWorld"
 $unittestFolder = "ASAHelloWorld.Tests"
 $testID = (Get-Date -Format "yyyyMMddHHmmss")
+
 ```
 
 ## Testing
@@ -49,32 +66,35 @@ $testID = (Get-Date -Format "yyyyMMddHHmmss")
 ### Creating a new test
 
 - Add a new fixture via `New-Fixture .\MyScript.ps1`
-- Move the .test into asa.unittest.test
+- Move the .test into `\asa.unittest.test`
 - Update its header to:
 
 ```PowerShell
 ### If tests are in ModuleRoot\Whatever, and scripts reachable via a module at ModuleRoot\Module\Module.psm1
 
-$projectRoot = Resolve-Path "$PSScriptRoot\.." #ModuleRoot\Whatever becomes \ModuleRoot with ..
-$moduleRoot = Split-Path (Resolve-Path "$projectRoot\*\*.psd1") #Look for the manifest to get to ModuleRoot\Module
-$moduleName = Split-Path $moduleRoot -Leaf #Extract the module name from above
+$projectRoot = Resolve-Path "$PSScriptRoot\.."
+#Look for the manifest to get to ModuleRoot\Module
+$moduleRoot = Split-Path (Resolve-Path "$projectRoot\*\*.psd1")
+#Extract the module name from above
+$moduleName = Split-Path $moduleRoot -Leaf
 Import-Module (Join-Path $moduleRoot "$moduleName.psm1") -force
 
-#############################################################################################################
+###
 ```
 
 ### Running a test
 
 ```PowerShell
-Set-Location C:\Users\fleide\Repos\asa.unittest\asa.unittest.tests
+$testFolder = "C:\Users\fleide\Repos\asa.unittest\asa.unittest.tests"
+Set-Location $testFolder
 Invoke-Pester .\MyScript.Tests.ps1
 Invoke-Pester
+
 ```
 
 ### Linting
 
 ```PowerShell
-
 # Install-PackageProvider Nuget -MinimumVersion 2.8.5.201 –Force
 Install-Module -Name PSScriptAnalyzer
 
@@ -82,4 +102,5 @@ Set-Location C:\Users\fleide\Repos\asa.unittest
 Invoke-ScriptAnalyzer -Path .
 Invoke-ScriptAnalyzer -Path .\public
 Invoke-ScriptAnalyzer -Path .\private
+
 ```
