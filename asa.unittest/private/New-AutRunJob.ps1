@@ -58,7 +58,10 @@ Function New-AutRunJob{
         {
             Start-Job -ArgumentList $exePath,$testPath,$testCase,$asaProjectName -ScriptBlock{
                 param($exePath,$testPath,$testCase,$asaProjectName)
-                & $exePath localrun -Project $testPath\$testCase\$asaProjectName\$asaProjectName.asaproj -OutputPath $testPath\$testCase} |
+                #Can't do that since Start-Job is invoked in a separate scope with no context
+                #Invoke-External -l $exePath localrun -Project "$testPath\$testCase\$asaProjectName\$asaProjectName.asaproj" -OutputPath "$testPath\$testCase"
+                & $exePath localrun -Project $testPath\$testCase\$asaProjectName\$asaProjectName.asaproj -OutputPath $testPath\$testCase
+            }|
             Out-Null
         }
     } #PROCESS

@@ -34,8 +34,8 @@ Function Start-AutRun{
         ConfirmImpact="Low"
         )]
     param (
-        [ValidateSet("2.3.0")]
-        [string]$asaNugetVersion = "2.3.0",
+        [ValidateSet("2.3.0","2.4.0")]
+        [string]$asaNugetVersion = "2.4.0",
 
         [string]$solutionPath = $ENV:BUILD_SOURCESDIRECTORY, # Azure DevOps Pipelines default variable
 

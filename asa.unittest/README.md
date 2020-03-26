@@ -53,12 +53,13 @@ Scripts should be isolated in atomic .ps1 file, written as advanced functions. T
 Common parameters:
 
 ```PowerShell
-$ASAnugetVersion = "2.3.0"
+$ASAnugetVersion = "2.4.0"
 $solutionPath = "C:\Users\fleide\Repos\asa.unittest\examples"
 $asaProjectName = "ASAHelloWorld"
 $unittestFolder = "ASAHelloWorld.Tests"
 $testID = (Get-Date -Format "yyyyMMddHHmmss")
 
+$exePath = "C:\Users\fleide\Repos\asa.unittest\examples\ASAHelloWorld.Tests\2_act\Microsoft.Azure.StreamAnalytics.CICD.2.4.0\tools\sa.exe"
 ```
 
 ## Testing

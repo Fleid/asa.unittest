@@ -43,7 +43,7 @@ Describe "Start-AutRun parameter asaNugetVersion" {
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder |
-            Assert-MockCalled New-AutRunJob -Times 1 -Exactly -Scope It -ParameterFilter { $exePath -like "*$t_asaNugetVersion*"}
+            Assert-MockCalled New-AutRunJob -Times 1 -Exactly -Scope It -ParameterFilter { ($exePath -like "*$t_asaNugetVersion*") -or ($exePath -like "*2.4.0*")}
         }
         Mock New-AutRunFixture {}
 

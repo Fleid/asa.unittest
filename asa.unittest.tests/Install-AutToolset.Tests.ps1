@@ -51,8 +51,7 @@ Describe "Install-AutToolset behavior nuget" {
         Mock Test-Path {return $false} -ParameterFilter { $PathType -and $PathType -eq "Leaf" }
         Mock New-Item {}
         Mock Invoke-WebRequest {} #Nuget download
-        Mock Invoke-External {} -ParameterFilter {$LiteralPath -like "*nuget*"}
-        Mock Invoke-External {} -ParameterFilter {$LiteralPath -eq "npm"}
+        Mock Invoke-External {}
 
         It "does not download nuget on default parameter" {
             Install-AutToolset -installPath $t_installPath |
@@ -110,8 +109,7 @@ Describe "Install-AutToolset npm" {
             Mock Test-Path {return $true} -ParameterFilter { $Path -and $Path -eq $t_installPath }
             Mock New-Item {}
             Mock Invoke-WebRequest {} #Nuget download
-            Mock Invoke-External {} -ParameterFilter {$LiteralPath -like "*nuget*"}
-            Mock Invoke-External {} -ParameterFilter {$LiteralPath -eq "npm"}
+            Mock Invoke-External {} 
 
             It "does not invoke npm on default parameter" {
                 Install-AutToolset -installPath $t_installPath |
@@ -151,8 +149,7 @@ Describe "Install-AutToolset nuget + npm" {
         Mock Test-Path {return $false} -ParameterFilter { $PathType -and $PathType -eq "Leaf" }
         Mock New-Item {}
         Mock Invoke-WebRequest {} #Nuget download
-        Mock Invoke-External {} -ParameterFilter {$LiteralPath -like "*nuget*"}
-        Mock Invoke-External {} -ParameterFilter {$LiteralPath -eq "npm"}
+        Mock Invoke-External {}
 
         It "does invoke nuget for nuget + npm" {
             Install-AutToolset -installPath $installPath -nugetPackages "bar1","bar2" -npmPackages "bar1","bar2" |
@@ -162,37 +159,6 @@ Describe "Install-AutToolset nuget + npm" {
         It "does invoke npm for nuget + npm" {
             Install-AutToolset -installPath $installPath -nugetPackages "bar1","bar2" -npmPackages "bar1","bar2" |
             Assert-MockCalled Invoke-External -Times 2 -Exactly -Scope It -ParameterFilter { $LiteralPath -like "npm*" }
-        }
-
-    }
-}
-
-Describe "Install-AutToolset Invoke-External" {
-    InModuleScope $moduleName {
-
-        $t_installPath = "foo"
-
-        Mock Test-Path {return $true} -ParameterFilter {$Path -eq $t_installPath}
-        Mock Test-Path {return $true} -ParameterFilter { $PathType -and $PathType -eq "Leaf" }
-        Mock New-Item {}
-        Mock Invoke-WebRequest {}
-        #Mock Invoke-External {} -ParameterFilter {$LiteralPath -like "*nuget*"}
-        #Mock Invoke-External {} -ParameterFilter {$LiteralPath -eq "npm"}
-
-        It "fails if installPath is missing" {
-            { Install-AutToolset } |
-            Should -throw "-installPath is required"
-        }
-
-        It "doesn't create a folder if it exists" {
-            Install-AutToolset -installPath $t_installPath |
-            Assert-MockCalled New-Item -Times 0 -Exactly -Scope It  -ParameterFilter {$Path -eq $t_installPath}
-        }
-
-        Mock Test-Path {return $false} -ParameterFilter {$Path -eq $t_installPath}
-        It "does create a folder it doesn't" {
-            Install-AutToolset -installPath $t_installPath |
-            Assert-MockCalled New-Item -Times 1 -Exactly -Scope It  -ParameterFilter {$Path -eq $t_installPath}
         }
 
     }

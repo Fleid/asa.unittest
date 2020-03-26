@@ -173,3 +173,31 @@ Describe "New-AutRunJob Paths" {
 }
 
 
+Describe "New-AutRunJob Invoke-External" {
+    InModuleScope $moduleName {
+
+        $t_solutionPath = "TestDrive:\foo"
+        $t_asaProjectName = "bar"
+        $t_unittestFolder = "bar.Tests"
+        $t_testID = "yyyymmddhhmmss"
+        $t_testCase = "123"
+        $t_exePath = "sa.exe"
+
+        Mock Test-Path {return $true}
+        Mock Invoke-External {}
+        
+
+        It "does invoke sa.exe once" {
+            New-AutRunJob `
+            -solutionPath $t_solutionPath `
+            -asaProjectName $t_asaProjectName `
+            -unittestFolder $t_unittestFolder `
+            -testID $t_testID `
+            -testCase $t_testCase `
+            -exePath $t_exePath
+
+            # THIS IS LEFT HERE IN CASE I MANAGED TO GET START-JOB TO OPERATE WITH Invoke-External - update Times to 1 then
+            Assert-MockCalled Invoke-External -Times 0 -Exactly -Scope It #-ParameterFilter {$LiteralPath -like "*sa.exe"}
+        }
+    }
+}
