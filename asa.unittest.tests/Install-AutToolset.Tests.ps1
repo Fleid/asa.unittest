@@ -167,3 +167,33 @@ Describe "Install-AutToolset nuget + npm" {
     }
 }
 
+Describe "Install-AutToolset Invoke-External" {
+    InModuleScope $moduleName {
+
+        $t_installPath = "foo"
+
+        Mock Test-Path {return $true} -ParameterFilter {$Path -eq $t_installPath}
+        Mock Test-Path {return $true} -ParameterFilter { $PathType -and $PathType -eq "Leaf" }
+        Mock New-Item {}
+        Mock Invoke-WebRequest {}
+        #Mock Invoke-External {} -ParameterFilter {$LiteralPath -like "*nuget*"}
+        #Mock Invoke-External {} -ParameterFilter {$LiteralPath -eq "npm"}
+
+        It "fails if installPath is missing" {
+            { Install-AutToolset } |
+            Should -throw "-installPath is required"
+        }
+
+        It "doesn't create a folder if it exists" {
+            Install-AutToolset -installPath $t_installPath |
+            Assert-MockCalled New-Item -Times 0 -Exactly -Scope It  -ParameterFilter {$Path -eq $t_installPath}
+        }
+
+        Mock Test-Path {return $false} -ParameterFilter {$Path -eq $t_installPath}
+        It "does create a folder it doesn't" {
+            Install-AutToolset -installPath $t_installPath |
+            Assert-MockCalled New-Item -Times 1 -Exactly -Scope It  -ParameterFilter {$Path -eq $t_installPath}
+        }
+
+    }
+}
