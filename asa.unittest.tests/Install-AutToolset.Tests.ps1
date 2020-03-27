@@ -6,7 +6,7 @@ $moduleName = Split-Path $moduleRoot -Leaf #Extract the module name from above
 Import-Module (Join-Path $moduleRoot "$moduleName.psm1") -force
 
 #############################################################################################################
-# Invoke-Pester .\Install-AutToolset.Tests.ps1 -CodeCoverage .\..\asa.unittest\public\Install-AutToolset.ps1
+# Invoke-Pester .\Install-AutToolset.Tests.ps1 -CodeCoverage .\..\asa.unittest\private\Install-AutToolset.ps1
 
 Describe "Install-AutToolset paramater installPath" {
     InModuleScope $moduleName {

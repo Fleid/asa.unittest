@@ -8,7 +8,7 @@ PS: VSCode has a weird behavior on that topic, use Terminal : https://github.com
 .DESCRIPTION
 See documentation for more information : https://github.com/Fleid/asa.unittest
 
-This script will create the required folder fixture and download the dependencies
+This script will create the required folder fixture, download the dependencies and add a gitignore file to protect against repo sprawl
 
 .PARAMETER installPath
 Path to the folder in the fixture that will contain the dependencies, usually (solutionPath\asaProjectName.Tests\2_act)
@@ -19,7 +19,10 @@ Create-AutToolset -installPath C:\Users\fleide\Repos\asa.unittest\examples\ASAHe
 
 Function New-AutProject{
 
-    [CmdletBinding()]
+    [CmdletBinding(
+        SupportsShouldProcess=$true,
+        ConfirmImpact="Low"
+        )]
     param (
         [string]$installPath = $(Throw "-installPath is required")
     )
@@ -29,14 +32,28 @@ Function New-AutProject{
     }
 
     PROCESS {
-        # Create folder structure
-        if (-not (Test-Path "$installPath\1_assert")) {New-Item -ItemType Directory -Path "$installPath\1_assert" | Out-Null}
-        if (-not (Test-Path "$installPath\2_act")) {New-Item -ItemType Directory -Path "$installPath\2_act" | Out-Null}
-        if (-not (Test-Path "$installPath\3_assert")) {New-Item -ItemType Directory -Path "$installPath\3_assert" | Out-Null}
+        if ($pscmdlet.ShouldProcess("Creating a new AUT project at $installPath"))
+        {
+            # Create folder structure
+            if (-not (Test-Path "$installPath\1_arrange")) {New-Item -ItemType Directory -Path "$installPath\1_arrange" | Out-Null}
+            if (-not (Test-Path "$installPath\2_act")) {New-Item -ItemType Directory -Path "$installPath\2_act" | Out-Null}
+            if (-not (Test-Path "$installPath\3_assert")) {New-Item -ItemType Directory -Path "$installPath\3_assert" | Out-Null}
 
-        # Install dependencies
-        Install-AutToolset -installPath "$installPath\2_act" -npmpackages jsondiffpatch -nugetpackages Microsoft.Azure.StreamAnalytics.CICD
+            # Install dependencies
+            Install-AutToolset -installPath "$installPath\2_act" -npmpackages jsondiffpatch -nugetpackages Microsoft.Azure.StreamAnalytics.CICD
 
+            $gitIgnoreContent = `
+"
+# testing dependencies
+2_act/nuget.exe
+2_act/Microsoft.Azure.StreamAnalytics.CICD.*/
+
+# local test results
+3_assert/*
+"
+            if (-not (Test-Path "$installPath\.gitignore" -PathType Leaf)) {$gitIgnoreContent | Out-File "$installPath\.gitignore"}
+
+        } # SHOULD
     } # PROCESS
     END {}
 }

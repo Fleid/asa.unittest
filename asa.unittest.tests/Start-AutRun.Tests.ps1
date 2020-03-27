@@ -284,6 +284,18 @@ Describe "Start-AutRun parameter unittestFolder" {`
             Assert-MockCalled New-AutRunFixture -Times 1 -Exactly -Scope It -ParameterFilter { $unittestFolder -eq "$t_asaProjectName.Tests"}
         }
 
+        $t_unittestFolder = "TestingForReal"
+        It "doesn't overwrite a unittestFolder with default (bar.Tests)" {
+            Start-AutRun `
+                -asaNugetVersion $t_asaNugetVersion `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder |
+            Assert-MockCalled New-AutRunFixture -Times 1 -Exactly -Scope It -ParameterFilter { $unittestFolder -eq "$t_unittestFolder"}
+        }
+        $t_unittestFolder = "bar.Tests"
+
+
         Mock Test-Path {return $false} -ParameterFilter {$path -like "*sa.exe"}
         It "fails if unittest doesn't lead to sa.exe" {
             {Start-AutRun `

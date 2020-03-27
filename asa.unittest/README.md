@@ -29,11 +29,9 @@ Import-Module -Name $moduleFile -verbose -force
 Testing a run
 
 ```PowerShell
-$installFolder = "C:\Users\fleide\Repos\asa.unittest\examples\ASAHelloWorld.Tests\2_act"
-Install-AutToolset `
-    -installPath $installFolder `
-    -npmPackages jsondiffpatch `
-    -nugetPackages Microsoft.Azure.StreamAnalytics.CICD
+$installFolder = "C:\Users\fleide\Repos\asa.unittest\examples\ASAHelloWorld.Tests\"
+New-AutProject `
+    -installPath $installFolder
 
 $asaProjectName = "ASAHelloWorld"
 $solutionPath = "C:\Users\fleide\Repos\asa.unittest\examples"
