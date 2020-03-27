@@ -25,12 +25,12 @@ In this article:
 
 ### Context
 
-At the time of writing, the major IDEs that support ASA ([VSCode](https://code.visualstudio.com/) and [Visual Studio](https://visualstudio.microsoft.com/vs/)) don't offer unit testing for it natively.
+At the time of writing, the major IDEs that support ASA ([VSCode](https://code.visualstudio.com/) and [Visual Studio](https://visualstudio.microsoft.com/vs/)) do not offer native unit testing capabilities.
 
 This solution intends to fill that gap by enabling:
 
 - fully local, repeatable executions over multiple test cases
-- automated evaluation of the resulting outputs against the expected ones
+- automated evaluation of the resulting outputs against expected ones
 
 For that it leverages the **local testing with sample data** capabilities of either [VSCode](https://docs.microsoft.com/en-us/azure/stream-analytics/visual-studio-code-local-run) or [Visual Studio](https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-vs-tools-local-run), as unit testing should not rely on external services (no live input).
 
@@ -44,7 +44,7 @@ The whole thing is wired together in a **PowerShell** script based on a predefin
 
 *[figure 1 - High level overview](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_overview.png?raw=true)*
 
-This repository provides an **installation script**, in addition to the test script, to automate most of the setup. This installation script also allows automated executions in a continuous build pipeline such as **Azure DevOps Pipelines**.
+This repository provides an **installation script** (`New-AutProject`), in addition to the test script (`Start-AutRun`), to automate most of the setup. This installation script also allows automated executions in a continuous build pipeline such as **Azure DevOps Pipelines**.
 
 Please note that this solution is currently available **only on Windows** as it depends on *Microsoft.Azure.StreamAnalytics.CICD*.
 
@@ -76,24 +76,38 @@ From there, the installation script will take care of the other dependencies (in
 
 To be noted that those requirements are installed by default on every Azure DevOps Pipelines agents.
 
+### Fixture structure
+
+The scripts will expect the following folder structure to run properly:
+
+- **mySolutionFolder** <- *Potentially new top solution folder*
+  - **ASATest1** <- *Existing ASA project folder, containing the `.asaql` file and inputs folder*
+  - **ASATest1.Tests** <- *New folder for the test project*
+    - 1_arrange <- *New folder that will contain test cases*
+    - 2_act <- *New folder that will contain dependencies and scripts*
+    - 3_assert <- *New folder that will contain test run results*
+
+Step-by-step processes below explain how to set up this environment from scratch.
+
 ### Hello World
 
 The following steps show how to download and run the solution with the included Hello World ASA project:
 
-1. Check all requirements are installed
-1. Clone/download this repository (it includes a basic ASA project `ASAHelloWorld` and a couple of pre-configured tests in *unittest\1_arrange* )
-1. **Only once** - execute the installer in the *unittest\2_act* folder: `Install-AutToolset.ps1`
-   - Open a **Powershell** host (terminal, ISE...)
-   - Navigate to `asa.unittest\unittest\2_act`
-   - Run `.\Install-AutToolset.ps1 -solutionPath "C:\Users\florian\Repos\asa.unittest" -verbose` with the right `-solutionPath` (absolute paths)
+1. Check all the [requirements](https://github.com/Fleid/asa.unittest#Requirements) are installed
+1. Import the module from the PowerShell Gallery
+   - Open a **Powershell** host (terminal, ISE, VSCode...)
+   - Run `Install-Module -Name asa.unittest`
+1. Clone/download the [Examples folder](https://github.com/Fleid/asa.unittest/tree/master/examples) from this repository, save it to a convenient location (`C:\temp\examples` from now on)
+1. **Only once** - execute the installer: `New-AutProject`
+   - In the **Powershell** host
+   - Run `New-AutProject -installPath "C:\temp\examples\ASAHelloWorld.Tests" -verbose` with `installPath` the absolute path to the **test folder**, **not** the ASA project folder
    - ![Screenshot of a terminal run of the installation script](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_install_terminal.png?raw=true)
    - In case of issues see [troubleshooting](https://github.com/Fleid/asa.unittest#Troubleshooting)
-1. Execute the test runner in the *unittest\2_act* folder: `Start-AutRun.ps1`
-   - Open a **Powershell** host (terminal, ISE...)
-   - Navigate to `asa.unittest\unittest\2_act`
-   - Run `.\Start-AutRun.ps1 -asaProjectName "ASAHelloWorld" -solutionPath "C:\Users\florian\Repos\asa.unittest" -assertPath "C:\Users\florian\Repos\asa.unittest\unittest\3_assert"-verbose` with the right `-solutionPath` and `-assertPath` (absolute paths)
+1. Execute the test runner: `Start-AutRun`
+   - In the **Powershell** host
+   - Run `Start-AutRun -solutionPath "C:\temp\examples" -asaProjectName "ASAHelloWorld" -verbose` with `solutionPath` the absolute path to the folder containing both the ASA and the Test projects. `Start-AutRun` offers additional parameters that can be discovered via its help
    - ![Screenshot of a terminal run of the installation script](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_prun_terminal.png?raw=true)
-   - Here it is expected that the test ends with 2 errors, in test case *003*
+   - Here it is expected that the test ends with 2 errors, in test case *003*. The folder `C:\temp\examples\ASAHelloWorld.Tests\3_assert` will contain the full trace of the run
    - In case of issues see [troubleshooting](https://github.com/Fleid/asa.unittest#Troubleshooting)
 
 ### Installation
@@ -101,16 +115,13 @@ The following steps show how to download and run the solution with the included 
 The following steps show how to download and run the solution on an existing ASA project:
 
 1. Check all requirements are installed
-1. If it doesn't exist, **create a solution folder** (simple top folder)
 1. Prepare the ASA Project
+   - If it doesn't exist, **create a solution folder** (simple top folder, `C:\temp\examples` in the HelloWorld above)
    - Copy or move the existing ASA project to the solution folder
-   - ~~If the project was developed with VSCode (not necessary for Visual Studio), add an `.asaproj` file to the ASA project as explained below~~
    - In ASA, add local inputs for every source used in the query (see [VSCode](https://docs.microsoft.com/en-us/azure/stream-analytics/visual-studio-code-local-run) / [Visual Studio](https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-vs-tools-local-run))
-1. Clone/download this repository, copy or move the *unittest* folder to the solution folder
-1. **Only once** - execute the installer in the *unittest\2_act* folder: `Install-AutToolset.ps1`
-   - Open a **Powershell** host (terminal, ISE...)
-   - Navigate to `unittest\2_act` in the solution folder
-   - Run `.\Install-AutToolset.ps1 -solutionPath "C:\<SOLUTIONFOLDERPATH>" -verbose` with the right `-solutionPath` (absolute paths)
+1. **Only once** - Import the module from the PowerShell Gallery
+   - Open a **Powershell** host (terminal, ISE, VSCode...)
+   - Run `Install-Module -Name asa.unittest`
    - In case of issues see [troubleshooting](https://github.com/Fleid/asa.unittest#Troubleshooting)
 
 ***
@@ -122,13 +133,12 @@ The following steps show how to download and run the solution on an existing ASA
 Once the [installation](https://github.com/Fleid/asa.unittest#Installation) is done:
 
 1. [Configure a test case](https://github.com/Fleid/asa.unittest#Configuring-a-test-case)
-1. Execute the test runner in the *unittest\2_act* folder: `Start-AutRun.ps1`
+1. Execute the test runner: `Start-AutRun`
    - Open a **Powershell** host (terminal, ISE...)
-   - Navigate to `unittest\2_act` in the solution folder
-   - Run `.\Start-AutRun.ps1 -asaProjectName "<ASAPROJECTNAME>" -solutionPath "C:\<SOLUTIONFOLDERPATH>" -assertPath "C:\<SOLUTIONFOLDERPATH>\unittest\3_assert"-verbose` with the right `-solutionPath` and `-assertPath` (absolute paths)
+   - Run `Start-AutRun -solutionPath "MyAbsolutePath -asaProjectName "MyAsaProject" -verbose` with `solutionPath` the absolute path to the folder containing both the ASA and the Test projects. `Start-AutRun` offers additional parameters that can be discovered via its help
    - In case of issues see **troubleshooting**
 
-The recommended way of running jobs is via a terminal window.
+For local development, the recommended way of running jobs is via a terminal window.
 
 ### Configuring a test case
 
@@ -185,11 +195,12 @@ Note that both scripts use default values for most parameters. These default val
 
 The mandatory parameters are:
 
-- For the **installation script** (`Install-AutToolset`)
-  - `$unittestFolder` if it's not the default (`unittest`)
+- For the **installation script** (`New-AutProject`)
+  - `$installPath`, the folder containing the test fixture
 - For the **test runner** (`Start-AutRun`)
   - `$asaProjectName`
-  - `$unittestFolder` if it's not the default (`unittest`)
+  - `$unittestFolder` is defaulted to `$asaProjectName.Tests`
+  - `$solutionPath` is defaulted to `$ENV:BUILD_SOURCESDIRECTORY`
 
 ### Troubleshooting
 
@@ -211,19 +222,16 @@ PowerShell [remoting for jobs](https://docs.microsoft.com/en-us/powershell/modul
 
 ## Internal details
 
-**(This needs to be updated to reflect the new parallel run workflow)**
-
-![figure 2 - Detailed overview](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_overviewFull.png?raw=true)
-
-*[figure 2 - Detailed overview](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_overviewFull.png?raw=true)*
-
 ### Change Log
 
+- March 2020 :
+  - Full refactoring to allow publication in the PowerShell Gallery
+  - Complete unit test coverage (Pester) and linting
 - February 2020 :
   - Automated the generation of the XML asaproj file (required by sa.exe) from the JSON one (for VSCode project)
   - Renamed scripts to follow PowerShell standards, with backward compatibility
 
-### Scenario and components
+### Components
 
 This solution uses the following components:
 
@@ -232,19 +240,6 @@ This solution uses the following components:
 - the **jsondiffpatch** npm package ([GitHub]((https://github.com/benjamine/JsonDiffPatch) ), [npm](https://www.npmjs.com/package/jsondiffpatch)) which allows to compare json files
   - the [npm CLI](https://docs.npmjs.com/cli-documentation/) to install the package above, available with [Node.JS](https://nodejs.org/en/download/)
 - [PowerShell](https://github.com/PowerShell/PowerShell/releases) as the shell to run intermediary tasks and execute the required commands
-
-These components are used in a script as follow:
-
-![figure 1 - Schema of the unit testing setup - it is detailed below](https://github.com/Fleid/fleid.github.io/blob/master/_posts/202001_asa_unittest/ut_solution.png?raw=true)
-
-The script will expect the following folder structure to run properly:
-
-- **mySolutionFolder** <- *Potentially new top solution folder*
-  - **ASATest1** <- *Existing ASA project folder, containing the `.asaql` file and inputs folder*
-  - **unittest** <- *New folder for the test project*
-    - 1_arrange <- *New folder that will contain test cases*
-    - 2_act <- *New folder that will contain dependencies and scripts*
-    - 3_assert <- *New folder that will contain test run results*
 
 ### Shortcomings
 
