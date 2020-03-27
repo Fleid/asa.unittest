@@ -1,8 +1,0 @@
-
-# testing dependencies
-2_act/nuget.exe
-2_act/Microsoft.Azure.StreamAnalytics.CICD.*/
-
-# local test results
-3_assert/*
-
