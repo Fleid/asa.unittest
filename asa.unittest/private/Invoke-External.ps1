@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
 Helper function for invoking an external utility (executable).
 The raison d'être for this function is to allow calls to external executables via their *full paths* to be mocked in Pester.
