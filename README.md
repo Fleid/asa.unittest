@@ -87,7 +87,7 @@ The scripts will expect the following folder structure to run properly:
     - 2_act <- *New folder that will contain dependencies and scripts*
     - 3_assert <- *New folder that will contain test run results*
 
-Step-by-step processes below explain how to set up this environment from scratch.
+The step-by-step processes below explain how to set up this environment from scratch.
 
 ### Hello World
 
@@ -123,6 +123,9 @@ The following steps show how to download and run the solution on an existing ASA
    - Open a **Powershell** host (terminal, ISE, VSCode...)
    - Run `Install-Module -Name asa.unittest`
    - In case of issues see [troubleshooting](https://github.com/Fleid/asa.unittest#Troubleshooting)
+1. **Only once** - execute the installer: `New-AutProject`
+   - In the **Powershell** host
+   - Run `New-AutProject -installPath "MySolutionPath\MyTestFolder" -verbose` with `installPath` the absolute path to the **test folder**, **not** the ASA project folder. Usually the `MyTestFolder` subfolder is of the form `MyAsaProject.Tests`
 
 ***
 
@@ -135,7 +138,7 @@ Once the [installation](https://github.com/Fleid/asa.unittest#Installation) is d
 1. [Configure a test case](https://github.com/Fleid/asa.unittest#Configuring-a-test-case)
 1. Execute the test runner: `Start-AutRun`
    - Open a **Powershell** host (terminal, ISE...)
-   - Run `Start-AutRun -solutionPath "MyAbsolutePath -asaProjectName "MyAsaProject" -verbose` with `solutionPath` the absolute path to the folder containing both the ASA and the Test projects. `Start-AutRun` offers additional parameters that can be discovered via its help
+   - Run `Start-AutRun -solutionPath "MySolutionPath" -asaProjectName "MyAsaProject" -verbose` with `solutionPath` the absolute path to the folder containing both the ASA and the Test projects. `Start-AutRun` offers additional parameters that can be discovered via its help
    - In case of issues see **troubleshooting**
 
 For local development, the recommended way of running jobs is via a terminal window.
