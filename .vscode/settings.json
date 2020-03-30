@@ -4,11 +4,13 @@
         "CICD",
         "MYINPUT",
         "SOLUTIONFOLDERPATH",
+        "SOURCESDIRECTORY",
         "asaproj",
         "asaql",
         "aut",
         "jsondiffpatch",
         "prun",
+        "tabler",
         "toolset",
         "unittest"
     ]

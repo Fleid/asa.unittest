@@ -18,6 +18,7 @@ In this article:
   - [Troubleshooting](https://github.com/Fleid/asa.unittest#Troubleshooting)
 - [Internal Details](https://github.com/Fleid/asa.unittest#Internal-Details)
   - [Change Log](https://github.com/Fleid/asa.unittest#Change-Log)
+  - [Thanks](https://github.com/Fleid/asa.unittest#Thanks)
 
 ***
 
@@ -125,7 +126,7 @@ The following steps show how to download and run the solution on an existing ASA
    - In case of issues see [troubleshooting](https://github.com/Fleid/asa.unittest#Troubleshooting)
 1. **Only once** - execute the installer: `New-AutProject`
    - In the **Powershell** host
-   - Run `New-AutProject -installPath "MySolutionPath\MyTestFolder" -verbose` with `installPath` the absolute path to the **test folder**, **not** the ASA project folder. Usually the `MyTestFolder` subfolder is of the form `MyAsaProject.Tests`
+   - Run `New-AutProject -installPath "MySolutionPath\MyTestFolder" -verbose` with `installPath` the absolute path to the **test folder**, **not** the ASA project folder. Usually the `MyTestFolder` sub-folder is of the form `MyAsaProject.Tests`
 
 ***
 
@@ -249,3 +250,9 @@ This solution uses the following components:
 - Slow execution
 - No integration to the usual IDEs
 - No cross-platform options
+
+### Thanks
+
+- [Kevin Marquette](https://twitter.com/KevinMarquette) for his [invaluable](https://powershellexplained.com/2017-01-21-powershell-module-continious-delivery-pipeline/) blog on PowerShell
+- [jsondiffpatch](https://github.com/benjamine/JsonDiffPatch) : Diff & patch JavaScript objects
+- [Tabler icons](https://github.com/tabler/tabler-icons) : A set of over 400 free MIT-licensed high-quality SVG icons for you to use in your web projects
