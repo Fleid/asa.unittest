@@ -1,6 +1,6 @@
 # Unit testing Azure Stream Analytics
 
-Unit testing for [Azure Stream Analytics](https://docs.microsoft.com/en-us/azure/stream-analytics/) (ASA), the serverless [complex-event-processing](https://en.wikipedia.org/wiki/Complex_event_processing) service running in Azure.
+[PowerShell Gallery module](https://www.powershellgallery.com/packages/asa.unittest/) for unit testing [Azure Stream Analytics](https://docs.microsoft.com/en-us/azure/stream-analytics/) (ASA) jobs, the serverless [complex-event-processing](https://en.wikipedia.org/wiki/Complex_event_processing) service running in Azure.
 
 In this article:
 
@@ -97,7 +97,7 @@ The following steps show how to download and run the solution with the included 
 1. Check all the [requirements](https://github.com/Fleid/asa.unittest#Requirements) are installed
 1. Import the module from the PowerShell Gallery
    - Open a **Powershell** host (terminal, ISE, VSCode...)
-   - Run `Install-Module -Name asa.unittest`
+   - Run `Install-Module -Name asa.unittest` to import the module from the [PowerShell Gallery](https://www.powershellgallery.com/packages/asa.unittest)
 1. Clone/download the [Examples folder](https://github.com/Fleid/asa.unittest/tree/master/examples) from this repository, save it to a convenient location (`C:\temp\examples` from now on)
 1. **Only once** - execute the installer: `New-AutProject`
    - In the **Powershell** host
@@ -122,7 +122,7 @@ The following steps show how to download and run the solution on an existing ASA
    - In ASA, add local inputs for every source used in the query (see [VSCode](https://docs.microsoft.com/en-us/azure/stream-analytics/visual-studio-code-local-run) / [Visual Studio](https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-vs-tools-local-run))
 1. **Only once** - Import the module from the PowerShell Gallery
    - Open a **Powershell** host (terminal, ISE, VSCode...)
-   - Run `Install-Module -Name asa.unittest`
+   - Run `Install-Module -Name asa.unittest` to import the module from the [PowerShell Gallery](https://www.powershellgallery.com/packages/asa.unittest)
    - In case of issues see [troubleshooting](https://github.com/Fleid/asa.unittest#Troubleshooting)
 1. **Only once** - execute the installer: `New-AutProject`
    - In the **Powershell** host

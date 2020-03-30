@@ -1,27 +1,18 @@
-# Generic module definition, sourced from the PSGraph one by Kevin Marquette
-# https://powershellexplained.com/2017-01-21-powershell-module-continious-delivery-pipeline
+#Get public and private function definition files.
+$Public  = @( Get-ChildItem -Path $PSScriptRoot\public\*.ps1 -ErrorAction SilentlyContinue )
+$Private = @( Get-ChildItem -Path $PSScriptRoot\private\*.ps1 -ErrorAction SilentlyContinue )
+#$ModuleRoot = $PSScriptRoot
 
-[CmdletBinding()]
-param()
-
-$Script:PSModuleRoot = $PSScriptRoot
-Write-Verbose -Message "This file is replaced in the build output, and is only used for debugging."
-Write-Verbose -Message $PSScriptRoot
-
-Write-Verbose "Importing Functions"
-
-# Import everything in these folders
-foreach($folder in @('private', 'public', 'classes'))
+#Dot source the files
+Foreach($import in @($Public + $Private))
 {
-    $root = Join-Path -Path $PSScriptRoot -ChildPath $folder
-    if(Test-Path -Path $root)
+    Try
     {
-        Write-Verbose "processing folder $root"
-        $files = Get-ChildItem -Path $root -Filter *.ps1
-
-        # dot source each file
-        $files | where-Object{ $_.name -NotLike '*.Tests.ps1'} |
-            ForEach-Object{Write-Verbose $_.name; . $_.FullName}
+        . $import.fullname
+    }
+    Catch
+    {
+        Write-Error -Message "Failed to import function $($import.fullname): $_"
     }
 }
 

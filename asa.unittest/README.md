@@ -29,7 +29,7 @@ Import-Module -Name $moduleFile -verbose -force
 Testing a run
 
 ```PowerShell
-$installFolder = "C:\Users\fleide\Repos\asa.unittest\examples\ASAHelloWorld.Tests\"
+$installFolder = "C:\temp\fleide2\Repos\asa.unittest\examples\ASAHelloWorld.Tests\"
 New-AutProject `
     -installPath $installFolder
 
@@ -42,6 +42,15 @@ Start-AutRun `
     -unittestFolder $unittestFolder `
     -verbose
 
+```
+
+From the Gallery
+
+```PowerShell
+Get-InstalledModule -name asa.unittest
+Uninstall-Module -Name asa.unittest
+
+Install-Module -Name asa.unittest -verbose
 ```
 
 ## Development
@@ -108,7 +117,6 @@ Invoke-ScriptAnalyzer -Path .\private
 ### Code Coverage
 
 Command in comment at the top each test file
-
 
 ## Publishing to the Gallery
 
