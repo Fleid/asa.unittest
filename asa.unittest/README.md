@@ -99,7 +99,7 @@ Install-Module -Name PSScriptAnalyzer
 
 $moduleFolder = "C:\Users\fleide\Repos\asa.unittest\asa.unittest"
 Set-Location $moduleFolder
-Invoke-ScriptAnalyzer -Path .
+Invoke-ScriptAnalyzer -Path . -Recurse
 Invoke-ScriptAnalyzer -Path .\public
 Invoke-ScriptAnalyzer -Path .\private
 
@@ -108,3 +108,15 @@ Invoke-ScriptAnalyzer -Path .\private
 ### Code Coverage
 
 Command in comment at the top each test file
+
+
+## Publishing to the Gallery
+
+```PowerShell
+$moduleFolder = "C:\Users\fleide\Repos\asa.unittest\asa.unittest"
+$moduleManifest = ".\asa.unittest.psd1"
+Set-Location $moduleFolder
+Test-ModuleManifest $moduleManifest -verbose
+
+Publish-Module -Name asa.unittest -NuGetApiKey XXX
+```
