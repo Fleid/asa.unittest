@@ -118,5 +118,11 @@ $moduleManifest = ".\asa.unittest.psd1"
 Set-Location $moduleFolder
 Test-ModuleManifest $moduleManifest -verbose
 
-Publish-Module -Name asa.unittest -NuGetApiKey XXX
+$rootFolder = "C:\Users\fleide\Repos\asa.unittest"
+$modulePath = ".\asa.unittest"
+$nugetApiKey = "XXX"
+Set-Location $rootFolder
+
+Publish-Module -Path $modulePath -WhatIf -Verbose -NuGetApiKey $nugetApiKey
+Publish-Module -Path $modulePath -NuGetApiKey $nugetApiKey
 ```
