@@ -44,7 +44,7 @@ function New-AutAsaprojXML{
                 Throw "Error : startFile (aka .asaql path) is missing or empty from input asaProj file"
             }
 
-            if (-not ($sourceAsaproj.configurations | Where-Object {$_.subType -in "JobConfig"}).count -eq 1) {
+            if (-not ($sourceAsaproj.configurations | Where-Object {$_.subType -in "JobConfig"})) {
                 Throw "Error : JobConfig path is missing or empty from input asaProj file"
             }
 
