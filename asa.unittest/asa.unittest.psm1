@@ -16,4 +16,4 @@ Foreach($import in @($Public + $Private))
     }
 }
 
-Export-ModuleMember -Function (Get-ChildItem -Path "$PSScriptRoot\public\*.ps1").basename
+Export-ModuleMember -Function $Public.Basename
