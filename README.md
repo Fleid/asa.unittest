@@ -57,7 +57,7 @@ From [Wikipedia](https://en.wikipedia.org/wiki/Unit_testing):
 
 Here **the unit is an individual output of an ASA job / query**. The test runner will need all the test inputs required for the job, but it will calculate test results only for outputs having a reference data file provided.
 
-For practical reason (limiting the number of tests mean limiting the number of parallel runs to do), a single test can involve multiple outputs, as is demonstrated in [the sample files](https://github.com/Fleid/asa.unittest/tree/master/unittest/1_arrange).
+For practical reason (limiting the number of tests mean limiting the number of parallel runs to do), a single test can involve multiple outputs, as is demonstrated in [the sample files](https://github.com/Fleid/asa.unittest/tree/master/examples/ASAHelloWorld.Tests/1_arrange).
 
 Unit tests should not rely on external services, so all runs are done via local runs on sample data. Using live sources, or the Cloud service, to run tests would not qualify as unit testing.
 
@@ -152,7 +152,7 @@ A test case is made of at least 2 files : a **test input data** file and a **ref
 
 Once this is done:
 
-1. In `unittest\1_arrange`, prepare input files:
+1. In `MyTestFolder\1_arrange`, prepare input files:
    - Copy the **test input data** file to be used in the test case for the test case
    - Rename it according to the file name convention : `xxx~input~sourceAlias~testLabel.yyy`
       - `xxx` : for the test case number (grouping multiple inputs and outputs together), for example : 001, 002...
@@ -161,7 +161,7 @@ Once this is done:
       - `sourceAlias` : alias of the source in the query
       - `testLabel` : a label to identify the test (`nominal`, `missingField`, `nullValue`...)
       - `yyy` : any of the supported data format extension (csv, json, avro)
-1. In `unittest\1_arrange`, prepare output files:
+1. In `MyTestFolder\1_arrange`, prepare output files:
    - Copy the **reference output data** file to be used in the test case
    - Rename it according to the file name convention : `xxx~output~sinkAlias~testLabel.json`
       - `xxx` : for the test case number (grouping multiple inputs and outputs together), for example : 001, 002...
@@ -197,7 +197,7 @@ Use a [PowerShell task](https://docs.microsoft.com/en-us/azure/devops/pipelines/
 
 Note that both scripts use default values for most parameters. These default values are wired to the [build variables](https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml#build-variables) provided by Azure DevOps. As such, they can be left unassigned in the task.
 
-The mandatory parameters are:
+The parameters are:
 
 - For the **installation script** (`New-AutProject`)
   - `$installPath`, the folder containing the test fixture
