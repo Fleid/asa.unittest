@@ -92,6 +92,8 @@ Import-Module (Join-Path $moduleRoot "$moduleName.psm1") -force
 
 ### Running a test
 
+To be ran in PowerShell 5.1.x and 7.x
+
 ```PowerShell
 $testFolder = "C:\Users\fleide\Repos\asa.unittest\asa.unittest.tests"
 Set-Location $testFolder
