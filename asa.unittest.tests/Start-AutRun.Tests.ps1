@@ -109,15 +109,6 @@ Describe "Start-AutRun parameter solutionPath" {
             Assert-MockCalled New-AutRunFixture -Times 1 -Exactly -Scope It
         }
 
-        $ENV:BUILD_SOURCESDIRECTORY = $null
-        It "doesn't run without a solutionPath (no ENV)" {
-            {Start-AutRun `
-                -asaNugetVersion $t_asaNugetVersion `
-                -asaProjectName $t_asaProjectName `
-                -unittestFolder $t_unittestFolder} |
-            Should -throw "Invalid -solutionPath"
-        }
-
         $ENV:BUILD_SOURCESDIRECTORY = $t_solutionPath
         It "loads the default solutionPath from ENV" {
             Start-AutRun `
