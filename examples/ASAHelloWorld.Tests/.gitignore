@@ -1,7 +1,7 @@
 # Windows being Windows
 desktop.ini
 
-# testing dependancies
+# testing dependencies
 2_act/nuget.exe
 2_act/Microsoft.Azure.StreamAnalytics.CICD.*/
 
