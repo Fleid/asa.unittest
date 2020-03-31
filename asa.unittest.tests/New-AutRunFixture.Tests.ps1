@@ -17,8 +17,15 @@ Describe "New-AutRunFixture nominal"  {
         $t_unittestFolder = "bar.Tests"
         $t_testID = "yyyymmddhhmmss"
 
-        Mock Get-ChildItem {return 1}
-        Mock Get-AutFieldFromFileInfo {return @(@{Basename0="003";FilePath="foobar";Basename1="Input";FullName="fb"},@{Basename0="001";FilePath="foobar1";Basename1="Input";FullName="fb"},@{Basename0="001";FilePath="foobar2"},@{Basename0="002";FilePath="foobar"})}
+        $t_tests = @(
+            [PSCustomObject] @{Basename0="003";FilePath="foobar";Basename1="Input";FullName="fb"},
+            [PSCustomObject] @{Basename0="001";FilePath="foobar1";Basename1="Input";FullName="fb"},
+            [PSCustomObject] @{Basename0="001";FilePath="foobar2"},
+            [PSCustomObject] @{Basename0="002";FilePath="foobar"}
+        )
+
+        Mock Get-ChildItem {1}
+        Mock Get-AutFieldFromFileInfo {return $t_tests}
         Mock New-Item {}
         Mock Copy-Item {}
         Mock Test-Path {return $true}
