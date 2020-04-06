@@ -69,9 +69,35 @@ Function Get-AutRunResult{
             @{Name = "testableFilePath"; Expression = {"$testPath\$($_.SourceName).testable.json"}}, #to be generated
             @{Name = "testCaseOutputFile"; Expression = {"$testPath\$asaProjectName\Inputs\$($_.FullName)"}} |
         Foreach-Object -process {
-            $testableContent = "[$(Get-Content -Path $_.rawContent)]"; #adding brackets
-            Add-Content -Path $_.testableFilePath -Value $testableContent;
-            $testResult = Invoke-External -l "jsondiffpatch" $_.testCaseOutputFile $_.testableFilePath;
+
+            # Prepare input content (sorting)
+            $referenceContent = Get-Content -Path $_.testCaseOutputFile | ConvertFrom-Json
+
+            $referenceContentProperties = `
+                    $referenceContent  | `
+                    Get-Member -MemberType NoteProperty | `
+                    Sort-Object -Property Name | `
+                    Select-Object -ExpandProperty Name
+
+            $referenceSortedContent = $referenceContent | Sort-Object -Property $referenceContentProperties | ConvertTo-JSON
+            
+            Add-Content -Path "$($_.testCaseOutputFile).sorted" -Value $referenceSortedContent
+
+            # Prepare output content (format, sorting)
+            $testableContent = ("[$(Get-Content -Path $_.rawContent)]") | ConvertFrom-Json
+
+            $testableContentProperties = `
+                    $testableContent | `
+                    Get-Member -MemberType NoteProperty | `
+                    Sort-Object -Property Name | `
+                    Select-Object -ExpandProperty Name
+
+            $testableSortedContent = $testableContent | Sort-Object -Property $testableContentProperties | ConvertTo-JSON
+            
+            Add-Content -Path $_.testableFilePath -Value $testableSortedContent
+
+            # Actual testing
+            $testResult = Invoke-External -l "jsondiffpatch" "$($_.testCaseOutputFile).sorted" $_.testableFilePath;
             $testResult | Out-File "$testPath\$($_.SourceName).Result.txt"
             if ($testResult) {$errorCounter++}
         }
