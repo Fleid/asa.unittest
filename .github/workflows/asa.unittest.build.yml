@@ -29,4 +29,6 @@ jobs:
     - name: Run a multi-line script
       run: |
         pwsh
-        Invoke-Pester -path "$GITHUB_WORKSPACE\asa.unittest.tests\"
+        $testPath = "$GITHUB_WORKSPACE\asa.unittest.tests\"
+        Write-Host "Testing at $testPath"
+        Invoke-Pester -script $testPath
