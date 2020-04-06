@@ -29,7 +29,7 @@ jobs:
     - name: Run a multi-line script
       run: |
         Install-Module -Name Pester -Force
-        Write-Host "Is this something? $($ENV:GITHUB_WORKSPACE)"
-        $testPath = ".\asa.unittest.tests\"
-        Write-Host "Testing at $testPath"
-        Invoke-Pester -Script $testPath
+        $testPath = "$($ENV:GITHUB_WORKSPACE)\asa.unittest.tests"
+        New-Item -ItemType Directory -Path "$testPath\Results"
+        Write-Host "Testing at $testPath, output at $testPath\Results"
+        Invoke-Pester -Script $testPath -OutputFile $testPath\Results\Test-Pester.XML -OutputFormat NUnitXML
