@@ -75,8 +75,8 @@ Describe "Get-AutRunResult Nominal" {
                 -testID $t_testID `
                 -testCase $t_testCase  | Out-Null
 
-            Assert-MockCalled Get-Content -Times 4 -Exactly -Scope It
-            Assert-MockCalled Add-Content -Times 4 -Exactly -Scope It
+            Assert-MockCalled Get-Content -Times 8 -Exactly -Scope It #4 for ref, 4 for output
+            Assert-MockCalled Add-Content -Times 8 -Exactly -Scope It #4 for ref, 4 for output
         }
 
         Mock Get-AutFieldFromFileInfo {return @(`
