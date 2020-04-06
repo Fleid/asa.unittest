@@ -40,9 +40,9 @@ Describe "Start-AutRun parameter asaNugetVersion" {
 
         Mock New-AutRunFixture {return @{test="001"}}
         Mock Get-ChildItem {return @(`
-            @{Name="Microsoft.Azure.StreamAnalytics.CICD.6.6.7"; LastWriteTime="2020-01-01 12:00:00"},`
-            @{Name="nuget.exe"; LastWriteTime="2020-05-01 12:00:00"},`
-            @{Name="Microsoft.Azure.StreamAnalytics.CICD.18.45.123"; LastWriteTime="2020-03-01 12:00:00"} `
+            [PSCustomObject] @{Name="Microsoft.Azure.StreamAnalytics.CICD.6.6.7"; LastWriteTime="2020-01-01 12:00:00"},`
+            [PSCustomObject] @{Name="nuget.exe"; LastWriteTime="2020-05-01 12:00:00"},`
+            [PSCustomObject] @{Name="Microsoft.Azure.StreamAnalytics.CICD.18.45.123"; LastWriteTime="2020-03-01 12:00:00"} `
         )}
         It "runs without an asaNugetVersion" {
             Start-AutRun `
