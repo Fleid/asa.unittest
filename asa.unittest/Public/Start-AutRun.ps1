@@ -63,8 +63,8 @@ Function Start-AutRun{
                 Get-ChildItem -path "$solutionPath\$unittestFolder\2_act\" | `
                 Where-Object { ($_.Name -like "Microsoft.Azure.StreamAnalytics.CICD.*") `
                     -and ($_.Name -match '([0-9]+\.[0-9]+\.[0-9]+)$') } | `
-                Sort-Object -Descending -Property LastWriteTime -Top 1 | `
-                Select-Object -expandproperty Name `
+                Sort-Object -Descending -Property LastWriteTime | `
+                Select-Object -First 1 -ExpandProperty Name `
             ).Substring(37) #Microsoft.Azure.StreamAnalytics.CICD.
         }
 
