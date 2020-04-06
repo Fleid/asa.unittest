@@ -23,7 +23,7 @@ Describe "Get-AutRunResult Nominal" {
         Mock Get-AutFieldFromFileInfo {}
         Mock Get-Content {return (@{FilePath="foobar"} | ConvertTo-Json)}
         Mock Add-Content {}
-        Mock jsondiffpatch {}
+        Mock Invoke-External {}
         Mock Out-File {}
 
         It "tries to get a list of files" {
@@ -85,7 +85,7 @@ Describe "Get-AutRunResult Nominal" {
             @{Basename0="001";FilePath="foobar2";Basename1="Output";Basename2="fb12"},`
             @{Basename0="002";FilePath="foobar";Basename1="Output";Basename2="fb2"}`
         )}
-        Mock jsondiffpatch {return $null}
+        Mock Invoke-External {return $null}
         It "Tests and generates N result files for N output files" {
             Get-AutRunResult `
                 -solutionPath $t_solutionPath `
@@ -94,7 +94,7 @@ Describe "Get-AutRunResult Nominal" {
                 -testID $t_testID `
                 -testCase $t_testCase  | Out-Null
 
-            Assert-MockCalled jsondiffpatch -Times 4 -Exactly -Scope It
+            Assert-MockCalled Invoke-External -Times 4 -Exactly -Scope It
             Assert-MockCalled Out-File -Times 4 -Exactly -Scope It
         }
 
@@ -105,7 +105,7 @@ Describe "Get-AutRunResult Nominal" {
             @{Basename0="001";FilePath="foobar3";Basename1="Output";Basename2="fb13"},`
             @{Basename0="002";FilePath="foobar";Basename1="Output";Basename2="fb2"}`
         )}
-        Mock jsondiffpatch {return "a"}
+        Mock Invoke-External {return "a"}
         It "returns N for N errors" {
             Get-AutRunResult `
                 -solutionPath $t_solutionPath `
@@ -118,7 +118,7 @@ Describe "Get-AutRunResult Nominal" {
     }
 }
 
-Describe "New-AutRunFixture empty folders"  {
+Describe "Get-AutRunResult empty folders"  {
     InModuleScope $moduleName {
 
         $t_solutionPath = "TestDrive:\foo"
@@ -132,7 +132,7 @@ Describe "New-AutRunFixture empty folders"  {
         Mock Get-AutFieldFromFileInfo {}
         Mock Get-Content {}
         Mock Add-Content {}
-        Mock jsondiffpatch {}
+        Mock Invoke-External {}
         Mock Out-File {}
 
         It "provides 0 error in output pipeline on an empty folder" {
@@ -173,7 +173,7 @@ Describe "Get-AutRunResult parameters"  {
         Mock Get-AutFieldFromFileInfo {}
         Mock Get-Content {return (@{FilePath="foobar"} | ConvertTo-Json)}
         Mock Add-Content {}
-        Mock jsondiffpatch {}
+        Mock Invoke-External {}
         Mock Out-File {}
 
         It "runs with a valid set of parameters" {
@@ -253,7 +253,7 @@ Describe "Get-AutRunResult paths"  {
         Mock Get-AutFieldFromFileInfo {}
         Mock Get-Content {return (@{FilePath="foobar"} | ConvertTo-Json)}
         Mock Add-Content {}
-        Mock jsondiffpatch {}
+        Mock Invoke-External {}
         Mock Out-File {}
 
         Mock Test-Path {return $true}

@@ -71,7 +71,7 @@ Function Get-AutRunResult{
         Foreach-Object -process {
             $testableContent = "[$(Get-Content -Path $_.rawContent)]"; #adding brackets
             Add-Content -Path $_.testableFilePath -Value $testableContent;
-            $testResult = jsondiffpatch $_.testCaseOutputFile $_.testableFilePath;
+            $testResult = Invoke-External -l "jsondiffpatch" $_.testCaseOutputFile $_.testableFilePath;
             $testResult | Out-File "$testPath\$($_.SourceName).Result.txt"
             if ($testResult) {$errorCounter++}
         }
