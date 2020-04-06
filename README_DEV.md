@@ -33,7 +33,8 @@ Testing a run
 ```PowerShell
 $installFolder = "C:\users\fleide\Repos\asa.unittest\examples\ASAHelloWorld.Tests\"
 New-AutProject `
-    -installPath $installFolder
+    -installPath $installFolder `
+    -verbose
 
 $asaProjectName = "ASAHelloWorld"
 $solutionPath = "C:\users\fleide\Repos\asa.unittest\examples"
