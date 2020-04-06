@@ -24,6 +24,8 @@ Set-Location $moduleFolder
 Import-Module -Name $moduleFile -verbose -force
 #Remove-Module asa.unittest
 
+#Check what's installed
+$env:psmodulePath
 ```
 
 Testing a run
