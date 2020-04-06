@@ -80,7 +80,7 @@ Function Get-AutRunResult{
                     Select-Object -ExpandProperty Name
 
             $referenceSortedContent = $referenceContent | Sort-Object -Property $referenceContentProperties | ConvertTo-JSON
-            
+
             Add-Content -Path "$($_.testCaseOutputFile).sorted" -Value $referenceSortedContent
 
             # Prepare output content (format, sorting)
@@ -93,7 +93,7 @@ Function Get-AutRunResult{
                     Select-Object -ExpandProperty Name
 
             $testableSortedContent = $testableContent | Sort-Object -Property $testableContentProperties | ConvertTo-JSON
-            
+
             Add-Content -Path $_.testableFilePath -Value $testableSortedContent
 
             # Actual testing
