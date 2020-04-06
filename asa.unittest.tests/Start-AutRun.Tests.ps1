@@ -26,6 +26,7 @@ Describe "Start-AutRun parameter asaNugetVersion" {
         Mock New-AutRunFixture {}
         Mock New-AutRunJob {}
         Mock Get-AutRunResult {}
+        Mock Get-ChildItem {}
 
         $t_asaNugetVersion = "2.3.0"
         It "runs with a valid asaNugetVersion" {
@@ -38,14 +39,22 @@ Describe "Start-AutRun parameter asaNugetVersion" {
         }
 
         Mock New-AutRunFixture {return @{test="001"}}
+        Mock Get-ChildItem {return @(`
+            @{Name="Microsoft.Azure.StreamAnalytics.CICD.6.6.7"; LastWriteTime="2020-01-01 12:00:00"},`
+            @{Name="nuget.exe"; LastWriteTime="2020-05-01 12:00:00"},`
+            @{Name="Microsoft.Azure.StreamAnalytics.CICD.18.45.123"; LastWriteTime="2020-03-01 12:00:00"} `
+        )}
         It "runs without an asaNugetVersion" {
             Start-AutRun `
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder |
-            Assert-MockCalled New-AutRunJob -Times 1 -Exactly -Scope It -ParameterFilter { ($exePath -like "*Microsoft.Azure.StreamAnalytics.CICD.*\tools\sa.exe")}
+            Assert-MockCalled New-AutRunJob -Times 1 -Exactly -Scope It -ParameterFilter { ($exePath -like "*Microsoft.Azure.StreamAnalytics.CICD.18.45.123\tools\sa.exe")}
         }
         Mock New-AutRunFixture {}
+        Mock Get-ChildItem {}
+
+<# Removed to provide forward compatibility
 
         $t_asaNugetVersion = "1.0.0"
         It "fails with a invalid asaNugetVersion" {
@@ -56,7 +65,9 @@ Describe "Start-AutRun parameter asaNugetVersion" {
                 -unittestFolder $t_unittestFolder} |
             Should -throw "Cannot validate argument on parameter 'asaNugetVersion'"
         }
+#>
 
+<# Added feature to grab the latest installed version of the component
         $t_asaNugetVersion = ""
         It "fails with an empty asaNugetVersion" {
             {Start-AutRun `
@@ -66,6 +77,7 @@ Describe "Start-AutRun parameter asaNugetVersion" {
                 -unittestFolder $t_unittestFolder} |
             Should -throw "Cannot validate argument on parameter 'asaNugetVersion'"
         }
+#>
 
         $t_asaNugetVersion = "2.3.0"
         Mock Test-Path {return $false} -ParameterFilter {$path -like "*sa.exe"}
@@ -99,6 +111,7 @@ Describe "Start-AutRun parameter solutionPath" {
         Mock New-AutRunFixture {}
         Mock New-AutRunJob {}
         Mock Get-AutRunResult {}
+        Mock Get-ChildItem {}
 
         It "runs with a valid solutionPath" {
             Start-AutRun `
@@ -160,6 +173,7 @@ Describe "Start-AutRun parameter asaProjectName" {
         Mock New-AutRunFixture {}
         Mock New-AutRunJob {}
         Mock Get-AutRunResult {}
+        Mock Get-ChildItem {}
 
         $t_solutionPath = "foo"
         It "runs with a asaProjectName" {
@@ -249,6 +263,7 @@ Describe "Start-AutRun parameter unittestFolder" {`
         Mock New-AutRunFixture {}
         Mock New-AutRunJob {}
         Mock Get-AutRunResult {}
+        Mock Get-ChildItem {}
 
         It "runs with a valid unittestFolder" {
             Start-AutRun `
@@ -331,6 +346,7 @@ Describe "Start-AutRun behavior orchestration" {`
         Mock New-AutRunFixture {}
         Mock New-AutRunJob {}
         Mock Get-AutRunResult {}
+        Mock Get-ChildItem {}
 
         It "doesn't run on -Whatif" {
             Start-AutRun `
@@ -431,6 +447,7 @@ Describe "Start-AutRun behavior result processing" {`
         Mock New-AutRunFixture {return @(@{test="001"},@{test="002"})}
         Mock New-AutRunJob {}
         Mock Get-AutRunResult {return 0}
+        Mock Get-ChildItem {}
 
         It "doesn't throw for 0 errors" {
             {Start-AutRun `

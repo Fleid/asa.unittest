@@ -34,8 +34,8 @@ Function Start-AutRun{
         ConfirmImpact="Low"
         )]
     param (
-        [ValidateSet("2.3.0","2.4.0","2.4.1")]
-        [string]$asaNugetVersion = "2.4.1",
+        #[ValidateSet("2.3.0","2.4.0","2.4.1")]
+        [string]$asaNugetVersion,
 
         [string]$solutionPath = $ENV:BUILD_SOURCESDIRECTORY, # Azure DevOps Pipelines default variable
 
@@ -57,6 +57,16 @@ Function Start-AutRun{
         )) {Throw "Invalid -asaProjectName (3-63 alp_ha-num)"}
 
         if (-not (Test-Path "$solutionPath\$unittestFolder\1_arrange")) {Throw "Can't find 1_arrange folder at $solutionPath\$unittestFolder\1_arrange"}
+
+        if (-not $asaNugetVersion) {
+            $asaNugetVersion = (`
+                Get-ChildItem -path "$solutionPath\$unittestFolder\2_act\" | `
+                Where-Object { ($_.Name -like "Microsoft.Azure.StreamAnalytics.CICD.*") `
+                    -and ($_.Name -match '([0-9]+\.[0-9]+\.[0-9]+)$') } | `
+                Sort-Object -Descending -Property LastWriteTime -Top 1 | `
+                Select-Object -expandproperty Name `
+            ).Substring(37) #Microsoft.Azure.StreamAnalytics.CICD.
+        }
 
         $exePath = "$solutionPath\$unittestFolder\2_act\Microsoft.Azure.StreamAnalytics.CICD.$asaNugetVersion\tools\sa.exe"
         if (-not (Test-Path $exePath -PathType Leaf)) {Throw "Can't find sa.exe at $solutionPath\$unittestFolder\2_act\Microsoft.Azure.StreamAnalytics.CICD.$asaNugetVersion\tools\sa.exe"}
