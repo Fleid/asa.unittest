@@ -27,6 +27,7 @@ Describe "Start-AutRun parameter asaNugetVersion" {
         Mock New-AutRunJob {}
         Mock Get-AutRunResult {}
         Mock Get-ChildItem {}
+        Mock Get-Content {}
 
         $t_asaNugetVersion = "2.3.0"
         It "runs with a valid asaNugetVersion" {
@@ -112,6 +113,7 @@ Describe "Start-AutRun parameter solutionPath" {
         Mock New-AutRunJob {}
         Mock Get-AutRunResult {}
         Mock Get-ChildItem {}
+        Mock Get-Content {}
 
         It "runs with a valid solutionPath" {
             Start-AutRun `
@@ -174,6 +176,7 @@ Describe "Start-AutRun parameter asaProjectName" {
         Mock New-AutRunJob {}
         Mock Get-AutRunResult {}
         Mock Get-ChildItem {}
+        Mock Get-Content {}
 
         $t_solutionPath = "foo"
         It "runs with a asaProjectName" {
@@ -264,6 +267,7 @@ Describe "Start-AutRun parameter unittestFolder" {`
         Mock New-AutRunJob {}
         Mock Get-AutRunResult {}
         Mock Get-ChildItem {}
+        Mock Get-Content {}
 
         It "runs with a valid unittestFolder" {
             Start-AutRun `
@@ -347,6 +351,7 @@ Describe "Start-AutRun behavior orchestration" {`
         Mock New-AutRunJob {}
         Mock Get-AutRunResult {}
         Mock Get-ChildItem {}
+        Mock Get-Content {}
 
         It "doesn't run on -Whatif" {
             Start-AutRun `
@@ -448,6 +453,7 @@ Describe "Start-AutRun behavior result processing" {`
         Mock New-AutRunJob {}
         Mock Get-AutRunResult {return 0}
         Mock Get-ChildItem {}
+        Mock Get-Content {return "MyErrorResults"}
 
         It "doesn't throw for 0 errors" {
             {Start-AutRun `
