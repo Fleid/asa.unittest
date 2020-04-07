@@ -40,7 +40,7 @@ Function New-AutProject{
             if (-not (Test-Path "$installPath\3_assert")) {New-Item -ItemType Directory -Path "$installPath\3_assert" | Out-Null}
 
             # Install dependencies
-            Install-AutToolset -installPath "$installPath\2_act" -npmpackages jsondiffpatch -nugetpackages Microsoft.Azure.StreamAnalytics.CICD
+            Install-AutToolset -installPath "$installPath\2_act" -nugetpackages Microsoft.Azure.StreamAnalytics.CICD
 
             $gitIgnoreContent = `
 "
