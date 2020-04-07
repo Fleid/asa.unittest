@@ -67,6 +67,7 @@ Function Get-AutRunResult{
             TestCase,
             @{Name = "rawContent"; Expression = {"$testPath\$($_.SourceName).json"}}, #sa.exe output
             @{Name = "testableFilePath"; Expression = {"$testPath\$($_.SourceName).testable.json"}}, #to be generated
+            @{Name = "sortedTestCaseOutputFilePath"; Expression = {"$testPath\$($_.Basename).sorted.json"}}, #to be generated
             @{Name = "testCaseOutputFile"; Expression = {"$testPath\$asaProjectName\Inputs\$($_.FullName)"}} |
         Foreach-Object -process {
 
@@ -81,8 +82,7 @@ Function Get-AutRunResult{
 
             $referenceSortedContent = $referenceContent | Sort-Object -Property $referenceContentProperties | ConvertTo-JSON
 
-            $sortedTestCaseOutputFile = "$($_.testCaseOutputFile).sorted.json"
-            Add-Content -Path $sortedTestCaseOutputFile -Value $referenceSortedContent
+            Add-Content -Path $_.sortedTestCaseOutputFilePath -Value $referenceSortedContent
 
             # Prepare output content (format, sorting)
             $testableContent = ("[$(Get-Content -Path $_.rawContent)]") | ConvertFrom-Json
@@ -98,9 +98,16 @@ Function Get-AutRunResult{
             Add-Content -Path $_.testableFilePath -Value $testableSortedContent
 
             # Actual testing
-            $testResult = Invoke-External -l "jsondiffpatch" $sortedTestCaseOutputFile $_.testableFilePath;
-            $testResult | Out-File "$testPath\$($_.SourceName).Result.txt"
-            if ($testResult) {$errorCounter++}
+            $left = Get-Content $_.sortedTestCaseOutputFilePath 
+            $right = Get-Content $_.testableFilePath
+            $testResult = Compare-Object $left $right
+            
+            if ($testResult) {
+                $testResult | Out-File "$testPath\$($_.SourceName).Result.txt"
+                Write-Verbose ">> Errors on test $($_.TestCase)\$($_.SourceName):"
+                $testResult | Foreach-Object {Write-Verbose "$($_.SideIndicator) $($_.InputObject)"}
+                $errorCounter++
+            }
         }
 
         $errorCounter
