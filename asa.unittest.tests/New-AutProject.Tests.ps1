@@ -85,8 +85,6 @@ Describe "New-AutProject behavior dependencies" {
                 New-AutProject -installPath $t_installPath |
                 Assert-MockCalled Install-AutToolset -Times 1 -Exactly -Scope It  -ParameterFilter {  
                         ($installPath -eq "$t_installPath\2_act") `
-                        -and `
-                        ($npmpackages -eq "jsondiffpatch") `
                         -and  `
                         ($nugetpackages -eq "Microsoft.Azure.StreamAnalytics.CICD")
                     }

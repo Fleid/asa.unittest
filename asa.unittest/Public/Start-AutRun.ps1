@@ -138,13 +138,6 @@ Function Start-AutRun{
             # Final result
             if ($errorCounter -gt 0) {
                     Write-Verbose "Ending Test Run with $errorCounter errors"
-                    ForEach ($testCase in $testCases) {
-                        $result = Get-Content "$solutionPath\$unittestFolder\3_assert\$testID\$testCase\*.Result.txt"
-                        if ($result.Trim()) {
-                            Write-Verbose $testCase
-                            Write-Verbose "$result"
-                        }
-                    }
                     throw("Ending Test Run with $errorCounter errors")
             }
 
