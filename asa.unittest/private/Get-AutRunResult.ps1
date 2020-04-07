@@ -98,10 +98,10 @@ Function Get-AutRunResult{
             Add-Content -Path $_.testableFilePath -Value $testableSortedContent
 
             # Actual testing
-            $left = Get-Content $_.sortedTestCaseOutputFilePath 
+            $left = Get-Content $_.sortedTestCaseOutputFilePath
             $right = Get-Content $_.testableFilePath
             $testResult = Compare-Object $left $right
-            
+
             if ($testResult) {
                 $testResult | Out-File "$testPath\$($_.SourceName).Result.txt"
                 Write-Verbose ">> Errors on test $($_.TestCase)\$($_.SourceName):"
