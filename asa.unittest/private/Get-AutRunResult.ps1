@@ -81,7 +81,8 @@ Function Get-AutRunResult{
 
             $referenceSortedContent = $referenceContent | Sort-Object -Property $referenceContentProperties | ConvertTo-JSON
 
-            Add-Content -Path "$($_.testCaseOutputFile).sorted.json" -Value $referenceSortedContent
+            $sortedTestCaseOutputFile = "$($_.testCaseOutputFile).sorted.json"
+            Add-Content -Path $sortedTestCaseOutputFile -Value $referenceSortedContent
 
             # Prepare output content (format, sorting)
             $testableContent = ("[$(Get-Content -Path $_.rawContent)]") | ConvertFrom-Json
@@ -97,7 +98,7 @@ Function Get-AutRunResult{
             Add-Content -Path $_.testableFilePath -Value $testableSortedContent
 
             # Actual testing
-            $testResult = Invoke-External -l "jsondiffpatch" "$($_.testCaseOutputFile).sorted.json" $_.testableFilePath;
+            $testResult = Invoke-External -l "jsondiffpatch" $sortedTestCaseOutputFile $_.testableFilePath;
             $testResult | Out-File "$testPath\$($_.SourceName).Result.txt"
             if ($testResult) {$errorCounter++}
         }
