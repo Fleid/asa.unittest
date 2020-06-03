@@ -30,7 +30,7 @@ Describe "New-AutAsaprojXML Nominal" {
             {
                 `"filePath`": `"Functions\\jsFunction1.js.json`",
                 `"subType`": `"JSFunction`"
-            },
+            }
         ]
     }"
     $sourceAsaprojMock = $sourceAsaprojMockJSON | ConvertFrom-Json
