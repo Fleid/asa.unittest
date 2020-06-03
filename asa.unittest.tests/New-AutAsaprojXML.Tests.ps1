@@ -26,7 +26,11 @@ Describe "New-AutAsaprojXML Nominal" {
             {
                 `"filePath`": `"JobConfig.json`",
                 `"subType`": `"JobConfig`"
-            }
+            },
+            {
+                `"filePath`": `"Functions\\jsFunction1.js.json`",
+                `"subType`": `"JSFunction`"
+            },
         ]
     }"
     $sourceAsaprojMock = $sourceAsaprojMockJSON | ConvertFrom-Json
@@ -44,6 +48,9 @@ Describe "New-AutAsaprojXML Nominal" {
 </Configure>
 <Configure Include=`"JobConfig.json`">
 <SubType>JobConfig</SubType>
+</Configure>
+<Configure Include=`"Functions\jsFunction1.js.json`">
+<SubType>JSFunction</SubType>
 </Configure>
 </ItemGroup>
 </Project>
