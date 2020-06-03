@@ -214,9 +214,11 @@ Describe "Start-AutRun parameter asaProjectName" {
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder} |
-            Should -throw "Invalid -asaProjectName (3"
+            Should -throw "Invalid -asaProjectName ("
         }
 
+        <#
+        # 1.0.9 - This is actually not necessary, the validation requirement are only applied on the Azure job, not the local project
         $t_asaProjectName = " "
         It "fails with an invalid asaProjectName (space)" {
             {Start-AutRun `
@@ -256,6 +258,7 @@ Describe "Start-AutRun parameter asaProjectName" {
                 -unittestFolder $t_unittestFolder} |
             Should -throw "Invalid -asaProjectName (3"
         }
+        #>
     }
 }
 
