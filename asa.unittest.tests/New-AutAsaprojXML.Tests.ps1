@@ -39,7 +39,7 @@ Describe "New-AutAsaprojXML Nominal" {
 <ItemGroup>
 <Script Include=`"asaproject.asaql`"/>
 <ScriptCode Include=`"asaproject.asaql.cs`">
-  <DependentUpon>asaproject.asaql</DependentUpon>
+<DependentUpon>asaproject.asaql</DependentUpon>
 </ScriptCode>
 </ItemGroup>
 <ItemGroup>
