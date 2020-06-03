@@ -78,10 +78,10 @@ Function New-AutRunFixture{
                 New-Item -ItemType Directory |
                 Out-Null
 
-            ## Copy .asaql, .asaproj (XML) and JobConfig, asaproj (JSON) required for run in each test case folder
+            ## Copy .asaql, .asaql.cs, .asaproj (XML) and JobConfig, asaproj (JSON) required for run in each test case folder
             $testFolders |
                 Select-Object @{Name="Destination"; Expression = {"$($_.Path)\$asaProjectName\"}} |
-                Copy-Item -Path "$asaProjectPath\*.as*","$asaProjectPath\*.json" -recurse |
+                Copy-Item -Path "$asaProjectPath\*.as*","$asaProjectPath\*.cs","$asaProjectPath\*.json" -recurse |
                 Out-Null
 
             ## If there isn't a XML asaproj, generate it from the JSON one
