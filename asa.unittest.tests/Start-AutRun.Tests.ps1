@@ -178,7 +178,6 @@ Describe "Start-AutRun parameter asaProjectName" {
         Mock Get-ChildItem {}
         Mock Get-Content {}
 
-        $t_solutionPath = "foo"
         It "runs with a asaProjectName" {
             Start-AutRun `
                 -asaNugetVersion $t_asaNugetVersion `
@@ -188,10 +187,22 @@ Describe "Start-AutRun parameter asaProjectName" {
             Assert-MockCalled New-AutRunFixture -Times 1 -Exactly -Scope It
         }
 
+        $t_asaProjectName = "X.X.X.ASA.ProjectName"
+        It "runs with dots in the asaProjectName" {
+            Start-AutRun `
+                -asaNugetVersion $t_asaNugetVersion `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder |
+            Assert-MockCalled New-AutRunFixture -Times 1 -Exactly -Scope It
+        }
+        $t_asaProjectName = "bar"
+
         It "fails without a asaProjectName" {
             {Start-AutRun `
                 -asaNugetVersion $t_asaNugetVersion `
                 -solutionPath $t_solutionPath `
+                #-asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder} |
             Should -throw "-asaProjectName is required"
         }
