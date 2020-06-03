@@ -99,6 +99,16 @@ Describe "New-AutRunFixture nominal"  {
             Assert-MockCalled Copy-Item -Times 3 -Exactly -Scope It -ParameterFilter {$Path -like "*.as*"}
         }
 
+        It "copies ASA cs code behind files in each test case folders" {
+            New-AutRunFixture `
+                 -solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 -testID $t_testID
+
+            Assert-MockCalled Copy-Item -Times 3 -Exactly -Scope It -ParameterFilter {$Path -like "*.cs"}
+        }
+
         Mock Test-Path {return $false} -ParameterFilter {$Path -like "*.asaproj"}
         It "calls New-AUTAsaprojXML if needed" {
             New-AutRunFixture `
