@@ -89,6 +89,19 @@ Describe "New-AutRunFixture nominal"  {
             Assert-MockCalled New-Item -Times 3 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\00?\$t_asaProjectName\Inputs\")}
         }
 
+        It "creates function subfolder in each test case folder" {
+            New-AutRunFixture `
+                 -solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 -testID $t_testID
+
+            Assert-MockCalled New-Item -Times 1 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\001\$t_asaProjectName\Functions\")}
+            Assert-MockCalled New-Item -Times 1 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\002\$t_asaProjectName\Functions\")}
+            Assert-MockCalled New-Item -Times 1 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\003\$t_asaProjectName\Functions\")}
+            Assert-MockCalled New-Item -Times 3 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\00?\$t_asaProjectName\Functions\")}
+        }
+
         It "copies ASA config files in each test case folders" {
             New-AutRunFixture `
                  -solutionPath $t_solutionPath `
@@ -140,7 +153,17 @@ Describe "New-AutRunFixture nominal"  {
                  -testID $t_testID
 
             Assert-MockCalled Copy-Item -Times 3 -Exactly -Scope It -ParameterFilter {$Path -like "*Local*.json"}
-        }
+        }  
+
+        It "copies ASA JS Function files in each test case folders" {
+            New-AutRunFixture `
+                 -solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 -testID $t_testID
+
+            Assert-MockCalled Copy-Item -Times 6 -Exactly -Scope It -ParameterFilter {$Path -like "*js*"}
+        }  
 
         It "copies test files from 1_arrange in each test case folders" {
             New-AutRunFixture `
