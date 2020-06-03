@@ -172,7 +172,7 @@ Describe "New-AutRunFixture nominal"  {
                  -unittestFolder $t_unittestFolder `
                  -testID $t_testID
 
-            Assert-MockCalled Copy-Item -Times 3 -Exactly -Scope It -ParameterFilter {$Path -like "*.json.js"}
+            Assert-MockCalled Copy-Item -Times 3 -Exactly -Scope It -ParameterFilter {$Path -like "*.js.json"}
         }  
 
         It "copies test files from 1_arrange in each test case folders" {
