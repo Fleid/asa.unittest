@@ -28,9 +28,9 @@ In this article:
 
 ### Context
 
-At the time of writing, the major IDEs that support ASA ([VSCode](https://code.visualstudio.com/) and [Visual Studio](https://visualstudio.microsoft.com/vs/)) do not offer native unit testing capabilities.
+At the time of writing, the major IDEs that support ASA ([VSCode](https://code.visualstudio.com/) and [Visual Studio](https://visualstudio.microsoft.com/vs/)) do not offer native **unit testing** capabilities.
 
-This solution intends to fill that gap by enabling:
+This tool intends to fill that gap by enabling:
 
 - fully local, repeatable executions over multiple test cases
 - automated evaluation of the resulting outputs against expected ones
@@ -39,7 +39,7 @@ For that it leverages the **local testing with sample data** capabilities of eit
 
 Local runs are scripted thanks to the `sa.exe` tool from the [Microsoft.Azure.StreamAnalytics.CICD](https://www.nuget.org/packages/Microsoft.Azure.StreamAnalytics.CICD/) package.
 
-The results are then evaluated against reference data sets thanks to the [jsondiffpatch](https://github.com/benjamine/JsonDiffPatch) library.
+The results are then evaluated against reference data sets thanks to the [Compare-Object](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/compare-object?view=powershell-7) **PowerShell** cmdlet.
 
 The whole thing is wired together in a **PowerShell** script based on a predefined test fixture (folder structure + naming convention):
 
@@ -69,10 +69,9 @@ Unit tests should not rely on external services, so all runs are done via local 
 
 ### Requirements
 
-This solution leverages [PowerShell](https://en.wikipedia.org/wiki/PowerShell), a [nuget](https://en.wikipedia.org/wiki/NuGet) package and a [npm](https://en.wikipedia.org/wiki/Npm_(software)) package to enable unit testing:
+This solution leverages [PowerShell](https://en.wikipedia.org/wiki/PowerShell), and a [nuget](https://en.wikipedia.org/wiki/NuGet) package to enable ASA unit testing:
 
 - For **PowerShell**, any [recent version](https://github.com/PowerShell/PowerShell/releases) should do (*assets* tab under a specific release)
-- The **npm CLI** must also be installed manually (available with [Node.JS](https://nodejs.org/en/download/))
 - The nuget CLI will be downloaded via the provided installation script, but it requires the [.NET Framework 4.7.2 or above](https://dotnet.microsoft.com/download/dotnet-framework) to run.
 
 From there, the installation script will take care of the other dependencies (including the nuget CLI).
@@ -230,6 +229,9 @@ PowerShell [remoting for jobs](https://docs.microsoft.com/en-us/powershell/modul
 
 ### Change Log
 
+- May 2020 :
+  - Update doc to reflect the removal of the jsondiffpatch dependency
+  - Fix open issues
 - March 2020 :
   - Full refactoring to allow publication in the PowerShell Gallery
   - Complete unit test coverage (Pester) and linting
@@ -243,18 +245,16 @@ This solution uses the following components:
 
 - the [Microsoft.Azure.StreamAnalytics.CICD](https://www.nuget.org/packages/Microsoft.Azure.StreamAnalytics.CICD/) nuget package, which provides `sa.exe`, a Windows-only executable that allows to run an ASA job [via command line](https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-tools-for-visual-studio-cicd)
   - the [nuget CLI](https://docs.microsoft.com/en-us/nuget/reference/nuget-exe-cli-reference), to download and install the package above
-- the **jsondiffpatch** npm package ([GitHub]((https://github.com/benjamine/JsonDiffPatch) ), [npm](https://www.npmjs.com/package/jsondiffpatch)) which allows to compare json files
-  - the [npm CLI](https://docs.npmjs.com/cli-documentation/) to install the package above, available with [Node.JS](https://nodejs.org/en/download/)
 - [PowerShell](https://github.com/PowerShell/PowerShell/releases) as the shell to run intermediary tasks and execute the required commands
 
 ### Shortcomings
 
-- Slow execution
+- ~~Slow execution~~ Somewhat mitigated via the parallel execution of tests
 - No integration to the usual IDEs
 - No cross-platform options
 
 ### Thanks
 
 - [Kevin Marquette](https://twitter.com/KevinMarquette) for his [invaluable](https://powershellexplained.com/2017-01-21-powershell-module-continious-delivery-pipeline/) blog on PowerShell
-- [jsondiffpatch](https://github.com/benjamine/JsonDiffPatch) : Diff & patch JavaScript objects
+- [jsondiffpatch](https://github.com/benjamine/JsonDiffPatch) : Diff & patch JavaScript objects (used actively up to release 1.0.7)
 - [Tabler icons](https://github.com/tabler/tabler-icons) : A set of over 400 free MIT-licensed high-quality SVG icons for you to use in your web projects
