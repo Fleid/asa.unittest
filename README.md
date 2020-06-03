@@ -1,4 +1,4 @@
-# Unit testing Azure Stream Analytics
+# asa.unittest : Unit testing Azure Stream Analytics
 
 A [PowerShell Gallery module](https://www.powershellgallery.com/packages/asa.unittest/) for unit testing [Azure Stream Analytics](https://docs.microsoft.com/en-us/azure/stream-analytics/) (ASA) jobs, the serverless [complex-event-processing](https://en.wikipedia.org/wiki/Complex_event_processing) service running in Azure.
 
