@@ -78,10 +78,16 @@ Function New-AutRunFixture{
                 New-Item -ItemType Directory |
                 Out-Null
 
-            ## Copy .asaql, .asaproj (XML) and JobConfig, asaproj (JSON) required for run in each test case folder
+            ## Create an ASA function folder in test case folder
+            $testFolders |
+            Select-Object @{Name = "Path"; Expression = {"$($_.Path)\$asaProjectName\Functions\"}} |
+            New-Item -ItemType Directory |
+            Out-Null
+
+            ## Copy .asaql, .asaql.cs, .asaproj (XML) and JobConfig, asaproj (JSON) required for run in each test case folder
             $testFolders |
                 Select-Object @{Name="Destination"; Expression = {"$($_.Path)\$asaProjectName\"}} |
-                Copy-Item -Path "$asaProjectPath\*.as*","$asaProjectPath\*.json" -recurse |
+                Copy-Item -Path "$asaProjectPath\*.as*","$asaProjectPath\*.cs","$asaProjectPath\*.json" -recurse |
                 Out-Null
 
             ## If there isn't a XML asaproj, generate it from the JSON one
@@ -97,6 +103,18 @@ Function New-AutRunFixture{
                 Select-Object @{Name="Destination"; Expression = {"$($_.Path)\$asaProjectName\Inputs\"}} |
                 Copy-Item -Path "$asaProjectPath\Inputs\Local*.json" -recurse |
                 Out-Null
+
+            ## Copy the local JS function files required for run in each test case folder
+            $testFolders |
+            Select-Object @{Name="Destination"; Expression = {"$($_.Path)\$asaProjectName\Functions\"}} |
+            Copy-Item -Path "$asaProjectPath\Functions\*.js" -recurse |
+            Out-Null
+
+            ## Copy the local JS function definition files (JSON) required for run in each test case folder
+            $testFolders |
+            Select-Object @{Name="Destination"; Expression = {"$($_.Path)\$asaProjectName\Functions\"}} |
+            Copy-Item -Path "$asaProjectPath\Functions\*.js.json" -recurse |
+            Out-Null
 
             ## Copy test files from 1_arrange to each test case folder
             $testDetails |

@@ -50,11 +50,11 @@ Function Start-AutRun{
 
         if (-not (Test-Path $solutionPath)) {Throw "Invalid -solutionPath"}
 
-        if (-not (`
-                     ($asaProjectName -match '^[a-zA-Z0-9_-]+$') `
-                -and ($asaProjectName.Length -ge 3) `
-                -and ($asaProjectName.Length -le 63) `
-        )) {Throw "Invalid -asaProjectName (3-63 alp_ha-num)"}
+        if (-not (($asaProjectName.Length -ge 1)
+                # 1.0.9 - This is actually not necessary, the validation requirement are only applied on the Azure job, not the local project
+                #-and ($asaProjectName -match '^[a-zA-Z0-9_-]+$') `
+                #-and ($asaProjectName.Length -le 63) `
+        )) {Throw "Invalid -asaProjectName (empty string)"}
 
         if (-not (Test-Path "$solutionPath\$unittestFolder\1_arrange")) {Throw "Can't find 1_arrange folder at $solutionPath\$unittestFolder\1_arrange"}
 

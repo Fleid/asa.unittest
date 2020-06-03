@@ -56,7 +56,7 @@ function New-AutAsaprojXML{
             $footer = "</Project>"
             $itemGroupStart = "<ItemGroup>"
             $itemGroupEnd = "</ItemGroup>"
-            $itemFilter = @("InputMock","JobConfig")
+            $itemFilter = @("InputMock","JobConfig","JSFunction")
 
             ################################################################################################################################
             write-verbose "101 - Generating the XML asaproj"
@@ -67,6 +67,9 @@ function New-AutAsaprojXML{
             # First ItemGroup for script file (asaql)
             $targetAsaproj += $itemGroupStart + $newline
             $targetAsaproj += "<Script Include=`"$($sourceAsaproj.startFile)`"/>" + $newline
+            $targetAsaproj += "<ScriptCode Include=`"$($sourceAsaproj.startFile).cs`">" + $newline
+            $targetAsaproj += "<DependentUpon>$($sourceAsaproj.startFile)</DependentUpon>" + $newline
+            $targetAsaproj += "</ScriptCode>" + $newline
             $targetAsaproj += $itemGroupEnd + $newline
 
             # Second ItemGroup for InputMock (local input config files) and JobConfig

@@ -26,6 +26,10 @@ Describe "New-AutAsaprojXML Nominal" {
             {
                 `"filePath`": `"JobConfig.json`",
                 `"subType`": `"JobConfig`"
+            },
+            {
+                `"filePath`": `"Functions\\jsFunction1.js.json`",
+                `"subType`": `"JSFunction`"
             }
         ]
     }"
@@ -34,6 +38,9 @@ Describe "New-AutAsaprojXML Nominal" {
     $outputXMLstring ="<Project ToolsVersion=`"4.0`" DefaultTargets=`"Build`" xmlns=`"http://schemas.microsoft.com/developer/msbuild/2003`">
 <ItemGroup>
 <Script Include=`"asaproject.asaql`"/>
+<ScriptCode Include=`"asaproject.asaql.cs`">
+<DependentUpon>asaproject.asaql</DependentUpon>
+</ScriptCode>
 </ItemGroup>
 <ItemGroup>
 <Configure Include=`"Inputs\Local_input.json`">
@@ -44,6 +51,9 @@ Describe "New-AutAsaprojXML Nominal" {
 </Configure>
 <Configure Include=`"JobConfig.json`">
 <SubType>JobConfig</SubType>
+</Configure>
+<Configure Include=`"Functions\jsFunction1.js.json`">
+<SubType>JSFunction</SubType>
 </Configure>
 </ItemGroup>
 </Project>
