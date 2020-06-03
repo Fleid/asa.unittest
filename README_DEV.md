@@ -28,7 +28,7 @@ Import-Module -Name $moduleFile -verbose -force
 $env:psmodulePath
 ```
 
-Testing a run
+### Testing a run (integration)
 
 ```PowerShell
 $installFolder = "C:\users\fleide\Repos\asa.unittest\examples\ASAHelloWorld.Tests\"
