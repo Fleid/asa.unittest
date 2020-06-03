@@ -162,7 +162,17 @@ Describe "New-AutRunFixture nominal"  {
                  -unittestFolder $t_unittestFolder `
                  -testID $t_testID
 
-            Assert-MockCalled Copy-Item -Times 6 -Exactly -Scope It -ParameterFilter {$Path -like "*js*"}
+            Assert-MockCalled Copy-Item -Times 3 -Exactly -Scope It -ParameterFilter {$Path -like "*.js"}
+        }  
+
+        It "copies ASA JS Function definition (JSON) files in each test case folders" {
+            New-AutRunFixture `
+                 -solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 -testID $t_testID
+
+            Assert-MockCalled Copy-Item -Times 3 -Exactly -Scope It -ParameterFilter {$Path -like "*.json.js"}
         }  
 
         It "copies test files from 1_arrange in each test case folders" {
