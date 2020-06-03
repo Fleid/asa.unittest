@@ -38,6 +38,9 @@ Describe "New-AutAsaprojXML Nominal" {
     $outputXMLstring ="<Project ToolsVersion=`"4.0`" DefaultTargets=`"Build`" xmlns=`"http://schemas.microsoft.com/developer/msbuild/2003`">
 <ItemGroup>
 <Script Include=`"asaproject.asaql`"/>
+<ScriptCode Include=`"asaproject.asaql.cs`">
+  <DependentUpon>asaproject.asaql</DependentUpon>
+</ScriptCode>
 </ItemGroup>
 <ItemGroup>
 <Configure Include=`"Inputs\Local_input.json`">
