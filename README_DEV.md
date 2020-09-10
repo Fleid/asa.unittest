@@ -53,7 +53,7 @@ From the Gallery
 Get-InstalledModule -name asa.unittest
 Uninstall-Module -Name asa.unittest
 
-Install-Module -Name asa.unittest -verbose -version 1.0.3
+Install-Module -Name asa.unittest -verbose -force
 ```
 
 ## Development
