@@ -196,7 +196,7 @@ Describe "New-AutRunFixture ASA cs code behind files handling"  {
                 -unittestFolder $t_unittestFolder `
                 -testID $t_testID
 
-            Assert-MockCalled New-Item -Times 3 -Exactly -Scope It -ParameterFilter {$Path -like "*$t_asaProjectName.asaql.cs"}
+            Assert-MockCalled New-Item -Times 3 -Exactly -Scope It -ParameterFilter {$Name -like "$t_asaProjectName.asaql.cs"}
         }
     }
 }
