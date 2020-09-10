@@ -129,7 +129,7 @@ Function New-AutRunFixture{
 
             ## If there's no asaql.cs in the source folder, create dummy ones
             if (-not (Test-Path("$asaProjectPath\$asaProjectName.asaql.cs"))) {
-                $testFolders | New-Item -Name "$asaProjectName.asaql.cs" -ItemType file
+                $testFolders | New-Item -Path "$($_.Path)\$asaProjectName" -Name "$asaProjectName.asaql.cs" -ItemType file
             }
 
             ################################################################################################################################
