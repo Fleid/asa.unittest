@@ -110,26 +110,28 @@ Function New-AutRunFixture{
             if (Test-Path("$asaProjectPath\Functions\")) {
                     ## Create an ASA function folder in test case folder
                     $testFolders |
-                    Select-Object @{Name = "Path"; Expression = {"$($_.Path)\$asaProjectName\Functions\"}} |
-                    New-Item -ItemType Directory |
-                    Out-Null
+                        Select-Object @{Name = "Path"; Expression = {"$($_.Path)\$asaProjectName\Functions\"}} |
+                        New-Item -ItemType Directory |
+                        Out-Null
 
                     ## Copy the local JS function files required for run in each test case folder
                     $testFolders |
-                    Select-Object @{Name="Destination"; Expression = {"$($_.Path)\$asaProjectName\Functions\"}} |
-                    Copy-Item -Path "$asaProjectPath\Functions\*.js" -recurse |
-                    Out-Null
+                        Select-Object @{Name="Destination"; Expression = {"$($_.Path)\$asaProjectName\Functions\"}} |
+                        Copy-Item -Path "$asaProjectPath\Functions\*.js" -recurse |
+                        Out-Null
 
                     ## Copy the local JS function definition files (JSON) required for run in each test case folder
                     $testFolders |
-                    Select-Object @{Name="Destination"; Expression = {"$($_.Path)\$asaProjectName\Functions\"}} |
-                    Copy-Item -Path "$asaProjectPath\Functions\*.js.json" -recurse |
-                    Out-Null
+                        Select-Object @{Name="Destination"; Expression = {"$($_.Path)\$asaProjectName\Functions\"}} |
+                        Copy-Item -Path "$asaProjectPath\Functions\*.js.json" -recurse |
+                        Out-Null
             }
 
             ## If there's no asaql.cs in the source folder, create dummy ones
             if (-not (Test-Path("$asaProjectPath\$asaProjectName.asaql.cs"))) {
-                $testFolders | New-Item -Path "$($_.Path)\$asaProjectName\" -Name "$asaProjectName.asaql.cs" -ItemType file
+                    $testFolders |
+                        Select-Object @{Name = "Path"; Expression = {"$($_.Path)\$asaProjectName\"}} |
+                        New-Item -Name "$asaProjectName.asaql.cs" -ItemType file
             }
 
             ################################################################################################################################
