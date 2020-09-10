@@ -56,9 +56,7 @@ Function Install-AutToolset{
 
             foreach ($nugetPackage in $nugetPackages){
                 Write-Verbose "002 - Installing nuget package : $nugetPackage"
-                #Hotfix for release 1.0.10
-                #Invoke-External -l "$installPath\nuget.exe" install $nugetPackage -OutputDirectory $installPath |
-                Invoke-External -l "$installPath\nuget.exe" install "Microsoft.Azure.StreamAnalytics.CICD" -version "2.4.1" -OutputDirectory $installPath |
+                Invoke-External -l "$installPath\nuget.exe" install $nugetPackage -OutputDirectory $installPath |
                     Out-Null
             }
 
