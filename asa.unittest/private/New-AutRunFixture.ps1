@@ -78,12 +78,6 @@ Function New-AutRunFixture{
                 New-Item -ItemType Directory |
                 Out-Null
 
-            ## Create an ASA function folder in test case folder
-            $testFolders |
-            Select-Object @{Name = "Path"; Expression = {"$($_.Path)\$asaProjectName\Functions\"}} |
-            New-Item -ItemType Directory |
-            Out-Null
-
             ## Copy .asaql, .asaql.cs, .asaproj (XML) and JobConfig, asaproj (JSON) required for run in each test case folder
             $testFolders |
                 Select-Object @{Name="Destination"; Expression = {"$($_.Path)\$asaProjectName\"}} |
@@ -104,18 +98,6 @@ Function New-AutRunFixture{
                 Copy-Item -Path "$asaProjectPath\Inputs\Local*.json" -recurse |
                 Out-Null
 
-            ## Copy the local JS function files required for run in each test case folder
-            $testFolders |
-            Select-Object @{Name="Destination"; Expression = {"$($_.Path)\$asaProjectName\Functions\"}} |
-            Copy-Item -Path "$asaProjectPath\Functions\*.js" -recurse |
-            Out-Null
-
-            ## Copy the local JS function definition files (JSON) required for run in each test case folder
-            $testFolders |
-            Select-Object @{Name="Destination"; Expression = {"$($_.Path)\$asaProjectName\Functions\"}} |
-            Copy-Item -Path "$asaProjectPath\Functions\*.js.json" -recurse |
-            Out-Null
-
             ## Copy test files from 1_arrange to each test case folder
             $testDetails |
                 Select-Object `
@@ -123,6 +105,26 @@ Function New-AutRunFixture{
                     @{Name = "Path"; Expression = {$_.FilePath}} |
                 Copy-Item |
                 Out-Null
+
+            if (Test-Path("$asaProjectPath\Functions\")) {
+                         ## Create an ASA function folder in test case folder
+                        $testFolders |
+                        Select-Object @{Name = "Path"; Expression = {"$($_.Path)\$asaProjectName\Functions\"}} |
+                        New-Item -ItemType Directory |
+                        Out-Null
+
+                        ## Copy the local JS function files required for run in each test case folder
+                        $testFolders |
+                        Select-Object @{Name="Destination"; Expression = {"$($_.Path)\$asaProjectName\Functions\"}} |
+                        Copy-Item -Path "$asaProjectPath\Functions\*.js" -recurse |
+                        Out-Null
+
+                        ## Copy the local JS function definition files (JSON) required for run in each test case folder
+                        $testFolders |
+                        Select-Object @{Name="Destination"; Expression = {"$($_.Path)\$asaProjectName\Functions\"}} |
+                        Copy-Item -Path "$asaProjectPath\Functions\*.js.json" -recurse |
+                        Out-Null   
+            }
 
             ################################################################################################################################
             # 3xx - Updating config files
