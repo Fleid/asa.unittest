@@ -89,19 +89,6 @@ Describe "New-AutRunFixture nominal"  {
             Assert-MockCalled New-Item -Times 3 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\00?\$t_asaProjectName\Inputs\")}
         }
 
-        It "creates function subfolder in each test case folder" {
-            New-AutRunFixture `
-                 -solutionPath $t_solutionPath `
-                 -asaProjectName $t_asaProjectName `
-                 -unittestFolder $t_unittestFolder `
-                 -testID $t_testID
-
-            Assert-MockCalled New-Item -Times 1 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\001\$t_asaProjectName\Functions\")}
-            Assert-MockCalled New-Item -Times 1 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\002\$t_asaProjectName\Functions\")}
-            Assert-MockCalled New-Item -Times 1 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\003\$t_asaProjectName\Functions\")}
-            Assert-MockCalled New-Item -Times 3 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\00?\$t_asaProjectName\Functions\")}
-        }
-
         It "copies ASA config files in each test case folders" {
             New-AutRunFixture `
                  -solutionPath $t_solutionPath `
@@ -155,6 +142,22 @@ Describe "New-AutRunFixture nominal"  {
             Assert-MockCalled Copy-Item -Times 3 -Exactly -Scope It -ParameterFilter {$Path -like "*Local*.json"}
         }  
 
+        Mock Test-Path {return $true} -ParameterFilter {$Path -and ($Path -like "*\Functions\")}
+        It "creates function subfolder in each test case folder" {
+            New-AutRunFixture `
+                 -solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 -testID $t_testID
+
+            Assert-MockCalled New-Item -Times 1 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\001\$t_asaProjectName\Functions\")}
+            Assert-MockCalled New-Item -Times 1 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\002\$t_asaProjectName\Functions\")}
+            Assert-MockCalled New-Item -Times 1 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\003\$t_asaProjectName\Functions\")}
+            Assert-MockCalled New-Item -Times 3 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\00?\$t_asaProjectName\Functions\")}
+        }
+        Mock Test-Path {return $true}
+
+        Mock Test-Path {return $true} -ParameterFilter {$Path -and ($Path -like "*\Functions\")}
         It "copies ASA JS Function files in each test case folders" {
             New-AutRunFixture `
                  -solutionPath $t_solutionPath `
@@ -163,8 +166,10 @@ Describe "New-AutRunFixture nominal"  {
                  -testID $t_testID
 
             Assert-MockCalled Copy-Item -Times 3 -Exactly -Scope It -ParameterFilter {$Path -like "*.js"}
-        }  
+        }
+        Mock Test-Path {return $true}
 
+        Mock Test-Path {return $true} -ParameterFilter {$Path -and ($Path -like "*\Functions\")}
         It "copies ASA JS Function definition (JSON) files in each test case folders" {
             New-AutRunFixture `
                  -solutionPath $t_solutionPath `
@@ -173,7 +178,47 @@ Describe "New-AutRunFixture nominal"  {
                  -testID $t_testID
 
             Assert-MockCalled Copy-Item -Times 3 -Exactly -Scope It -ParameterFilter {$Path -like "*.js.json"}
-        }  
+        }
+        Mock Test-Path {return $true}
+
+        Mock Test-Path {return $false} -ParameterFilter {$Path -and ($Path -like "*\Functions\")}
+        It "doesn't create a function subfolder in each test case folder if there's no source function folder" {
+            New-AutRunFixture `
+                 -solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 -testID $t_testID
+
+            Assert-MockCalled New-Item -Times 0 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\001\$t_asaProjectName\Functions\")}
+            Assert-MockCalled New-Item -Times 0 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\002\$t_asaProjectName\Functions\")}
+            Assert-MockCalled New-Item -Times 0 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\003\$t_asaProjectName\Functions\")}
+            Assert-MockCalled New-Item -Times 0 -Exactly -Scope It -ParameterFilter {($ItemType -eq "Directory") -and ($Path -like "*\$t_testID\00?\$t_asaProjectName\Functions\")}
+        }
+        Mock Test-Path {return $true}
+
+        Mock Test-Path {return $false} -ParameterFilter {$Path -and ($Path -like "*\Functions\")}
+        It "doesn't copy ASA JS Function files in each test case folders if there's no source function folder" {
+            New-AutRunFixture `
+                 -solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 -testID $t_testID
+
+            Assert-MockCalled Copy-Item -Times 0 -Exactly -Scope It -ParameterFilter {$Path -like "*.js"}
+        }
+        Mock Test-Path {return $true}
+
+        Mock Test-Path {return $false} -ParameterFilter {$Path -and ($Path -like "*\Functions\")}
+        It "doesn't copy ASA JS Function definition (JSON) files in each test case folders if there's no source function folder" {
+            New-AutRunFixture `
+                 -solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 -testID $t_testID
+
+            Assert-MockCalled Copy-Item -Times 0 -Exactly -Scope It -ParameterFilter {$Path -like "*.js.json"}
+        }
+        Mock Test-Path {return $true}
 
         It "copies test files from 1_arrange in each test case folders" {
             New-AutRunFixture `
