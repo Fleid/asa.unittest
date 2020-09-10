@@ -123,7 +123,7 @@ Function New-AutRunFixture{
                         $testFolders |
                         Select-Object @{Name="Destination"; Expression = {"$($_.Path)\$asaProjectName\Functions\"}} |
                         Copy-Item -Path "$asaProjectPath\Functions\*.js.json" -recurse |
-                        Out-Null   
+                        Out-Null
             }
 
             ################################################################################################################################
