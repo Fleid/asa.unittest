@@ -1,6 +1,6 @@
 ﻿<#
 .SYNOPSIS
-Companion script used to install the dependencies required for the main package
+Companion script used to install a nuget package required for the main module
 
 In case of issues with PowerShell Execution Policies, see https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_scripts?view=powershell-7
 PS: VSCode has a weird behavior on that topic, use Terminal : https://github.com/PowerShell/vscode-powershell/issues/1217
@@ -9,23 +9,16 @@ PS: VSCode has a weird behavior on that topic, use Terminal : https://github.com
 See documentation for more information : https://github.com/Fleid/asa.unittest
 
 This script will first download nuget.exe, the Nuget CLI tool for Windows. See https://docs.microsoft.com/en-us/nuget/install-nuget-client-tools#nugetexe-cli
-After that nuget.exe will be invoked to install the required packages from nuget.
-
-Finally the script will invoke npm to install the npm packages.
-These packages will be installed globally (npm install -g).
-If npm is not available, please download node.js. See https://nodejs.org/en/download/
+After that nuget.exe will be invoked to install the required package from nuget.
 
 .PARAMETER installPath
 Path to the folder in the fixture that will contain the dependencies, usually (solutionPath\asaProjectName.Tests\2_act)
 
-.PARAMETER npmPackages
-List of npm packages to install
-
-.PARAMETER nugetPackages
-List of nuget packages to install
+.PARAMETER packageHash
+Hashtable of the package to install with the format @{type="nuget";package="Microsoft.Azure.StreamAnalytics.CICD";version="3.0.0"}
 
 .EXAMPLE
-Install-AutToolset -installPath C:\Users\fleide\Repos\asa.unittest\examples\ASAHelloWorld.Tests\2_act -npmpackages jsondiffpatch -nugetpackages Microsoft.Azure.StreamAnalytics.CICD
+Install-AutToolset -installPath C:\Users\fleide\Repos\asa.unittest\examples\ASAHelloWorld.Tests\2_act -packageHash @{type="nuget";package="Microsoft.Azure.StreamAnalytics.CICD";version="3.0.0"}
 #>
 
 Function Install-AutToolset{
@@ -33,8 +26,7 @@ Function Install-AutToolset{
     [CmdletBinding()]
     param (
         [string]$installPath = $(Throw "-installPath is required"),
-        [string[]]$npmPackages, # = @("jsondiffpatch"),
-        [string[]]$nugetPackages # = @("Microsoft.Azure.StreamAnalytics.CICD")
+        [hashtable]$packageHash # = @{type="nuget";package="Microsoft.Azure.StreamAnalytics.CICD";version="3.0.0"}
     )
 
     BEGIN {
@@ -43,7 +35,7 @@ Function Install-AutToolset{
 
     PROCESS {
 
-        if ($nugetPackages.Count -gt 0){
+        if ($packageHash.type -eq "nuget"){
 
             if (-not (Test-Path -Path "$installPath\nuget.exe" -PathType Leaf)){
                 # Windows - get nuget.exe from https://www.nuget.org/downloads
@@ -54,23 +46,17 @@ Function Install-AutToolset{
                     Out-Null
             }
 
-            foreach ($nugetPackage in $nugetPackages){
-                Write-Verbose "002 - Installing nuget package : $nugetPackage"
-                Invoke-External -l "$installPath\nuget.exe" install $nugetPackage -OutputDirectory $installPath |
-                    Out-Null
+
+            Write-Verbose "002 - Installing nuget package : $($packageHash.package)"
+            if ($packageHash.version) {
+                Invoke-External -l "$installPath\nuget.exe" install $packageHash.package -version $packageHash.version -OutputDirectory $installPath |
+                Out-Null
             }
-
-
-
-
-        } #IF nuget
-
-        if ($npmPackages.Count -gt 0){
-            foreach ($npmPackage in $npmPackages){
-                Write-Verbose "003 - Installing npm package : $npmPackage"
-                Invoke-External -l "npm" install -g $npmPackage | Out-Null
+            else {
+                Invoke-External -l "$installPath\nuget.exe" install $packageHash.package -OutputDirectory $installPath |
+                Out-Null
             }
-        } #IF npm
+        }
 
     } # PROCESS
     END {}
