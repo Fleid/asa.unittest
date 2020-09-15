@@ -87,7 +87,7 @@ Function Get-AutRunResult{
             # Prepare output content (format, sorting)
                 # $testableContent = ("[$(Get-Content -Path $_.rawContent)]") | ConvertFrom-Json
                 # New format after CICD 3.0.0
-            $testableContent = ("[$(Get-Content -Path $_.rawContent)]").split(" ").replace("[","").replace("]","") | ConvertFrom-Json
+            $testableContent = [IO.File]::ReadAllText($_.rawContent).split("`n") | ConvertFrom-Json
 
             $testableContentProperties = `
                     $testableContent | `
