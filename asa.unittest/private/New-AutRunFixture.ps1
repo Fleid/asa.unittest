@@ -79,6 +79,7 @@ Function New-AutRunFixture{
                 Out-Null
 
             ## Copy .asaql, .asaql.cs, .asaproj (XML) and JobConfig, asaproj (JSON) required for run in each test case folder
+                ## If there's no asaql.cs, dummy ones will created be later
             $testFolders |
                 Select-Object @{Name="Destination"; Expression = {"$($_.Path)\$asaProjectName\"}} |
                 Copy-Item -Path "$asaProjectPath\*.as*","$asaProjectPath\*.cs","$asaProjectPath\*.json" -recurse |
@@ -107,22 +108,30 @@ Function New-AutRunFixture{
                 Out-Null
 
             if (Test-Path("$asaProjectPath\Functions\")) {
-                         ## Create an ASA function folder in test case folder
-                        $testFolders |
+                    ## Create an ASA function folder in test case folder
+                    $testFolders |
                         Select-Object @{Name = "Path"; Expression = {"$($_.Path)\$asaProjectName\Functions\"}} |
                         New-Item -ItemType Directory |
                         Out-Null
 
-                        ## Copy the local JS function files required for run in each test case folder
-                        $testFolders |
+                    ## Copy the local JS function files required for run in each test case folder
+                    $testFolders |
                         Select-Object @{Name="Destination"; Expression = {"$($_.Path)\$asaProjectName\Functions\"}} |
                         Copy-Item -Path "$asaProjectPath\Functions\*.js" -recurse |
                         Out-Null
 
-                        ## Copy the local JS function definition files (JSON) required for run in each test case folder
-                        $testFolders |
+                    ## Copy the local JS function definition files (JSON) required for run in each test case folder
+                    $testFolders |
                         Select-Object @{Name="Destination"; Expression = {"$($_.Path)\$asaProjectName\Functions\"}} |
                         Copy-Item -Path "$asaProjectPath\Functions\*.js.json" -recurse |
+                        Out-Null
+            }
+
+            ## If there's no asaql.cs in the source folder, create dummy ones
+            if (-not (Test-Path("$asaProjectPath\$asaProjectName.asaql.cs"))) {
+                    $testFolders |
+                        Select-Object @{Name = "Path"; Expression = {"$($_.Path)\$asaProjectName\"}} |
+                        New-Item -Name "$asaProjectName.asaql.cs" -ItemType file |
                         Out-Null
             }
 

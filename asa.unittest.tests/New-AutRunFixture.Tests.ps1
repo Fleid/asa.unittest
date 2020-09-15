@@ -99,16 +99,6 @@ Describe "New-AutRunFixture nominal"  {
             Assert-MockCalled Copy-Item -Times 3 -Exactly -Scope It -ParameterFilter {$Path -like "*.as*"}
         }
 
-        It "copies ASA cs code behind files in each test case folders" {
-            New-AutRunFixture `
-                 -solutionPath $t_solutionPath `
-                 -asaProjectName $t_asaProjectName `
-                 -unittestFolder $t_unittestFolder `
-                 -testID $t_testID
-
-            Assert-MockCalled Copy-Item -Times 3 -Exactly -Scope It -ParameterFilter {$Path -like "*.cs"}
-        }
-
         Mock Test-Path {return $false} -ParameterFilter {$Path -like "*.asaproj"}
         It "calls New-AUTAsaprojXML if needed" {
             New-AutRunFixture `
@@ -141,6 +131,99 @@ Describe "New-AutRunFixture nominal"  {
 
             Assert-MockCalled Copy-Item -Times 3 -Exactly -Scope It -ParameterFilter {$Path -like "*Local*.json"}
         }  
+
+        It "copies test files from 1_arrange in each test case folders" {
+            New-AutRunFixture `
+                 -solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 -testID $t_testID
+
+            Assert-MockCalled Copy-Item -Times 4 -Exactly -Scope It -ParameterFilter {$Path -like "foobar*"}
+        }
+
+        It "edit the ASA conf file for each input files" {
+            New-AutRunFixture `
+                 -solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 -testID $t_testID
+
+            Assert-MockCalled Out-File -Times 2 -Exactly -Scope It
+        }
+
+    }
+}
+Describe "New-AutRunFixture ASA cs code behind files handling"  {
+    InModuleScope $moduleName {
+
+        $t_solutionPath = "TestDrive:\foo"
+        $t_asaProjectName = "bar"
+        $t_unittestFolder = "bar.Tests"
+        $t_testID = "yyyymmddhhmmss"
+
+        $t_tests = @(
+            [PSCustomObject] @{Basename0="003";FilePath="foobar";Basename1="Input";FullName="fb"},
+            [PSCustomObject] @{Basename0="001";FilePath="foobar1";Basename1="Input";FullName="fb"},
+            [PSCustomObject] @{Basename0="001";FilePath="foobar2"},
+            [PSCustomObject] @{Basename0="002";FilePath="foobar"}
+        )
+
+        Mock Get-ChildItem {1}
+        Mock Get-AutFieldFromFileInfo {return $t_tests}
+        Mock New-Item {}
+        Mock Copy-Item {}
+        Mock Test-Path {return $true}
+        Mock New-AUTAsaprojXML {}
+        Mock Get-Content {return (@{FilePath="foobar"} | ConvertTo-Json)}
+        Mock Out-File {}
+
+        It "copies ASA cs code behind files in each test case folders" {
+            New-AutRunFixture `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder `
+                -testID $t_testID
+
+            Assert-MockCalled Copy-Item -Times 3 -Exactly -Scope It -ParameterFilter {$Path -like "*.cs"}
+        }
+
+        Mock Test-Path {return $false} -ParameterFilter {$Path -and ($Path -like "*$t_asaProjectName.asaql.cs")}
+        It "creates an empty file if there's none"{
+            New-AutRunFixture `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder `
+                -testID $t_testID
+
+            Assert-MockCalled New-Item -Times 3 -Exactly -Scope It -ParameterFilter {($Name -like "$t_asaProjectName.asaql.cs") -and ($Path -like "*\$t_asaProjectName\")}
+        }
+    }
+}
+
+Describe "New-AutRunFixture ASA functions handling"  {
+    InModuleScope $moduleName {
+
+        $t_solutionPath = "TestDrive:\foo"
+        $t_asaProjectName = "bar"
+        $t_unittestFolder = "bar.Tests"
+        $t_testID = "yyyymmddhhmmss"
+
+        $t_tests = @(
+            [PSCustomObject] @{Basename0="003";FilePath="foobar";Basename1="Input";FullName="fb"},
+            [PSCustomObject] @{Basename0="001";FilePath="foobar1";Basename1="Input";FullName="fb"},
+            [PSCustomObject] @{Basename0="001";FilePath="foobar2"},
+            [PSCustomObject] @{Basename0="002";FilePath="foobar"}
+        )
+
+        Mock Get-ChildItem {1}
+        Mock Get-AutFieldFromFileInfo {return $t_tests}
+        Mock New-Item {}
+        Mock Copy-Item {}
+        Mock Test-Path {return $true}
+        Mock New-AUTAsaprojXML {}
+        Mock Get-Content {return (@{FilePath="foobar"} | ConvertTo-Json)}
+        Mock Out-File {}
 
         Mock Test-Path {return $true} -ParameterFilter {$Path -and ($Path -like "*\Functions\")}
         It "creates function subfolder in each test case folder" {
@@ -219,26 +302,6 @@ Describe "New-AutRunFixture nominal"  {
             Assert-MockCalled Copy-Item -Times 0 -Exactly -Scope It -ParameterFilter {$Path -like "*.js.json"}
         }
         Mock Test-Path {return $true}
-
-        It "copies test files from 1_arrange in each test case folders" {
-            New-AutRunFixture `
-                 -solutionPath $t_solutionPath `
-                 -asaProjectName $t_asaProjectName `
-                 -unittestFolder $t_unittestFolder `
-                 -testID $t_testID
-
-            Assert-MockCalled Copy-Item -Times 4 -Exactly -Scope It -ParameterFilter {$Path -like "foobar*"}
-        }
-
-        It "edit the ASA conf file for each input files" {
-            New-AutRunFixture `
-                 -solutionPath $t_solutionPath `
-                 -asaProjectName $t_asaProjectName `
-                 -unittestFolder $t_unittestFolder `
-                 -testID $t_testID
-
-            Assert-MockCalled Out-File -Times 2 -Exactly -Scope It
-        }
 
     }
 }

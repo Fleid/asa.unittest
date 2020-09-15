@@ -130,7 +130,8 @@ Function Start-AutRun{
                     -asaProjectName $asaProjectName `
                     -unittestFolder $unittestFolder `
                     -testID $testID `
-                    -testCase $testCase
+                    -testCase $testCase `
+                    -asaNugetVersion $asaNugetVersion
             }
 
             ################################################################################################################################

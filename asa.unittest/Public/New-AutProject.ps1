@@ -24,7 +24,8 @@ Function New-AutProject{
         ConfirmImpact="Low"
         )]
     param (
-        [string]$installPath = $(Throw "-installPath is required")
+        [string]$installPath = $(Throw "-installPath is required"),
+        [string]$ASAnugetVersion="3.0.0"
     )
 
     BEGIN {
@@ -40,7 +41,7 @@ Function New-AutProject{
             if (-not (Test-Path "$installPath\3_assert")) {New-Item -ItemType Directory -Path "$installPath\3_assert" | Out-Null}
 
             # Install dependencies
-            Install-AutToolset -installPath "$installPath\2_act" -nugetpackages Microsoft.Azure.StreamAnalytics.CICD
+            Install-AutToolset -installPath "$installPath\2_act" -packageHash @{type="nuget";package="Microsoft.Azure.StreamAnalytics.CICD";version=$ASAnugetVersion}
 
             $gitIgnoreContent = `
 "
