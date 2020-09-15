@@ -69,7 +69,7 @@ $asaProjectName = "ASAHelloWorld"
 $unittestFolder = "ASAHelloWorld.Tests"
 $testID = (Get-Date -Format "yyyyMMddHHmmss")
 
-$exePath = "C:\Users\fleide\Repos\asa.unittest\examples\ASAHelloWorld.Tests\2_act\Microsoft.Azure.StreamAnalytics.CICD.2.4.0\tools\sa.exe"
+$exePath = "C:\Users\fleide\Repos\asa.unittest\examples\ASAHelloWorld.Tests\2_act\Microsoft.Azure.StreamAnalytics.CICD.3.0.0\tools\sa.exe"
 ```
 
 ## Testing
