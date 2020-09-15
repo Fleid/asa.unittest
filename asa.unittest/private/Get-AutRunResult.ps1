@@ -85,7 +85,9 @@ Function Get-AutRunResult{
             Add-Content -Path $_.sortedTestCaseOutputFilePath -Value $referenceSortedContent
 
             # Prepare output content (format, sorting)
-            $testableContent = ("[$(Get-Content -Path $_.rawContent)]") | ConvertFrom-Json
+                # $testableContent = ("[$(Get-Content -Path $_.rawContent)]") | ConvertFrom-Json
+                # New format after CICD 3.0.0
+            $testableContent = ("[$(Get-Content -Path $_.rawContent)]").split(" ").replace("[","").replace("]","") | ConvertFrom-Json
 
             $testableContentProperties = `
                     $testableContent | `
