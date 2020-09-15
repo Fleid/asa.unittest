@@ -20,8 +20,11 @@ Timestamp of the test run (yyyyMMddHHmmss), will be used in the folder structure
 .PARAMETER testCase
 Current test to be run (001, 002, 003...)
 
+.PARAMETER asaNugetVersion
+Version of the Azure Stream Analytics CI/CD nuget package (Microsoft.Azure.StreamAnalytics.CICD) to be downloaded and used
+
 .EXAMPLE
-Get-AutRunResult -solutionPath $solutionPath -asaProjectName $asaProjectName -unittestFolder $unittestFolder -testID $testID -testCase $testCase
+Get-AutRunResult -solutionPath $solutionPath -asaProjectName $asaProjectName -unittestFolder $unittestFolder -testID $testID -testCase $testCase -asaNugetVersion "3.0.0"
 #>
 
 Function Get-AutRunResult{
@@ -33,7 +36,8 @@ Function Get-AutRunResult{
         [string]$asaProjectName = $(Throw "-asaProjectName is required"),
         [string]$unittestFolder = $(Throw "-unittestFolder is required"),
         [string]$testID = $(Throw "-testID is required"),
-        [string]$testCase = $(Throw "-testCase is required")
+        [string]$testCase = $(Throw "-testCase is required"),
+        [string]$asaNugetVersion = $(Throw "-asaNugetVersion is required")
     )
 
     BEGIN {
@@ -85,9 +89,13 @@ Function Get-AutRunResult{
             Add-Content -Path $_.sortedTestCaseOutputFilePath -Value $referenceSortedContent
 
             # Prepare output content (format, sorting)
-                # $testableContent = ("[$(Get-Content -Path $_.rawContent)]") | ConvertFrom-Json
+
+            if ($asaNugetVersion.split(".")[0].Equals("2")) {
+                $testableContent = ("[$(Get-Content -Path $_.rawContent)]") | ConvertFrom-Json
+            } else {
                 # New format after CICD 3.0.0
-            $testableContent = [IO.File]::ReadAllText($_.rawContent).split("`n") | ConvertFrom-Json
+                $testableContent = (Invoke-ReadAllText -p $_.rawContent).split("`n") | ConvertFrom-Json
+            }
 
             $testableContentProperties = `
                     $testableContent | `

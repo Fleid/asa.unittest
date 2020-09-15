@@ -17,6 +17,7 @@ Describe "Get-AutRunResult Nominal" {
         $t_unittestFolder = "bar.Tests"
         $t_testID = "yyyymmddhhmmss"
         $t_testCase = "123"
+        $t_asaNugetVersion = "3.0.0"
 
         Mock Test-Path {return $true}
         Mock Get-ChildItem {return 1}
@@ -25,6 +26,7 @@ Describe "Get-AutRunResult Nominal" {
         Mock Add-Content {}
         Mock Compare-Object {}
         Mock Out-File {}
+        Mock Invoke-ReadAllText {return (@{FilePath="foobar"} | ConvertTo-Json)}
 
         It "tries to get a list of files" {
             Get-AutRunResult `
@@ -32,7 +34,8 @@ Describe "Get-AutRunResult Nominal" {
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder `
                 -testID $t_testID `
-                -testCase $t_testCase  | Out-Null
+                -testCase $t_testCase `
+                -asaNugetVersion $t_asaNugetVersion | Out-Null
 
             Assert-MockCalled Get-ChildItem -Times 1 -Exactly -Scope It
         }
@@ -44,7 +47,8 @@ Describe "Get-AutRunResult Nominal" {
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder `
                 -testID $t_testID `
-                -testCase $t_testCase  | Out-Null
+                -testCase $t_testCase `
+                -asaNugetVersion $t_asaNugetVersion | Out-Null
 
             Assert-MockCalled Out-File -Times 0  -Exactly -Scope It
         }
@@ -56,7 +60,8 @@ Describe "Get-AutRunResult Nominal" {
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder `
                 -testID $t_testID `
-                -testCase $t_testCase  | Out-Null
+                -testCase $t_testCase `
+                -asaNugetVersion $t_asaNugetVersion | Out-Null
 
             Assert-MockCalled Get-AutFieldFromFileInfo -Times 1 -Exactly -Scope It
         }
@@ -67,17 +72,42 @@ Describe "Get-AutRunResult Nominal" {
                 @{Basename0="001";FilePath="foobar2";Basename1="Output";Basename2="fb12"},`
                 @{Basename0="002";FilePath="foobar";Basename1="Output";Basename2="fb2"}`
             )}
-        It "Generates N testable files for N output files" {
+        $t_asaNugetVersion = "2.x.y"
+        It "Generates N testable files for N output files for asANugetVersion 2.x" {
             Get-AutRunResult `
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder `
                 -testID $t_testID `
-                -testCase $t_testCase  | Out-Null
+                -testCase $t_testCase `
+                -asaNugetVersion $t_asaNugetVersion | Out-Null
 
             Assert-MockCalled Get-Content -Times 16 -Exactly -Scope It #4 for ref, 4 for output times 2
             Assert-MockCalled Add-Content -Times 8 -Exactly -Scope It #4 for ref, 4 for output times 2
         }
+        $t_asaNugetVersion = "3.0.0"
+
+        Mock Get-AutFieldFromFileInfo {return @(`
+            @{Basename0="003";FilePath="foobar";Basename1="Output";Basename2="fb3"},`
+            @{Basename0="001";FilePath="foobar1";Basename1="Output";Basename2="fb11"},`
+            @{Basename0="001";FilePath="foobar2";Basename1="Output";Basename2="fb12"},`
+            @{Basename0="002";FilePath="foobar";Basename1="Output";Basename2="fb2"}`
+        )}
+        $t_asaNugetVersion = "3.0.0"
+        It "Generates N testable files for N output files for asANugetVersion 3 or above" {
+            Get-AutRunResult `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder `
+                -testID $t_testID `
+                -testCase $t_testCase `
+                -asaNugetVersion $t_asaNugetVersion | Out-Null
+
+            Assert-MockCalled Get-Content -Times 12 -Exactly -Scope It #4 for output times 3
+            Assert-MockCalled Invoke-ReadAllText -Times 4 -Exactly -Scope It #4 for ref
+            Assert-MockCalled Add-Content -Times 8 -Exactly -Scope It #4 for ref, 4 for output times 2
+        }
+        $t_asaNugetVersion = "3.0.0"
 
         Mock Get-AutFieldFromFileInfo {return @(`
             @{Basename0="003";FilePath="foobar";Basename1="Output";Basename2="fb3"},`
@@ -92,7 +122,8 @@ Describe "Get-AutRunResult Nominal" {
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder `
                 -testID $t_testID `
-                -testCase $t_testCase  | Out-Null
+                -testCase $t_testCase `
+                -asaNugetVersion $t_asaNugetVersion | Out-Null
 
             Assert-MockCalled Compare-Object -Times 4 -Exactly -Scope It
             Assert-MockCalled Out-File -Times 0 -Exactly -Scope It
@@ -111,7 +142,8 @@ Describe "Get-AutRunResult Nominal" {
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder `
                 -testID $t_testID `
-                -testCase $t_testCase  | Out-Null
+                -testCase $t_testCase `
+                -asaNugetVersion $t_asaNugetVersion | Out-Null
 
             Assert-MockCalled Compare-Object -Times 4 -Exactly -Scope It
             Assert-MockCalled Out-File -Times 4 -Exactly -Scope It
@@ -131,7 +163,8 @@ Describe "Get-AutRunResult Nominal" {
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder `
                 -testID $t_testID `
-                -testCase $t_testCase  |
+                -testCase $t_testCase `
+                -asaNugetVersion $t_asaNugetVersion |
             Should -be 5
         }
     }
@@ -153,6 +186,7 @@ Describe "Get-AutRunResult empty folders"  {
         Mock Add-Content {}
         Mock Compare-Object {}
         Mock Out-File {}
+        Mock Invoke-ReadAllText {}
 
         It "provides 0 error in output pipeline on an empty folder" {
             Get-AutRunResult `
@@ -160,7 +194,8 @@ Describe "Get-AutRunResult empty folders"  {
                  -asaProjectName $t_asaProjectName `
                  -unittestFolder $t_unittestFolder `
                  -testID $t_testID `
-                 -testCase $t_testCase |
+                 -testCase $t_testCase `
+                 -asaNugetVersion $t_asaNugetVersion |
             Should -be 0
         }
 
@@ -170,7 +205,8 @@ Describe "Get-AutRunResult empty folders"  {
                  -asaProjectName $t_asaProjectName `
                  -unittestFolder $t_unittestFolder `
                  -testID $t_testID `
-                 -testCase $t_testCase | Out-Null
+                 -testCase $t_testCase `
+                 -asaNugetVersion $t_asaNugetVersion | Out-Null
 
             Assert-MockCalled Out-File -Times 0  -Exactly -Scope It
         }
@@ -194,6 +230,7 @@ Describe "Get-AutRunResult parameters"  {
         Mock Add-Content {}
         Mock Compare-Object {}
         Mock Out-File {}
+        Mock Invoke-ReadAllText {}
 
         It "runs with a valid set of parameters" {
            { Get-AutRunResult `
@@ -201,7 +238,8 @@ Describe "Get-AutRunResult parameters"  {
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder `
                 -testID $t_testID `
-                -testCase $t_testCase } |
+                -testCase $t_testCase `
+                -asaNugetVersion $t_asaNugetVersion } |
             Should -not -throw "-* is required"
         }
 
@@ -211,7 +249,8 @@ Describe "Get-AutRunResult parameters"  {
                  -asaProjectName $t_asaProjectName `
                  -unittestFolder $t_unittestFolder `
                  -testID $t_testID `
-                 -testCase $t_testCase } |
+                 -testCase $t_testCase `
+                 -asaNugetVersion $t_asaNugetVersion } |
              Should -throw "-solutionPath is required"
         }
 
@@ -221,7 +260,8 @@ Describe "Get-AutRunResult parameters"  {
                  #-asaProjectName $t_asaProjectName `
                  -unittestFolder $t_unittestFolder `
                  -testID $t_testID `
-                 -testCase $t_testCase } |
+                 -testCase $t_testCase `
+                 -asaNugetVersion $t_asaNugetVersion } |
              Should -throw "-asaProjectName is required"
         }
 
@@ -231,7 +271,8 @@ Describe "Get-AutRunResult parameters"  {
                  -asaProjectName $t_asaProjectName `
                  #-unittestFolder $t_unittestFolder `
                  -testID $t_testID `
-                 -testCase $t_testCase } |
+                 -testCase $t_testCase `
+                 -asaNugetVersion $t_asaNugetVersion } |
              Should -throw "-unittestFolder is required"
         }
 
@@ -241,7 +282,8 @@ Describe "Get-AutRunResult parameters"  {
                  -asaProjectName $t_asaProjectName `
                  -unittestFolder $t_unittestFolder `
                  #-testID $t_testID `
-                 -testCase $t_testCase } |
+                 -testCase $t_testCase `
+                 -asaNugetVersion $t_asaNugetVersion } |
              Should -throw "-testID is required"
         }
 
@@ -252,8 +294,20 @@ Describe "Get-AutRunResult parameters"  {
                  -unittestFolder $t_unittestFolder `
                  -testID $t_testID `
                  #-testCase $t_testCase
-                } |
+                 -asaNugetVersion $t_asaNugetVersion } |
              Should -throw "-testCase is required"
+        }
+
+        It "fails without -asaNugetVersion" {
+            { Get-AutRunResult `
+                 -solutionPath $t_solutionPath `
+                 -asaProjectName $t_asaProjectName `
+                 -unittestFolder $t_unittestFolder `
+                 -testID $t_testID `
+                 -testCase $t_testCase `
+                 #-asaNugetVersion $t_asaNugetVersion `
+                } |
+             Should -throw "-asaNugetVersion is required"
         }
     }
 }
@@ -274,6 +328,7 @@ Describe "Get-AutRunResult paths"  {
         Mock Add-Content {}
         Mock Compare-Object {}
         Mock Out-File {}
+        Mock Invoke-ReadAllText {}
 
         Mock Test-Path {return $true}
         It "runs with a valid set of paths" {
@@ -282,7 +337,8 @@ Describe "Get-AutRunResult paths"  {
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder `
                 -testID $t_testID `
-                -testCase $t_testCase } |
+                -testCase $t_testCase `
+                -asaNugetVersion $t_asaNugetVersion } |
             Should -not -throw
         }
 
@@ -293,7 +349,8 @@ Describe "Get-AutRunResult paths"  {
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder `
                 -testID $t_testID `
-                -testCase $t_testCase } |
+                -testCase $t_testCase `
+                -asaNugetVersion $t_asaNugetVersion  } |
             Should -throw "$t_solutionPath is not a valid path"
         }
 
@@ -305,7 +362,8 @@ Describe "Get-AutRunResult paths"  {
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder `
                 -testID $t_testID `
-                -testCase $t_testCase } |
+                -testCase $t_testCase `
+                -asaNugetVersion $t_asaNugetVersion  } |
             Should -throw "$t_testPath is not a valid path"
         }
 
@@ -317,7 +375,8 @@ Describe "Get-AutRunResult paths"  {
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder `
                 -testID $t_testID `
-                -testCase $t_testCase } |
+                -testCase $t_testCase `
+                -asaNugetVersion $t_asaNugetVersion  } |
             Should -throw "$t_outputSourcePath is not a valid path"
         }
     }
