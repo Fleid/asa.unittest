@@ -131,7 +131,8 @@ Function New-AutRunFixture{
             if (-not (Test-Path("$asaProjectPath\$asaProjectName.asaql.cs"))) {
                     $testFolders |
                         Select-Object @{Name = "Path"; Expression = {"$($_.Path)\$asaProjectName\"}} |
-                        New-Item -Name "$asaProjectName.asaql.cs" -ItemType file
+                        New-Item -Name "$asaProjectName.asaql.cs" -ItemType file |
+                        Out-Null
             }
 
             ################################################################################################################################
