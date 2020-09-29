@@ -13,5 +13,11 @@
         "AccountKey": null
     },
     "DataSourceCredentialDomain": null,
-    "Tags": {}
+    "Tags": {},
+    "CustomCodeStorage": {
+        "AccountName": null,
+        "AccountKey": null,
+        "ContainerName": null,
+        "Path": "UserCustomCode.zip"
+    }
 }
