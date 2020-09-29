@@ -141,3 +141,11 @@ Set-Location $rootFolder
 Publish-Module -Path $modulePath -WhatIf -Verbose -NuGetApiKey $nugetApiKey
 Publish-Module -Path $modulePath -NuGetApiKey $nugetApiKey
 ```
+
+### Cleaning up branches (VSCode)
+
+```PowerShell
+git fetch --prune
+```
+
+Then re-open VSCode
