@@ -10,23 +10,24 @@ See source for more information : https://github.com/pester/Pester/issues/592
 Literal path to the executable ("...\nuget.exe", "npm")
 
 .EXAMPLE
-Invoke-ReadAllText -param1 $rawContent
+Invoke-WriteAllText -file $file -content $content
 
 #>
 
-Function Invoke-ReadAllText
+Function Invoke-WriteAllText
 {
     [CmdletBinding()]
-    [OutputType('System.String')]
     param(
         [Parameter(Mandatory=$true)]
-        [string] $path
+        [string] $file,
+        [Parameter(Mandatory=$true)]
+        [string] $content
     )
 
 BEGIN {}
 
 PROCESS {
-    return [IO.File]::ReadAllText($path)
+    [IO.File]::WriteAllText($file, $content)
 } #PROCESS
 
 END {}
