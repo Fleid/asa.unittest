@@ -8,113 +8,180 @@ Import-Module (Join-Path $moduleRoot "$moduleName.psm1") -force
 #############################################################################################################
 # Invoke-Pester .\New-AutManifestFromFiles.Tests.ps1 -CodeCoverage .\..\asa.unittest\public\New-AutManifestFromFiles.ps1
 
-Describe "New-AutManifestFromFiles paramater installPath" {
+Describe "New-AutManifestFromFiles parameter solutionPath" {
     InModuleScope $moduleName {
 
-        $t_installPath = "foo"
+        $t_solutionPath = "foo"
+        $t_asaProjectName = "bar"
+        $t_unittestFolder = "bar.Tests"
+        #$t_outputFilePath
 
-        Mock Test-Path {return $true} 
-        Mock New-Item {}
-        Mock Install-AutToolset {}
+        $internalTimeStamp = (Get-Date -Format "yyyyMMddHHmmss")
+
+        Mock Test-Path {return $true}
+        Mock Get-Date {return $internalTimeStamp}
+
+        Mock Get-ChildItem {}
+        Mock Get-AutFieldFromFileInfo  {}
+        Mock Get-Content {}
         Mock Out-File {}
 
-        It "fails if installPath is missing" {
-            { New-AutManifestFromFiles } |
-            Should -throw "-installPath is required"
+        $t_arrangePath = "$t_solutionPath\$t_unittestFolder\1_arrange"
+        It "runs with a valid solutionPath" {
+            New-AutManifestFromFiles `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder |
+            Assert-MockCalled Get-ChildItem -Times 1 -Exactly -Scope It -ParameterFilter { $Path -eq $t_arrangePath}
         }
 
-        It "doesn't create a folder if it exists" {
-            New-AutManifestFromFiles -installPath $t_installPath |
-            Assert-MockCalled New-Item -Times 0 -Exactly -Scope It  -ParameterFilter {$Path -eq $t_installPath}
+        It "fails without a solutionPath" {
+            {New-AutManifestFromFiles `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder} |
+            Should -throw "-solutionPath is required"
         }
 
-        Mock Test-Path {return $false} -ParameterFilter {$Path -eq $t_installPath}
-        It "does create a folder it doesn't" {
-            New-AutManifestFromFiles -installPath $t_installPath |
-            Assert-MockCalled New-Item -Times 1 -Exactly -Scope It  -ParameterFilter {$Path -eq $t_installPath}
+        Mock Test-Path {return $false} -ParameterFilter {$path -eq $t_solutionPath}
+        It "fails with an empty/invalid solutionPath" {
+            {New-AutManifestFromFiles `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder} |
+            Should -throw "Invalid -solutionPath"
         }
+        Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_solutionPath}
 
+        $t_Script = "$t_solutionPath\$t_asaProjectName\$t_asaProjectName.asaql"
+        Mock Test-Path {return $false} -ParameterFilter {$path -eq $t_Script}
+        It "fails if solutionPath doesn't lead to a .asaql query" {
+            {New-AutManifestFromFiles `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder} |
+            Should -throw  "Can't find $t_asaProjectName.asaql at $t_solutionPath\$t_asaProjectName"
+        }
+        Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_Script}
+
+        $t_arrangePath = "$t_solutionPath\$t_unittestFolder\1_arrange"
+        Mock Test-Path {return $false} -ParameterFilter {$path -eq $t_arrangePath}
+        It "fails if solutionPath doesn't lead to a valid 1_arrange folder" {
+            {New-AutManifestFromFiles `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder} |
+            Should -throw  "$t_arrangePath is not a valid path"
+        }
+        Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_arrangePath}
     }
 }
 
-Describe "New-AutManifestFromFiles behavior folder structure" {
+
+Describe "New-AutManifestFromFiles parameter asaProjectName" {`
     InModuleScope $moduleName {
 
-        $t_installPath = "foo"
+        $t_solutionPath = "foo"
+        $t_asaProjectName = "bar"
+        $t_unittestFolder = "bar.Tests"
+        #$t_outputFilePath
 
-        Mock Test-Path {return $true} 
-        Mock New-Item {}
-        Mock Install-AutToolset {}
+        $internalTimeStamp = (Get-Date -Format "yyyyMMddHHmmss")
+
+        Mock Test-Path {return $true}
+        Mock Get-Date {return $internalTimeStamp}
+
+        Mock Get-ChildItem {}
+        Mock Get-AutFieldFromFileInfo  {}
+        Mock Get-Content {}
         Mock Out-File {}
 
-        Mock Test-Path {return $false} -ParameterFilter {$Path -eq "$t_installPath\1_arrange"}
-        It "does create a folder 1_arrange" {
-            New-AutManifestFromFiles -installPath $t_installPath |
-            Assert-MockCalled New-Item -Times 1 -Exactly -Scope It  -ParameterFilter {$Path -eq "$t_installPath\1_arrange"}
+        $t_localInputSourcePath = "$t_solutionPath\$t_asaProjectName\Inputs"
+        $t_arrangePath = "$t_solutionPath\$t_unittestFolder\1_arrange"
+        It "runs with a valid asaProjectName" {
+            New-AutManifestFromFiles `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder |
+                Assert-MockCalled Get-ChildItem -Times 1 -Exactly -Scope It -ParameterFilter { $Path -eq $t_arrangePath}
         }
-        Mock Test-Path {return $true}
 
-        Mock Test-Path {return $false} -ParameterFilter {$Path -eq "$t_installPath\2_act"}
-        It "does create a folder 2_act" {
-            New-AutManifestFromFiles -installPath $t_installPath |
-            Assert-MockCalled New-Item -Times 1 -Exactly -Scope It  -ParameterFilter {$Path -eq "$t_installPath\2_act"}
+        It "fails without a asaProjectName" {
+            {New-AutManifestFromFiles `
+                -solutionPath $t_solutionPath `
+                -unittestFolder $t_unittestFolder} |
+            Should -throw "-asaProjectName is required"
         }
-        Mock Test-Path {return $true} 
 
-        Mock Test-Path {return $false} -ParameterFilter {$Path -eq "$t_installPath\3_assert"}
-        It "does create a folder 3_assert" {
-            New-AutManifestFromFiles -installPath $t_installPath |
-            Assert-MockCalled New-Item -Times 1 -Exactly -Scope It  -ParameterFilter {$Path -eq "$t_installPath\3_assert"}
+        $t_localInputSourcePath = "$t_solutionPath\$t_asaProjectName\Inputs"
+        Mock Test-Path {return $false} -ParameterFilter {$path -eq $t_localInputSourcePath}
+        It "fails if asaProjectName doesn't lead to a valid Inputs subfolder" {
+            {New-AutManifestFromFiles `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder} |
+            Should -throw  "Can't find the Inputs subfolder at $t_solutionPath\$t_asaProjectName"
         }
-        Mock Test-Path {return $true}
+        Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_localInputSourcePath}
 
+        $t_Script = "$t_solutionPath\$t_asaProjectName\$t_asaProjectName.asaql"
+        Mock Test-Path {return $false} -ParameterFilter {$path -eq $t_Script}
+        It "fails if asaProjectName doesn't lead to a .asaql query" {
+            {New-AutManifestFromFiles `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder} |
+            Should -throw  "Can't find $t_asaProjectName.asaql at $t_solutionPath\$t_asaProjectName"
+        }
+        Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_Script}
     }
 }
 
-Describe "New-AutManifestFromFiles behavior dependencies" {
-        InModuleScope $moduleName {
 
-            $t_installPath = "foo"
-
-            Mock Test-Path {return $true} 
-            Mock New-Item {}
-            Mock Install-AutToolset {}
-            Mock Out-File {}
-
-            It "calls Install-AutToolset with the right parameters" {
-                New-AutManifestFromFiles -installPath $t_installPath |
-                Assert-MockCalled Install-AutToolset -Times 1 -Exactly -Scope It  -ParameterFilter {  
-                        ($installPath -eq "$t_installPath\2_act") `
-                        -and  `
-                        ($packageHash.package -eq "Microsoft.Azure.StreamAnalytics.CICD") `
-                        -and  `
-                        ($packageHash.type -eq "nuget")
-                    }
-            }
-
-        }
-}
-
-Describe "New-AutManifestFromFiles behavior gitignore" {
+Describe "New-AutManifestFromFiles parameter unittestFolder" {`
     InModuleScope $moduleName {
 
-        $t_installPath = "foo"
+        $t_solutionPath = "foo"
+        $t_asaProjectName = "bar"
+        $t_unittestFolder = "bar.Tests"
+        #$t_outputFilePath
 
-        Mock Test-Path {return $true} 
-        Mock New-Item {}
-        Mock Install-AutToolset {}
+        $internalTimeStamp = (Get-Date -Format "yyyyMMddHHmmss")
+
+        Mock Test-Path {return $true}
+        Mock Get-Date {return $internalTimeStamp}
+
+        Mock Get-ChildItem {}
+        Mock Get-AutFieldFromFileInfo  {}
+        Mock Get-Content {}
         Mock Out-File {}
 
-        It "doesn't create a gitignore if there's one already" {
-            New-AutManifestFromFiles -installPath $t_installPath |
-            Assert-MockCalled Out-File -Times 0 -Exactly -Scope It
+        $t_arrangePath = "$t_solutionPath\$t_unittestFolder\1_arrange"
+        It "runs with a valid unittestFolder" {
+            New-AutManifestFromFiles `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder |
+            Assert-MockCalled Get-ChildItem -Times 1 -Exactly -Scope It -ParameterFilter { $Path -eq $t_arrangePath}
         }
 
-        Mock Test-Path {return $false} -ParameterFilter {$Path -eq "$t_installPath\.gitignore"}
-        It "does create a gitignore if there's none" {
-            New-AutManifestFromFiles -installPath $t_installPath |
-            Assert-MockCalled Out-File -Times 1 -Exactly -Scope It
+        $t_arrangePath = "$t_solutionPath\$t_asaProjectName.Tests\1_arrange"
+        It "defaults to asaProjectName.Tests without a unittestFolder" {
+            New-AutManifestFromFiles `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName |
+            Assert-MockCalled Get-ChildItem -Times 1 -Exactly -Scope It -ParameterFilter { $Path -eq $t_arrangePath}
+         }
+
+        $t_arrangePath = "$t_solutionPath\$t_unittestFolder\1_arrange"
+        Mock Test-Path {return $false} -ParameterFilter {$path -eq $t_arrangePath}
+        It "fails if unittestFolder doesn't lead to a valid 1_arrange folder" {
+            {New-AutManifestFromFiles `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder} |
+            Should -throw  "$t_arrangePath is not a valid path"
         }
+        Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_arrangePath}
 
     }
 }
