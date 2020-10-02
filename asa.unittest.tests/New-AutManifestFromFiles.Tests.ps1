@@ -28,10 +28,11 @@ Describe "New-AutManifestFromFiles parameter solutionPath" {
 
         $t_arrangePath = "$t_solutionPath\$t_unittestFolder\1_arrange"
         It "runs with a valid solutionPath" {
-            New-AutManifestFromFiles `
+            $output = New-AutManifestFromFiles `
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
-                -unittestFolder $t_unittestFolder |
+                -unittestFolder $t_unittestFolder
+
             Assert-MockCalled Get-ChildItem -Times 1 -Exactly -Scope It -ParameterFilter { $Path -eq $t_arrangePath}
         }
 
@@ -98,11 +99,12 @@ Describe "New-AutManifestFromFiles parameter asaProjectName" {`
         $t_localInputSourcePath = "$t_solutionPath\$t_asaProjectName\Inputs"
         $t_arrangePath = "$t_solutionPath\$t_unittestFolder\1_arrange"
         It "runs with a valid asaProjectName" {
-            New-AutManifestFromFiles `
+            $output = New-AutManifestFromFiles `
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
-                -unittestFolder $t_unittestFolder |
-                Assert-MockCalled Get-ChildItem -Times 1 -Exactly -Scope It -ParameterFilter { $Path -eq $t_arrangePath}
+                -unittestFolder $t_unittestFolder
+            
+            Assert-MockCalled Get-ChildItem -Times 1 -Exactly -Scope It -ParameterFilter { $Path -eq $t_arrangePath}
         }
 
         It "fails without a asaProjectName" {
@@ -157,18 +159,20 @@ Describe "New-AutManifestFromFiles parameter unittestFolder" {`
 
         $t_arrangePath = "$t_solutionPath\$t_unittestFolder\1_arrange"
         It "runs with a valid unittestFolder" {
-            New-AutManifestFromFiles `
+            $output = New-AutManifestFromFiles `
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
-                -unittestFolder $t_unittestFolder |
+                -unittestFolder $t_unittestFolder
+            
             Assert-MockCalled Get-ChildItem -Times 1 -Exactly -Scope It -ParameterFilter { $Path -eq $t_arrangePath}
         }
 
         $t_arrangePath = "$t_solutionPath\$t_asaProjectName.Tests\1_arrange"
         It "defaults to asaProjectName.Tests without a unittestFolder" {
-            New-AutManifestFromFiles `
+            $output = New-AutManifestFromFiles `
                 -solutionPath $t_solutionPath `
-                -asaProjectName $t_asaProjectName |
+                -asaProjectName $t_asaProjectName
+            
             Assert-MockCalled Get-ChildItem -Times 1 -Exactly -Scope It -ParameterFilter { $Path -eq $t_arrangePath}
          }
 
@@ -206,34 +210,221 @@ Describe "New-AutManifestFromFiles parameter outputFilePath" {`
         Mock Out-File {}
 
         It "runs with a valid outputFilePath" {
-            New-AutManifestFromFiles `
+            $output = New-AutManifestFromFiles `
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder `
-                -outputFilePath $t_outputFilePath |
+                -outputFilePath $t_outputFilePath
+            
             Assert-MockCalled Out-File -Times 1 -Exactly -Scope It -ParameterFilter { $FilePath -eq $t_outputFilePath}
         }
 
         $t_arrangePath = "$t_solutionPath\$t_unittestFolder\1_arrange"
         $t_defaultedOutputFilePath = $t_arrangePath+"\testConfig_$internalTimeStamp.json"
         It "defaults to timestamp without a outputFilePath" {
-            New-AutManifestFromFiles `
+            $output = New-AutManifestFromFiles `
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
-                -unittestFolder $t_unittestFolder |
+                -unittestFolder $t_unittestFolder
+            
             Assert-MockCalled Out-File -Times 1 -Exactly -Scope It -ParameterFilter { $FilePath -eq $t_defaultedOutputFilePath}
         }
 
-         $t_outputFilePath = ""
-         $t_arrangePath = "$t_solutionPath\$t_unittestFolder\1_arrange"
-         $t_defaultedOutputFilePath = $t_arrangePath+"\testConfig_$internalTimeStamp.json"
-         It "defaults to timestamp with an empty outputFilePath" {
-         New-AutManifestFromFiles `
+        $t_outputFilePath = ""
+        $t_arrangePath = "$t_solutionPath\$t_unittestFolder\1_arrange"
+        $t_defaultedOutputFilePath = $t_arrangePath+"\testConfig_$internalTimeStamp.json"
+        It "defaults to timestamp with an empty outputFilePath" {
+            $output = New-AutManifestFromFiles `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder `
+                -outputFilePath $t_outputFilePath
+            
+            Assert-MockCalled Out-File -Times 1 -Exactly -Scope It -ParameterFilter { $FilePath -eq $t_defaultedOutputFilePath}
+        }
+    }
+}
+
+
+Describe "New-AutManifestFromFiles behavior" {`
+    InModuleScope $moduleName {
+
+        $t_solutionPath = "foo"
+        $t_asaProjectName = "bar"
+        $t_unittestFolder = "bar.Tests"
+        $t_outputFilePath = "testConfig.json"
+
+        $internalTimeStamp = (Get-Date -Format "yyyyMMddHHmmss")
+
+        Mock Test-Path {return $true}
+        Mock Get-Date {return $internalTimeStamp}
+
+        Mock Get-ChildItem {return 1}
+        Mock Get-Content {}
+        Mock Out-File {}
+
+        Mock Get-AutFieldFromFileInfo {return @(`
+            @{FilePath="001~Input~Stream~.json";Basename0="001";Basename1="Input";Basename2="Stream";},`
+            @{FilePath="001~Input~Ref~.json";Basename0="001";Basename1="Input";Basename2="Ref"},`
+            @{FilePath="001~Output~OutA~.json";Basename0="001";Basename1="Output";Basename2="OutA"},`
+
+            @{FilePath="002~Input~Stream~.json";Basename0="002";Basename1="Input";Basename2="Stream";},`
+            @{FilePath="002~Input~Ref~.json";Basename0="002";Basename1="Input";Basename2="Ref"},`
+            @{FilePath="002~Output~OutB~.json";Basename0="002";Basename1="Output";Basename2="OutB"},`
+
+            @{FilePath="003~Input~Stream~.json";Basename0="003";Basename1="Input";Basename2="Stream";},`
+            @{FilePath="003~Input~Ref~.json";Basename0="003";Basename1="Input";Basename2="Ref"},`
+            @{FilePath="003~Output~OutA~.json";Basename0="003";Basename1="Output";Basename2="OutA"},`
+            @{FilePath="003~Output~OutB~.json";Basename0="003";Basename1="Output";Basename2="OutB"}`
+        )}
+
+        $t_arrangePath = "$t_solutionPath\$t_unittestFolder\1_arrange"
+        It "gets the test file list" {
+            $output = New-AutManifestFromFiles `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder `
+                -outputFilePath $t_outputFilePath
+            
+            Assert-MockCalled Get-ChildItem  -Times 1 -Exactly -Scope It -ParameterFilter { $Path -eq $t_arrangePath}
+            Assert-MockCalled Get-AutFieldFromFileInfo -Times 1 -Exactly -Scope It
+        }
+
+        $t_localInputSourcePath = "$t_solutionPath\$t_asaProjectName\Inputs"
+        It "gets the details of the 2 sources" {
+            $output = New-AutManifestFromFiles `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder `
+                -outputFilePath $t_outputFilePath
+            
+            Assert-MockCalled Get-Content -Times 1 -Exactly -Scope It -ParameterFilter { $Path -eq "$t_localInputSourcePath\Local_Stream.json"}
+            Assert-MockCalled Get-Content -Times 1 -Exactly -Scope It -ParameterFilter { $Path -eq "$t_localInputSourcePath\Local_Ref.json"}
+        }
+
+        It "creates a file" {
+            $output = New-AutManifestFromFiles `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder `
+                -outputFilePath $t_outputFilePath
+            
+            Assert-MockCalled Out-File -Times 1 -Exactly -Scope It -ParameterFilter { $Path -eq $t_outputFilePath}
+        }
+
+        Mock Get-Content `
+            {return (@{Type="Reference Data";Format="csv";ScriptType="InputMock";}| ConvertTo-JSON)} `
+            -ParameterFilter { $Path -eq "$t_localInputSourcePath\Local_Ref.json"} 
+
+        Mock Get-Content `
+            {return (@{Type="Data Stream";Format="json";ScriptType="InputMock";} | ConvertTo-JSON)} `
+            -ParameterFilter { $Path -eq "$t_localInputSourcePath\Local_Stream.json"} 
+
+        $expectedOutput = '{
+            "Script": "foo\\bar\\bar.asaql",
+            "TestCases": [
+              {
+                "Name": "001",
+                "Inputs": [
+                  {
+                    "InputAlias": "Stream",
+                    "Type": "Data Stream",
+                    "Format": "json",
+                    "FilePath": "001~Input~Stream~.json",
+                    "ScriptType": "InputMock"
+                  },
+                  {
+                    "InputAlias": "Ref",
+                    "Type": "Reference Data",
+                    "Format": "csv",
+                    "FilePath": "001~Input~Ref~.json",
+                    "ScriptType": "InputMock"
+                  }
+                ],
+                "ExpectedOutputs": [
+                  {
+                    "OutputAlias": "OutA",
+                    "FilePath": "001~Output~OutA~.json",
+                    "Required": "true"
+                  },
+                  {
+                    "OutputAlias": "OutB",
+                    "FilePath": "foo.bar",
+                    "Required": "false"
+                  }
+                ]
+              },
+              {
+                "Name": "002",
+                "Inputs": [
+                  {
+                    "InputAlias": "Stream",
+                    "Type": "Data Stream",
+                    "Format": "json",
+                    "FilePath": "002~Input~Stream~.json",
+                    "ScriptType": "InputMock"
+                  },
+                  {
+                    "InputAlias": "Ref",
+                    "Type": "Reference Data",
+                    "Format": "csv",
+                    "FilePath": "002~Input~Ref~.json",
+                    "ScriptType": "InputMock"
+                  }
+                ],
+                "ExpectedOutputs": [
+                  {
+                    "OutputAlias": "OutA",
+                    "FilePath": "foo.bar",
+                    "Required": "false"
+                  },
+                  {
+                    "OutputAlias": "OutB",
+                    "FilePath": "002~Output~OutB~.json",
+                    "Required": "true"
+                  }
+                ]
+              },
+              {
+                "Name": "003",
+                "Inputs": [
+                  {
+                    "InputAlias": "Stream",
+                    "Type": "Data Stream",
+                    "Format": "json",
+                    "FilePath": "003~Input~Stream~.json",
+                    "ScriptType": "InputMock"
+                  },
+                  {
+                    "InputAlias": "Ref",
+                    "Type": "Reference Data",
+                    "Format": "csv",
+                    "FilePath": "003~Input~Ref~.json",
+                    "ScriptType": "InputMock"
+                  }
+                ],
+                "ExpectedOutputs": [
+                  {
+                    "OutputAlias": "OutA",
+                    "FilePath": "003~Output~OutA~.json",
+                    "Required": "true"
+                  },
+                  {
+                    "OutputAlias": "OutB",
+                    "FilePath": "003~Output~OutB~.json",
+                    "Required": "true"
+                  }
+                ]
+              }
+            ]
+          }' | ConvertFrom-Json | ConvertTo-Json -Depth 4
+        It "outputs a valid config file" {
+            New-AutManifestFromFiles `
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder `
                 -outputFilePath $t_outputFilePath |
-            Assert-MockCalled Out-File -Times 1 -Exactly -Scope It -ParameterFilter { $FilePath -eq $t_defaultedOutputFilePath}
+            Should be $expectedOutput
         }
     }
 }

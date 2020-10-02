@@ -166,7 +166,9 @@ Function New-AutManifestFromFiles{
                                 TestCases = $TestCases
                         }
 
-                        $testConfig | ConvertTo-Json -Depth 4 | Out-File -FilePath $outputFilePath
+                        $finalJSON = $testConfig | ConvertTo-Json -Depth 4 
+                        $finalJSON | Out-File -FilePath $outputFilePath
+                        $finalJSON 
                 }
         } #PROCESS
         END {}
