@@ -185,3 +185,55 @@ Describe "New-AutManifestFromFiles parameter unittestFolder" {`
 
     }
 }
+
+
+Describe "New-AutManifestFromFiles parameter outputFilePath" {`
+    InModuleScope $moduleName {
+
+        $t_solutionPath = "foo"
+        $t_asaProjectName = "bar"
+        $t_unittestFolder = "bar.Tests"
+        $t_outputFilePath = "testConfig.json"
+
+        $internalTimeStamp = (Get-Date -Format "yyyyMMddHHmmss")
+
+        Mock Test-Path {return $true}
+        Mock Get-Date {return $internalTimeStamp}
+
+        Mock Get-ChildItem {}
+        Mock Get-AutFieldFromFileInfo  {}
+        Mock Get-Content {}
+        Mock Out-File {}
+
+        It "runs with a valid outputFilePath" {
+            New-AutManifestFromFiles `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder `
+                -outputFilePath $t_outputFilePath |
+            Assert-MockCalled Out-File -Times 1 -Exactly -Scope It -ParameterFilter { $FilePath -eq $t_outputFilePath}
+        }
+
+        $t_arrangePath = "$t_solutionPath\$t_unittestFolder\1_arrange"
+        $t_defaultedOutputFilePath = $t_arrangePath+"\testConfig_$internalTimeStamp.json"
+        It "defaults to timestamp without a outputFilePath" {
+            New-AutManifestFromFiles `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder |
+            Assert-MockCalled Out-File -Times 1 -Exactly -Scope It -ParameterFilter { $FilePath -eq $t_defaultedOutputFilePath}
+        }
+
+         $t_outputFilePath = ""
+         $t_arrangePath = "$t_solutionPath\$t_unittestFolder\1_arrange"
+         $t_defaultedOutputFilePath = $t_arrangePath+"\testConfig_$internalTimeStamp.json"
+         It "defaults to timestamp with an empty outputFilePath" {
+         New-AutManifestFromFiles `
+                -solutionPath $t_solutionPath `
+                -asaProjectName $t_asaProjectName `
+                -unittestFolder $t_unittestFolder `
+                -outputFilePath $t_outputFilePath |
+            Assert-MockCalled Out-File -Times 1 -Exactly -Scope It -ParameterFilter { $FilePath -eq $t_defaultedOutputFilePath}
+        }
+    }
+}
