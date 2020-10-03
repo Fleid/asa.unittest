@@ -424,8 +424,8 @@ Describe "New-AutManifestFromFiles behavior" {`
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder `
-                -outputFilePath $t_outputFilePath 
-            | Should be $expectedOutput
+                -outputFilePath $t_outputFilePath | 
+            Should be $expectedOutput
         }
     }
 }
