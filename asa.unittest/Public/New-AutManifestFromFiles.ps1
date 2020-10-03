@@ -32,7 +32,7 @@ Function New-AutManifestFromFiles{
             [string]$unittestFolder = "$asaProjectName.Tests",
             [string]$outputFilePath
         )
-    
+
         BEGIN {
                 ################################################################################################################################
                 write-verbose "New-AutManifestFromFiles::101 - Set and check variables"
@@ -52,12 +52,12 @@ Function New-AutManifestFromFiles{
                         $outputFilePath = $arrangePath+"\testConfig_$(Get-Date -Format "yyyyMMddHHmmss").json"
                         write-verbose "New-AutManifestFromFiles::No outputFilePath provided, will default to $outputFilePath"
                 }
-                
+
         }
 
         PROCESS {
                 if ($pscmdlet.ShouldProcess("Starting a manifest generation for $asaProjectName at $arrangePath"))
-                {        
+                {
 
                         ################################################################################################################################
                         # Test inventory
@@ -143,7 +143,7 @@ Function New-AutManifestFromFiles{
                                                                                         | Where-Object -Property SourceName -eq $_.OutputAlias `
                                                                                         | Where-Object -Property TestCase -eq $_.Name).FilePath} `
                                                                                 else {"foo.bar"}
-                                }                                       
+                                }
                         }
 
                         ################################################################################################################################
@@ -166,9 +166,9 @@ Function New-AutManifestFromFiles{
                                 TestCases = $TestCases
                         }
 
-                        $finalJSON = $testConfig | ConvertTo-Json -Depth 4 
+                        $finalJSON = $testConfig | ConvertTo-Json -Depth 4
                         $finalJSON | Out-File -FilePath $outputFilePath
-                        $finalJSON 
+                        $finalJSON
                 }
         } #PROCESS
         END {}
