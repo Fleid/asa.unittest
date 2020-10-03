@@ -264,18 +264,18 @@ Describe "New-AutManifestFromFiles behavior" {`
         Mock Out-File {}
 
         Mock Get-AutFieldFromFileInfo {return @(`
-            @{FilePath="001~Input~Stream~.json";Basename0="001";Basename1="Input";Basename2="Stream";},`
-            @{FilePath="001~Input~Ref~.json";Basename0="001";Basename1="Input";Basename2="Ref"},`
-            @{FilePath="001~Output~OutA~.json";Basename0="001";Basename1="Output";Basename2="OutA"},`
+            [PSCustomObject]@{FilePath="001~Input~Stream~.json";Basename0="001";Basename1="Input";Basename2="Stream";},`
+            [PSCustomObject]@{FilePath="001~Input~Ref~.json";Basename0="001";Basename1="Input";Basename2="Ref"},`
+            [PSCustomObject]@{FilePath="001~Output~OutA~.json";Basename0="001";Basename1="Output";Basename2="OutA"},`
 
-            @{FilePath="002~Input~Stream~.json";Basename0="002";Basename1="Input";Basename2="Stream";},`
-            @{FilePath="002~Input~Ref~.json";Basename0="002";Basename1="Input";Basename2="Ref"},`
-            @{FilePath="002~Output~OutB~.json";Basename0="002";Basename1="Output";Basename2="OutB"},`
+            [PSCustomObject]@{FilePath="002~Input~Stream~.json";Basename0="002";Basename1="Input";Basename2="Stream";},`
+            [PSCustomObject]@{FilePath="002~Input~Ref~.json";Basename0="002";Basename1="Input";Basename2="Ref"},`
+            [PSCustomObject]@{FilePath="002~Output~OutB~.json";Basename0="002";Basename1="Output";Basename2="OutB"},`
 
-            @{FilePath="003~Input~Stream~.json";Basename0="003";Basename1="Input";Basename2="Stream";},`
-            @{FilePath="003~Input~Ref~.json";Basename0="003";Basename1="Input";Basename2="Ref"},`
-            @{FilePath="003~Output~OutA~.json";Basename0="003";Basename1="Output";Basename2="OutA"},`
-            @{FilePath="003~Output~OutB~.json";Basename0="003";Basename1="Output";Basename2="OutB"}`
+            [PSCustomObject]@{FilePath="003~Input~Stream~.json";Basename0="003";Basename1="Input";Basename2="Stream";},`
+            [PSCustomObject]@{FilePath="003~Input~Ref~.json";Basename0="003";Basename1="Input";Basename2="Ref"},`
+            [PSCustomObject]@{FilePath="003~Output~OutA~.json";Basename0="003";Basename1="Output";Basename2="OutA"},`
+            [PSCustomObject]@{FilePath="003~Output~OutB~.json";Basename0="003";Basename1="Output";Basename2="OutB"}`
         )}
 
         $t_arrangePath = "$t_solutionPath\$t_unittestFolder\1_arrange"
@@ -309,122 +309,123 @@ Describe "New-AutManifestFromFiles behavior" {`
                 -unittestFolder $t_unittestFolder `
                 -outputFilePath $t_outputFilePath
             
-            Assert-MockCalled Out-File -Times 1 -Exactly -Scope It -ParameterFilter { $Path -eq $t_outputFilePath}
+            Assert-MockCalled Out-File -Times 1 -Exactly -Scope It -ParameterFilter { $FilePath -eq $t_outputFilePath}
         }
 
         Mock Get-Content `
-            {return (@{Type="Reference Data";Format="csv";ScriptType="InputMock";}| ConvertTo-JSON)} `
+            {return ([PSCustomObject]@{Type="Reference Data";Format="csv";ScriptType="InputMock";}| ConvertTo-JSON)} `
             -ParameterFilter { $Path -eq "$t_localInputSourcePath\Local_Ref.json"} 
 
         Mock Get-Content `
-            {return (@{Type="Data Stream";Format="json";ScriptType="InputMock";} | ConvertTo-JSON)} `
+            {return ([PSCustomObject]@{Type="Data Stream";Format="json";ScriptType="InputMock";} | ConvertTo-JSON)} `
             -ParameterFilter { $Path -eq "$t_localInputSourcePath\Local_Stream.json"} 
 
         $expectedOutput = '{
-            "Script": "foo\\bar\\bar.asaql",
-            "TestCases": [
-              {
-                "Name": "001",
-                "Inputs": [
-                  {
-                    "InputAlias": "Stream",
-                    "Type": "Data Stream",
-                    "Format": "json",
-                    "FilePath": "001~Input~Stream~.json",
-                    "ScriptType": "InputMock"
-                  },
-                  {
-                    "InputAlias": "Ref",
-                    "Type": "Reference Data",
-                    "Format": "csv",
-                    "FilePath": "001~Input~Ref~.json",
-                    "ScriptType": "InputMock"
-                  }
-                ],
-                "ExpectedOutputs": [
-                  {
-                    "OutputAlias": "OutA",
-                    "FilePath": "001~Output~OutA~.json",
-                    "Required": "true"
-                  },
-                  {
-                    "OutputAlias": "OutB",
-                    "FilePath": "foo.bar",
-                    "Required": "false"
-                  }
-                ]
-              },
-              {
-                "Name": "002",
-                "Inputs": [
-                  {
-                    "InputAlias": "Stream",
-                    "Type": "Data Stream",
-                    "Format": "json",
-                    "FilePath": "002~Input~Stream~.json",
-                    "ScriptType": "InputMock"
-                  },
-                  {
-                    "InputAlias": "Ref",
-                    "Type": "Reference Data",
-                    "Format": "csv",
-                    "FilePath": "002~Input~Ref~.json",
-                    "ScriptType": "InputMock"
-                  }
-                ],
-                "ExpectedOutputs": [
-                  {
-                    "OutputAlias": "OutA",
-                    "FilePath": "foo.bar",
-                    "Required": "false"
-                  },
-                  {
-                    "OutputAlias": "OutB",
-                    "FilePath": "002~Output~OutB~.json",
-                    "Required": "true"
-                  }
-                ]
-              },
-              {
-                "Name": "003",
-                "Inputs": [
-                  {
-                    "InputAlias": "Stream",
-                    "Type": "Data Stream",
-                    "Format": "json",
-                    "FilePath": "003~Input~Stream~.json",
-                    "ScriptType": "InputMock"
-                  },
-                  {
-                    "InputAlias": "Ref",
-                    "Type": "Reference Data",
-                    "Format": "csv",
-                    "FilePath": "003~Input~Ref~.json",
-                    "ScriptType": "InputMock"
-                  }
-                ],
-                "ExpectedOutputs": [
-                  {
-                    "OutputAlias": "OutA",
-                    "FilePath": "003~Output~OutA~.json",
-                    "Required": "true"
-                  },
-                  {
-                    "OutputAlias": "OutB",
-                    "FilePath": "003~Output~OutB~.json",
-                    "Required": "true"
-                  }
-                ]
-              }
-            ]
-          }' | ConvertFrom-Json | ConvertTo-Json -Depth 4
+"Script": "foo\\bar\\bar.asaql",
+"TestCases": [
+    {
+    "Name": "001",
+    "Inputs": [
+        {
+        "InputAlias": "Stream",
+        "Type": "Data Stream",
+        "Format": "json",
+        "FilePath": "001~Input~Stream~.json",
+        "ScriptType": "InputMock"
+        },
+        {
+        "InputAlias": "Ref",
+        "Type": "Reference Data",
+        "Format": "csv",
+        "FilePath": "001~Input~Ref~.json",
+        "ScriptType": "InputMock"
+        }
+    ],
+    "ExpectedOutputs": [
+        {
+        "OutputAlias": "OutA",
+        "FilePath": "001~Output~OutA~.json",
+        "Required": "true"
+        },
+        {
+        "OutputAlias": "OutB",
+        "FilePath": "foo.bar",
+        "Required": "false"
+        }
+    ]
+    },
+    {
+    "Name": "002",
+    "Inputs": [
+        {
+        "InputAlias": "Stream",
+        "Type": "Data Stream",
+        "Format": "json",
+        "FilePath": "002~Input~Stream~.json",
+        "ScriptType": "InputMock"
+        },
+        {
+        "InputAlias": "Ref",
+        "Type": "Reference Data",
+        "Format": "csv",
+        "FilePath": "002~Input~Ref~.json",
+        "ScriptType": "InputMock"
+        }
+    ],
+    "ExpectedOutputs": [
+        {
+        "OutputAlias": "OutA",
+        "FilePath": "foo.bar",
+        "Required": "false"
+        },
+        {
+        "OutputAlias": "OutB",
+        "FilePath": "002~Output~OutB~.json",
+        "Required": "true"
+        }
+    ]
+    },
+    {
+    "Name": "003",
+    "Inputs": [
+        {
+        "InputAlias": "Stream",
+        "Type": "Data Stream",
+        "Format": "json",
+        "FilePath": "003~Input~Stream~.json",
+        "ScriptType": "InputMock"
+        },
+        {
+        "InputAlias": "Ref",
+        "Type": "Reference Data",
+        "Format": "csv",
+        "FilePath": "003~Input~Ref~.json",
+        "ScriptType": "InputMock"
+        }
+    ],
+    "ExpectedOutputs": [
+        {
+        "OutputAlias": "OutA",
+        "FilePath": "003~Output~OutA~.json",
+        "Required": "true"
+        },
+        {
+        "OutputAlias": "OutB",
+        "FilePath": "003~Output~OutB~.json",
+        "Required": "true"
+        }
+    ]
+    }
+]
+}' | ConvertFrom-Json | ConvertTo-Json -Depth 4
+        
         It "outputs a valid config file" {
             New-AutManifestFromFiles `
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder `
-                -outputFilePath $t_outputFilePath |
-            Should be $expectedOutput
+                -outputFilePath $t_outputFilePath 
+            | Should be $expectedOutput
         }
     }
 }
