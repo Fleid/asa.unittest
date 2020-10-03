@@ -70,7 +70,7 @@ Function Set-AutNewFormatOutputFiles{
 
             foreach ($file in $filesToBeProcessed){
                 write-verbose "Set-AutNewFormatOutputFiles::302 - Converting $($file.Name) content"
-                
+
                 $fileName = $file.FullName
 
                 ## This extract only the content of {...} and all other syntax
