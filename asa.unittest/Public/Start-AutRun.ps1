@@ -18,7 +18,7 @@ Version of the Azure Stream Analytics CI/CD nuget package (Microsoft.Azure.Strea
 Path to the solution (folder) containing both the Azure Stream Analytics folder and the Tests folder
 
 .PARAMETER asaProjectName
-Name of the Azure Stream Analytics project = name of the project folder = name of the query in that folder (.asaql) = name of the project description file (.asaproj)
+Name of the Azure Stream Analytics project, usually the name of the project folder
 
 .PARAMETER unittestFolder
 Name of the folder containing the test fixture (folders 1_arrange, 2_act, 3_assert), usually "asaProjectName.Tests"
