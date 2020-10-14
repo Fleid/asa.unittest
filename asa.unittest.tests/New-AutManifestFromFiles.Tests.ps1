@@ -53,16 +53,21 @@ Describe "New-AutManifestFromFiles parameter solutionPath" {
         }
         Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_solutionPath}
 
-        $t_Script = "$t_solutionPath\$t_asaProjectName\$t_asaProjectName.asaql"
-        Mock Test-Path {return $false} -ParameterFilter {$path -eq $t_Script}
+        Mock Get-ChildItem {return [PSCustomObject]@{FullName = "foo.asaproj"}} -ParameterFilter {$path -like "*.asaproj"}
+        Mock Get-Content {return "<Project><ItemGroup><Script Include=`"Script.asaql`"/></ItemGroup><ItemGroup></ItemGroup></Project>"} `
+             -ParameterFilter {$path -like "foo.asaproj"}
+        $t_Script = "*.asaql"
+        Mock Test-Path {return $false} -ParameterFilter {$path -like $t_Script}
         It "fails if solutionPath doesn't lead to a .asaql query" {
             {New-AutManifestFromFiles `
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder} |
-            Should -throw  "Can't find $t_asaProjectName.asaql at $t_solutionPath\$t_asaProjectName"
+            Should -throw  "Can't find $t_solutionPath\$t_asaProjectName\Script.asaql"
         }
-        Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_Script}
+        Mock Get-ChildItem {}
+        Mock Get-Content {}
+        Mock Test-Path {return $true}
 
         $t_arrangePath = "$t_solutionPath\$t_unittestFolder\1_arrange"
         Mock Test-Path {return $false} -ParameterFilter {$path -eq $t_arrangePath}
@@ -125,16 +130,21 @@ Describe "New-AutManifestFromFiles parameter asaProjectName" {`
         }
         Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_localInputSourcePath}
 
-        $t_Script = "$t_solutionPath\$t_asaProjectName\$t_asaProjectName.asaql"
-        Mock Test-Path {return $false} -ParameterFilter {$path -eq $t_Script}
+        Mock Get-ChildItem {return [PSCustomObject]@{FullName = "foo.asaproj"}} -ParameterFilter {$path -like "*.asaproj"}
+        Mock Get-Content {return "<Project><ItemGroup><Script Include=`"Script.asaql`"/></ItemGroup><ItemGroup></ItemGroup></Project>"} `
+             -ParameterFilter {$path -like "foo.asaproj"}
+        $t_Script = "*.asaql"
+        Mock Test-Path {return $false} -ParameterFilter {$path -like $t_Script}
         It "fails if asaProjectName doesn't lead to a .asaql query" {
             {New-AutManifestFromFiles `
                 -solutionPath $t_solutionPath `
                 -asaProjectName $t_asaProjectName `
                 -unittestFolder $t_unittestFolder} |
-            Should -throw  "Can't find $t_asaProjectName.asaql at $t_solutionPath\$t_asaProjectName"
+            Should -throw  "Can't find $t_solutionPath\$t_asaProjectName\Script.asaql"
         }
-        Mock Test-Path {return $true} -ParameterFilter {$path -eq $t_Script}
+        Mock Get-ChildItem {}
+        Mock Get-Content {}
+        Mock Test-Path {return $true}
     }
 }
 
@@ -278,6 +288,10 @@ Describe "New-AutManifestFromFiles behavior" {`
             [PSCustomObject]@{FilePath="003~Output~OutB~.json";Basename0="003";Basename1="Output";Basename2="OutB"}`
         )}
 
+        Mock Get-ChildItem {return [PSCustomObject]@{FullName = "foo.asaproj"}} -ParameterFilter {$path -like "*.asaproj"}
+        Mock Get-Content {return "<Project><ItemGroup><Script Include=`"Script.asaql`"/></ItemGroup><ItemGroup></ItemGroup></Project>"} `
+             -ParameterFilter {$path -like "foo.asaproj"}
+
         $t_arrangePath = "$t_solutionPath\$t_unittestFolder\1_arrange"
         It "gets the test file list" {
             $output = New-AutManifestFromFiles `
@@ -321,7 +335,7 @@ Describe "New-AutManifestFromFiles behavior" {`
             -ParameterFilter { $Path -eq "$t_localInputSourcePath\Local_Stream.json"} 
 
         $expectedOutput = '{
-"Script": "foo\\bar\\bar.asaql",
+"Script": "foo\\bar\\Script.asaql",
 "TestCases": [
     {
     "Name": "001",
