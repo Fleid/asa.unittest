@@ -42,8 +42,16 @@ Function New-AutManifestFromFiles{
                 $arrangePath = "$solutionPath\$unittestFolder\1_arrange"
                 if (-not (Test-Path $arrangePath )) {throw "$arrangePath is not a valid path"}
 
-                $Script = "$solutionPath\$asaProjectName\$asaProjectName.asaql"
-                if (-not (Test-Path $Script )) {throw "Can't find $asaProjectName.asaql at $solutionPath\$asaProjectName"}
+                $XMLasaproj = Get-ChildItem "$solutionPath\$asaProjectName\*.asaproj"
+                if ($XMLasaproj) {
+                    $Script = "$solutionPath\$asaProjectName\" + `
+                        ([xml](Get-Content $XMLasaproj[0].FullName)).Project.ItemGroup[0].Script.Include
+                }
+                else {
+                    $Script = "$solutionPath\$asaProjectName\" + `
+                        (Get-Content "$solutionPath\$asaProjectName\asaproj.json" | ConvertFrom-Json).startfile
+                }
+                if (-not (Test-Path $Script)) {throw "Can't find $Script"}                
 
                 $localInputSourcePath = "$solutionPath\$asaProjectName\Inputs"
                 if (-not (Test-Path $localInputSourcePath )) {throw "Can't find the Inputs subfolder at $solutionPath\$asaProjectName"}
