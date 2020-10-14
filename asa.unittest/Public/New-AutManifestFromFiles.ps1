@@ -163,15 +163,15 @@ Function New-AutManifestFromFiles{
                                 foreach ($testCase in $testList) {
                                 [PSCustomObject]@{
                                         Name = $testCase.TestCase;
-                                        Inputs = ($Inputs | Where-Object -Property Name -eq $testCase.TestCase | Select-Object InputAlias, Type, Format, FilePath, ScriptType);
-                                        ExpectedOutputs = ($ExpectedOutputs | Where-Object -Property Name -eq $testCase.TestCase| Select-Object OutputAlias, FilePath, Required)
+                                        Inputs = @($Inputs | Where-Object -Property Name -eq $testCase.TestCase | Select-Object InputAlias, Type, Format, FilePath, ScriptType);
+                                        ExpectedOutputs = @($ExpectedOutputs | Where-Object -Property Name -eq $testCase.TestCase| Select-Object OutputAlias, FilePath, Required)
                                 }
                         }
 
                         ## Build the final expected object and convert to JSON
                         $testConfig = [PSCustomObject]@{
                                 Script = $Script;
-                                TestCases = $TestCases
+                                TestCases = [array]$TestCases
                         }
 
                         $finalJSON = $testConfig | ConvertTo-Json -Depth 4
