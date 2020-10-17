@@ -1,5 +1,15 @@
 # asa.unittest : Unit testing Azure Stream Analytics
 
+## Update October 2020
+
+[Last month](https://techcommunity.microsoft.com/t5/analytics-on-azure/azure-stream-analytics-adds-support-for-unit-testing-in-a-ci-cd/ba-p/1690089) the ASA team updated **azure-streamanalytics-cicd**, their companion [npm package](https://www.npmjs.com/package/azure-streamanalytics-cicd). It now includes the `addtestcase` and `test` commands that add support for query unit testing. These commands are well [documented]((https://docs.microsoft.com/en-us/azure/stream-analytics/cicd-tools?tabs=visual-studio-code#automated-test)) and quite easy to use.
+
+Release [1.1.0](https://www.powershellgallery.com/packages/asa.unittest/1.1.0) of **asa.unittest** adds helper tools to migrate existing tests to the mew official tool. I document the process [here](https://www.eiden.ca/asa-alm-202010/)
+
+If you're getting started, [go directly]((https://docs.microsoft.com/en-us/azure/stream-analytics/cicd-tools?tabs=visual-studio-code#automated-test)) to **azure-streamanalytics-cicd**
+
+## Previously
+
 A [PowerShell Gallery module](https://www.powershellgallery.com/packages/asa.unittest/) for unit testing [Azure Stream Analytics](https://docs.microsoft.com/en-us/azure/stream-analytics/) (ASA) jobs, the serverless [complex-event-processing](https://en.wikipedia.org/wiki/Complex_event_processing) service running in Azure.
 
 ![Logo of asa.unittest](https://raw.githubusercontent.com/Fleid/asa.unittest/master/bandage.png)
@@ -28,7 +38,7 @@ In this article:
 
 ### Context
 
-At the time of writing, the major IDEs that support ASA ([VSCode](https://code.visualstudio.com/) and [Visual Studio](https://visualstudio.microsoft.com/vs/)) do not offer native **unit testing** capabilities.
+At the time of writing, the major IDEs that support ASA ([VSCode](https://code.visualstudio.com/) and [Visual Studio](https://visualstudio.microsoft.com/vs/)) ~~do not offer native **unit testing** capabilities~~ -> **Not true anymore, see above**.
 
 This tool intends to fill that gap by enabling:
 
@@ -229,6 +239,8 @@ PowerShell [remoting for jobs](https://docs.microsoft.com/en-us/powershell/modul
 
 ### Change Log
 
+- October 2020 :
+  - Add helpers command to migrate existing tests to the new official tool
 - May 2020 :
   - Update doc to reflect the removal of the jsondiffpatch dependency
   - Fix open issues
