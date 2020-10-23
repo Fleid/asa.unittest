@@ -18,7 +18,6 @@ jobs:
         shell: pwsh
         run: |
           $PesterResults = Invoke-Pester -Path .\asa.unittest.tests\Get-AutRunResult.Tests.ps1 -Show Fails -PassThru
-          If($PesterResults.FailedCount -ne 0){
-            Write-Warning "Some Tests Failed - See results above"
-            [System.Environment]::Exit(1)
+          If ($PesterResults.FailedCount -ne 0) {
+            Write-Error "Pester run : $($PesterResults.FailedCount) errors on $($PesterResults.TotalCount) total tests" -ErrorAction Stop
           }
