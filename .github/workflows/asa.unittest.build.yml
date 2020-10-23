@@ -17,5 +17,6 @@ jobs:
       - name: Perform a Pester test
         shell: pwsh
         run: |
-          Set-Location ".\asa.unittest.tests\"
-          Invoke-Pester Get-AutFieldFromFileInfo.Tests.ps1 -PassThru
+          Set-PSRepository psgallery -InstallationPolicy trusted
+          Install-Module -Name Pester -RequiredVersion 5.0.4 -Confirm:$false -Force
+          Invoke-Pester -Path "asa.unittest.tests"
