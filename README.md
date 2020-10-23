@@ -6,7 +6,7 @@
 
 Release [1.1.0](https://www.powershellgallery.com/packages/asa.unittest/1.1.0) of **asa.unittest** adds helper tools to migrate existing tests to the new official tool. I document the process [here](https://www.eiden.ca/asa-alm-202010/)
 
-If you're getting started, [go directly](https://docs.microsoft.com/en-us/azure/stream-analytics/cicd-tools?tabs=visual-studio-code#automated-test) to **azure-streamanalytics-cicd**
+If you're getting started, [go directly](https://docs.microsoft.com/en-us/azure/stream-analytics/cicd-tools?tabs=visual-studio-code#automated-test) to **azure-streamanalytics-cicd** instead of **asa.unittest**.
 
 ## Previously
 
