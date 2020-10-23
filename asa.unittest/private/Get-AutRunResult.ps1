@@ -32,7 +32,7 @@ Function Get-AutRunResult{
     [CmdletBinding()]
     [OutputType([int])]
     param (
-        [string]$solutionPath = $(Throw "-solutionPath is required"),
+        [string]$solutionPath,# = $(Throw "-solutionPath is required"),
         [string]$asaProjectName = $(Throw "-asaProjectName is required"),
         [string]$unittestFolder = $(Throw "-unittestFolder is required"),
         [string]$testID = $(Throw "-testID is required"),
