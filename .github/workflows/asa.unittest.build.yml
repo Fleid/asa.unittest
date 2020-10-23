@@ -17,4 +17,8 @@ jobs:
       - name: Perform a Pester test
         shell: pwsh
         run: |
-          Invoke-Pester -Path .\asa.unittest.tests\Get-AutRunResult.Tests.ps1
+          $PesterResults = Invoke-Pester -Path .\asa.unittest.tests\Get-AutRunResult.Tests.ps1 -Show Fails -PassThru
+          If($PesterResults.FailedCount -ne 0){
+            Write-Warning "Some Tests Failed - See results above"
+            [System.Environment]::Exit(1)
+          }
