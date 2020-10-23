@@ -18,4 +18,4 @@ jobs:
         shell: pwsh
         run: |
           Set-Location ".\asa.unittest.tests\"
-          Invoke-Pester -PassThru
+st          Invoke-Pester Get-AutFieldFromFileInfo.Tests.ps1 -PassThru
