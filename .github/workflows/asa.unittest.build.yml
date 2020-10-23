@@ -20,4 +20,4 @@ jobs:
         shell: pwsh
         run: |
           Set-Location ".\asa.unittest.tests\"
-          Invoke-Pester
+          Invoke-Pester -PassThru
