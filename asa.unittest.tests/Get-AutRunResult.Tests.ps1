@@ -50,7 +50,7 @@ InModuleScope $moduleName {
                 -testCase $t_testCase `
                 -asaNugetVersion $t_asaNugetVersion | Out-Null
 
-            Assert-MockCalled Get-ChildItem -Times 1 -Exactly -Scope It -ParameterFilter ($Path -eq $t_outputSourcePath)
+            Assert-MockCalled Get-ChildItem -Times 1 -Exactly -Scope It -ParameterFilter {$path -eq $t_outputSourcePath}
         }
 
         It "tries nothing if it gets nothing" {

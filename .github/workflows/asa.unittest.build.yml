@@ -17,4 +17,4 @@ jobs:
       - name: Perform a Pester test
         shell: pwsh
         run: |
-          Invoke-Pester -Path "asa.unittest.tests\Get-AutRunResults.Tests.ps1"
+          Invoke-Pester -Path .\asa.unittest.tests\Get-AutRunResult.Tests.ps1
